@@ -10,7 +10,6 @@ IMG_DIST = "./dist/images"
 
 
 def build_file_map(directory):
-    """Builds a lowercase map of filenames to full paths."""
     file_map = {}
     for root, _, files in os.walk(directory):
         for f in files:
@@ -26,7 +25,8 @@ def setup_dir(root, post_dist, img_dist):
 
 
 def parse_md_file(root, filename):
-    """Splits file into frontmatter string and body string."""
+    if not filename.endswith(".md"):
+        return None, None
     content = open(os.path.join(root, filename), "r", encoding="utf-8").read()
     fm_match = re.search(r"^---\n(.*?)\n---\n", content, flags=re.DOTALL)
     if not fm_match:
@@ -43,7 +43,6 @@ def update_filename(filename, frontmatter):
 
 
 def process_h1(body, frontmatter):
-    """Extracts H1 to frontmatter title if missing and removes it from body."""
     h1_pattern = r"^\s*#\s+(.+?)$"
     h1_match = re.search(h1_pattern, body, flags=re.MULTILINE)
 
@@ -53,19 +52,6 @@ def process_h1(body, frontmatter):
             frontmatter = f"title: {title}\n{frontmatter}"
         body = re.sub(h1_pattern, "", body, count=1, flags=re.MULTILINE).strip()
     return body, frontmatter
-
-
-# def process_images(body, img_map):
-#     """Converts ![[img]] to Markdown format and copies files."""
-
-#     def replacer(match):
-#         img_name = match.group(1).strip()
-#         if img_name.lower() in img_map:
-#             shutil.copy2(img_map[img_name.lower()], os.path.join(IMG_DIST, img_name))
-#             return f"![](/assets/images/{img_name})"
-#         return match.group(0)
-
-#     return re.sub(r"!\[\[(.*?)(?:\|.*?)?\]\]", replacer, body)
 
 
 def process_images(body, img_map):
@@ -105,8 +91,8 @@ def process_wikilinks(body):
 
 
 def process_math(body, frontmatter):
-    def math_block_replacer(match):
 
+    def math_block_replacer(match):
         inner_math = match.group(1)
         # change \\ to \\\\\\\\ so that MD will show \\\\ and html will read \\
         # which is important for math block line break
@@ -147,20 +133,16 @@ def clean_and_copy():
 
     for root, _, files in os.walk(POST_DIR):
         for filename in files:
-            if not filename.endswith(".md"):
-                continue
-
             frontmatter, body = parse_md_file(root, filename)
-            if not frontmatter:
-                continue
 
-            new_filename = update_filename(filename, frontmatter)
-            body, frontmatter = process_h1(body, frontmatter)
-            body = process_images(body, img_map)
-            body = process_wikilinks(body)
-            body = process_math(body, frontmatter)
+            if frontmatter:
+                new_filename = update_filename(filename, frontmatter)
+                body, frontmatter = process_h1(body, frontmatter)
+                body = process_images(body, img_map)
+                body = process_wikilinks(body)
+                body = process_math(body, frontmatter)
 
-            write_to_file(POST_DIST, new_filename, frontmatter, body)
+                write_to_file(POST_DIST, new_filename, frontmatter, body)
 
 
 if __name__ == "__main__":
