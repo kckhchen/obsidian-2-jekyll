@@ -1,6 +1,7 @@
 import os
 import re
 import shutil
+from datetime import datetime
 
 VAULT_DIR = "/Users/casey/Library/Mobile Documents/iCloud~md~obsidian/Documents/Casey"
 POST_DIR = os.path.join(VAULT_DIR, "_published")
@@ -30,19 +31,22 @@ def parse_md_file(root, filename):
     content = open(os.path.join(root, filename), "r", encoding="utf-8").read()
     fm_match = re.search(r"^---\n(.*?)\n---\n", content, flags=re.DOTALL)
     if not fm_match:
-        return None, content
+        return "", content
     return fm_match.group(1), content[fm_match.end() :]
 
 
-def update_filename(filename, frontmatter):
+def update_filename(root, filename, frontmatter):
+    stat_info = os.stat(os.path.join(root, filename))
+    creation_date = datetime.fromtimestamp(stat_info.st_birthtime).strftime("%Y-%m-%d")
     date_match = re.search(r"date:\s*(\d{4}-\d{2}-\d{2})", frontmatter)
-    date_str = date_match.group(1) if date_match else ""
+    date_str = date_match.group(1) if date_match else creation_date
     clean_name = re.sub(r"\d{4}-\d{2}-\d{2}-", "", filename).replace(" ", "-").lower()
     new_name = f"{date_str}-{clean_name}"
     return new_name
 
 
 def process_h1(body, frontmatter):
+    frontmatter = f"layout: post\n{frontmatter}"
     h1_pattern = r"^\s*#\s+(.+?)$"
     h1_match = re.search(h1_pattern, body, flags=re.MULTILINE)
 
@@ -90,7 +94,21 @@ def process_wikilinks(body):
     return body
 
 
-def process_math(body, frontmatter):
+def needs_mathjax(body):
+    clean_body = re.sub(r"```.*?```", "", body, flags=re.DOTALL)
+    clean_body = re.sub(r"`.*?`", "", clean_body)
+    has_block_math = bool(re.search(r"\$\$.*?\$\$", clean_body, flags=re.DOTALL))
+    has_inline_math = bool(re.search(r"(?<!\\)\$[^ \t\n\$].*?\$", clean_body))
+
+    return has_block_math or has_inline_math
+
+
+def process_math(body):
+
+    def shield_replacer(match):
+        placeholder = f"%%CODE_BLOCK_PLACEHOLDER_{len(code_blocks)}%%"
+        code_blocks.append(match.group(0))
+        return placeholder
 
     def math_block_replacer(match):
         inner_math = match.group(1)
@@ -105,16 +123,29 @@ def process_math(body, frontmatter):
         else:
             return f"\n\\\[{fixed_math}\\\]\n"
 
-    use_mathjax = 1 if re.search(r'\s*math:\s*"?true"?\s*', frontmatter) else 0
+    if needs_mathjax(body):
+        code_blocks = []
+        code_shield = re.sub(
+            r"(```.*?```|`.*?`)", shield_replacer, body, flags=re.DOTALL
+        )
 
-    if use_mathjax:
         # look for math block and apply changes first
-        body = re.sub(r"\$\$(.*?)\$\$", math_block_replacer, body, flags=re.DOTALL)
+        code_shield = re.sub(
+            r"\$\$(.*?)\$\$", math_block_replacer, code_shield, flags=re.DOTALL
+        )
         # replace $...$ to \(...\)
-        body = re.sub(r"(?<!\\)\$([^$]+?)(?<!\\)\$", r"\\\\(\1\\\\)", body)
+        code_shield = re.sub(
+            r"(?<!\\)\$([^$]+?)(?<!\\)\$", r"\\\\(\1\\\\)", code_shield
+        )
         # add this line at the end for html to recognize
-        body += "\n\n{% include mathjax.html %}"
+        code_shield += "\n\n{% include mathjax.html %}"
 
+        for i, original_code in enumerate(code_blocks):
+            code_shield = code_shield.replace(
+                f"%%CODE_BLOCK_PLACEHOLDER_{i}%%", original_code
+            )
+
+        return code_shield
     return body
 
 
@@ -135,12 +166,12 @@ def clean_and_copy():
         for filename in files:
             frontmatter, body = parse_md_file(root, filename)
 
-            if frontmatter:
-                new_filename = update_filename(filename, frontmatter)
+            if not frontmatter is None:
+                new_filename = update_filename(root, filename, frontmatter)
                 body, frontmatter = process_h1(body, frontmatter)
                 body = process_images(body, img_map)
                 body = process_wikilinks(body)
-                body = process_math(body, frontmatter)
+                body = process_math(body)
 
                 write_to_file(POST_DIST, new_filename, frontmatter, body)
 
