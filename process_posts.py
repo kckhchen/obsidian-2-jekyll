@@ -55,17 +55,39 @@ def process_h1(body, frontmatter):
     return body, frontmatter
 
 
+# def process_images(body, img_map):
+#     """Converts ![[img]] to Markdown format and copies files."""
+
+#     def replacer(match):
+#         img_name = match.group(1).strip()
+#         if img_name.lower() in img_map:
+#             shutil.copy2(img_map[img_name.lower()], os.path.join(IMG_DIST, img_name))
+#             return f"![](/assets/images/{img_name})"
+#         return match.group(0)
+
+#     return re.sub(r"!\[\[(.*?)(?:\|.*?)?\]\]", replacer, body)
+
+
 def process_images(body, img_map):
-    """Converts ![[img]] to Markdown format and copies files."""
+    # 1. (.*?) -> The filename
+    # 2. (?:\|(\d+))? -> Optional pipe followed by digits (Width)
+    # 3. (?:\|(.*?))? -> Optional pipe followed by text (Alt/Alias)
+    pattern = r"!\[\[([^|\]]+)(?:\|(\d+))?(?:\|([^\]]+))?\]\]"
 
     def replacer(match):
         img_name = match.group(1).strip()
+        width = match.group(2)
+
         if img_name.lower() in img_map:
             shutil.copy2(img_map[img_name.lower()], os.path.join(IMG_DIST, img_name))
-            return f"![](/assets/images/{img_name})"
+            updated_link = f"![](/assets/images/{img_name})"
+            if width:
+                updated_link += f'{{: width="{width}" }}'
+            return updated_link
+
         return match.group(0)
 
-    return re.sub(r"!\[\[(.*?)(?:\|.*?)?\]\]", replacer, body)
+    return re.sub(pattern, replacer, body)
 
 
 def process_wikilinks(body):
@@ -76,7 +98,7 @@ def process_wikilinks(body):
         target = match.group(1).strip()
         display = match.group(2).strip() if match.group(2) else target
         slug = target.replace(" ", "-").lower()
-        return f"[{display}](./{slug}/)"
+        return f"[{display}](../{slug}/)"
 
     body = re.sub(pattern, link_replacer, body)
     return body
