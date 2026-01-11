@@ -85,8 +85,26 @@ def process_wikilinks(body):
     pattern = r"(?<!\!)\[\[([^|\]]+)(?:\|([^\]]+))?\]\]"
 
     def link_replacer(match):
+
+        def clean_anchor(text):
+            text = text.lower()
+            text = re.sub(r"[^\w\s-]", "", text)
+            text = re.sub(r"\s+", "-", text)
+            return text.strip("-")
+
         target = match.group(1).strip()
         display = match.group(2).strip() if match.group(2) else target
+
+        if target.startswith("#"):
+            anchor = target.lower().replace(" ", "-")
+            return f"[{display}]({anchor})"
+
+        if "#" in target:
+            target, anchor = target.split("#", 1)
+            target_slug = target.replace(" ", "-").lower()
+            anchor_slug = clean_anchor(anchor)
+            return f"[{display}](../{target_slug}#{anchor_slug})"
+
         slug = target.replace(" ", "-").lower()
         return f"[{display}](../{slug}/)"
 
