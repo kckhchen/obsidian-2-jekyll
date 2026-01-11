@@ -86,7 +86,15 @@ def process_wikilinks(body):
     # Look for "\n" or " " followed by the anchor "^hash" and ending with " " or end-of-file
     anchor_pattern = r"(^|\s)\^([a-zA-Z0-9-]+)(?=\s|$)"
 
-    body = re.sub(anchor_pattern, r"\n{: #\2}", body, flags=re.MULTILINE)
+    def anchor_replacer(match):
+        preceeding_char = match.group(1)
+        anchor = match.group(2).strip()
+        if preceeding_char == " ":
+            return f"\n{{: #secid{anchor}}}"
+        else:
+            return f"{{: #secid{anchor}}}"
+
+    body = re.sub(anchor_pattern, anchor_replacer, body, flags=re.MULTILINE)
 
     def link_replacer(match):
         target = match.group(1).strip()
@@ -95,7 +103,7 @@ def process_wikilinks(body):
         if "#^" in target:
             parts = target.split("#^", 1)
             filename = parts[0].strip()
-            block_id = parts[1].strip()
+            block_id = "secid" + parts[1].strip()
 
             if not filename:
                 return f"[{display}](#{block_id})"
@@ -146,9 +154,9 @@ def process_math(body):
         # (i.e. strip away $$...$$ since \begin{} is a math block itself)
         # else simply swap $$...$$ for \[...\] and apply pretty line breaks
         if re.match(r"^\s*\\begin\{.+?\}", fixed_math.strip()):
-            return fixed_math
+            return f"\n{fixed_math}"
         else:
-            return f"\n\\\[{fixed_math}\\\]\n"
+            return f"\n\n\\\[{fixed_math}\\\]\n"
 
     if needs_mathjax(body):
         code_blocks = []
@@ -158,7 +166,7 @@ def process_math(body):
 
         # look for math block and apply changes first
         code_shield = re.sub(
-            r"\$\$(.*?)\$\$", math_block_replacer, code_shield, flags=re.DOTALL
+            r"\s*\$\$(.*?)\$\$\s*", math_block_replacer, code_shield, flags=re.DOTALL
         )
         # replace $...$ to \(...\)
         code_shield = re.sub(
