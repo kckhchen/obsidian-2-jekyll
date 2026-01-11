@@ -2,12 +2,10 @@ import os
 import re
 import shutil
 from datetime import datetime
+from env import *
 
-VAULT_DIR = "/Users/casey/Library/Mobile Documents/iCloud~md~obsidian/Documents/Casey"
-POST_DIR = os.path.join(VAULT_DIR, "_published")
-IMG_DIR = os.path.join(VAULT_DIR, "_images")
-POST_DIST = "./dist/posts"
-IMG_DIST = "./dist/images"
+POST_DIR = os.path.join(VAULT_DIR, POST_FOLDER)
+IMG_DIR = os.path.join(VAULT_DIR, IMG_FOLDER)
 
 
 def build_file_map(directory):
@@ -18,9 +16,11 @@ def build_file_map(directory):
     return file_map
 
 
-def setup_dir(root, post_dist, img_dist):
-    if os.path.exists(root):
-        shutil.rmtree(root)
+def setup_dir(post_dist, img_dist):
+    if os.path.exists(post_dist):
+        shutil.rmtree(post_dist)
+    if os.path.exists(img_dist):
+        shutil.rmtree(img_dist)
     os.makedirs(post_dist, exist_ok=True)
     os.makedirs(img_dist, exist_ok=True)
 
@@ -58,7 +58,7 @@ def process_h1(body, frontmatter):
     return body, frontmatter
 
 
-def process_images(body, img_map):
+def process_images(body, img_map, img_dist):
     # 1. (.*?) -> The filename
     # 2. (?:\|(\d+))? -> Optional pipe followed by digits (Width)
     # 3. (?:\|(.*?))? -> Optional pipe followed by text (Alt/Alias)
@@ -70,7 +70,7 @@ def process_images(body, img_map):
 
         if img_name.lower() in img_map:
             shutil.copy2(img_map[img_name.lower()], os.path.join(IMG_DIST, img_name))
-            updated_link = f"![](/assets/images/{img_name})"
+            updated_link = f"![]({os.path.join(img_dist, img_name)})"
             if width:
                 updated_link += f'{{: width="{width}" }}'
             return updated_link
@@ -158,8 +158,8 @@ def write_to_file(post_dist, new_filename, frontmatter, body):
 # --- Main Logic ---
 
 
-def clean_and_copy():
-    setup_dir("./dist", POST_DIST, IMG_DIST)
+def process_post():
+    setup_dir(POST_DIST, IMG_DIST)
     img_map = build_file_map(IMG_DIR)
 
     for root, _, files in os.walk(POST_DIR):
@@ -169,7 +169,7 @@ def clean_and_copy():
             if not frontmatter is None:
                 new_filename = update_filename(root, filename, frontmatter)
                 body, frontmatter = process_h1(body, frontmatter)
-                body = process_images(body, img_map)
+                body = process_images(body, img_map, IMG_DIST)
                 body = process_wikilinks(body)
                 body = process_math(body)
 
@@ -177,4 +177,4 @@ def clean_and_copy():
 
 
 if __name__ == "__main__":
-    clean_and_copy()
+    process_post()
