@@ -1,5 +1,9 @@
 # Obsidian2Jekyll
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)
+![Dependencies](https://img.shields.io/badge/dependencies-none-brightgreen.svg)
+
 Make your Obsidian articles Jekyll-ready. Built for math writers.
 
 This is a python script that scans your obsidian folder, formats your articles to make them compatible with Jekyll's requirements, and saves them to your destination folder, waiting to be published, so you can keep your articles clean, while Jekyll gets its preferred flavor.
