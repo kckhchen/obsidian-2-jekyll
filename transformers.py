@@ -16,10 +16,16 @@ def process_h1(body, frontmatter, layout="post"):
     return body, frontmatter
 
 
+def strip_comments(body):
+    comment_pattern = r"%%.*?%%"
+    body = re.sub(comment_pattern, "", body, flags=re.DOTALL)
+    return body
+
+
 def process_images(body, img_map, img_dist, img_link):
-    # 1. (.*?) -> The filename
-    # 2. (?:\|(\d+))? -> Optional pipe followed by digits (Width)
-    # 3. (?:\|(.*?))? -> Optional pipe followed by text (Alt/Alias)
+    # (.*?) The filename
+    # (?:\|(\d+))? Optional pipe followed by digits (Width)
+    # (?:\|(.*?))? Optional pipe followed by text (Alt/Alias)
     pattern = r"!\[\[([^|\]]+)(?:\|(\d+))?(?:\|([^\]]+))?\]\]"
 
     def replacer(match):
@@ -110,25 +116,3 @@ def process_math(body, frontmatter, math_mode):
                 'Math blocks detected but no rendering mode is selected. Please either set MATH_RENDERING_MODE = "inject_cdn" or "metadata".\n'
             )
     return body, frontmatter
-
-
-def create_code_shield(body):
-
-    def shield_replacer(match):
-        placeholder = f"&&CODE_BLOCK_{len(code_blocks)}&&"
-        code_blocks.append(match.group(0))
-        return placeholder
-
-    code_blocks = []
-    code_pattern = r"(```.*?```|`.*?`)"
-    code_shield = re.sub(code_pattern, shield_replacer, body, flags=re.DOTALL)
-
-    return code_shield, code_blocks
-
-
-def unshield(code_shield, code_blocks):
-    for i, original_code in enumerate(code_blocks):
-        code_shield = code_shield.replace(f"&&CODE_BLOCK_{i}&&", original_code)
-    unshield_content = code_shield
-
-    return unshield_content

@@ -1,7 +1,13 @@
 import os
 import re
 from utils import parse_md_file, get_dist_filepath, write_to_file
-from transformers import process_h1, process_images, process_wikilinks, process_math
+from transformers import (
+    process_h1,
+    process_images,
+    process_wikilinks,
+    process_math,
+    strip_comments,
+)
 
 
 def build_posts(vault_dir, post_dist, img_dist, img_link, post_dir, layout, math_mode):
@@ -21,6 +27,7 @@ def build_posts(vault_dir, post_dist, img_dist, img_link, post_dir, layout, math
                     body, code_blocks = create_code_shield(body)
 
                     body, frontmatter = process_h1(body, frontmatter, layout)
+                    body = strip_comments(body)
                     body = process_images(body, img_map, img_dist, img_link)
                     body = process_wikilinks(body)
                     body, frontmatter = process_math(body, frontmatter, math_mode)
