@@ -13,3 +13,11 @@ IMG_DIST = "./assets/images"
 # absolute path for Jekyll to locate the image folder
 # (please change this path to your image path. This is for the demo website.)
 IMG_LINK = "/obsidian-2-jekyll/assets/images"
+
+# If the Jekyll theme supports math rendering and can recognize "math: true"
+# please uncomment "metadata".
+# If the Jekyll theme does not support math rendering
+# or you want to inject mathjax cdn, please uncomment "inject_cdn"
+
+# MATH_RENDERING_MODE = "metadata"
+MATH_RENDERING_MODE = "inject_cdn"

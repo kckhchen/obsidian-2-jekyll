@@ -87,56 +87,42 @@ def process_wikilinks(body):
     return body
 
 
-def needs_mathjax(body):
-    clean_body = re.sub(r"```.*?```", "", body, flags=re.DOTALL)
-    clean_body = re.sub(r"`.*?`", "", clean_body)
-    has_block_math = bool(re.search(r"\$\$.*?\$\$", clean_body, flags=re.DOTALL))
-    has_inline_math = bool(re.search(r"(?<!\\)\$[^ \t\n\$].*?\$", clean_body))
+def needs_math(body):
+    no_code = re.sub(r"(```.*?```|`.*?`)", "", body, flags=re.DOTALL)
+    has_block_math = bool(re.search(r"\$\$.*?\$\$", no_code, flags=re.DOTALL))
+    has_inline_math = bool(re.search(r"(?<!\\)\$[^ \t\n\$].*?\$", no_code))
 
     return has_block_math or has_inline_math
 
 
-def process_math(body):
+def process_math(body, frontmatter, math_mode):
+    if not needs_math(body):
+        return body, frontmatter
 
     def shield_replacer(match):
-        placeholder = f"%%CODE_BLOCK_PLACEHOLDER_{len(code_blocks)}%%"
+        placeholder = f"%%CODE_BLOCK_{len(code_blocks)}%%"
         code_blocks.append(match.group(0))
         return placeholder
 
-    def math_block_replacer(match):
-        inner_math = match.group(1)
-        # change \\ to \\\\\\\\ so that MD will show \\\\ and html will read \\
-        # which is important for math block line break
-        fixed_math = inner_math.replace(r"\\", r"\\\\\\\\")
-        # if math block starts with \begin{...} return the raw math block
-        # (i.e. strip away $$...$$ since \begin{} is a math block itself)
-        # else simply swap $$...$$ for \[...\] and apply pretty line breaks
-        if re.match(r"^\s*\\begin\{.+?\}", fixed_math.strip()):
-            return f"\n{fixed_math}"
-        else:
-            return f"\n\n\\\[{fixed_math}\\\]\n"
+    mathjax_script = '<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>'
 
-    if needs_mathjax(body):
-        code_blocks = []
-        code_shield = re.sub(
-            r"(```.*?```|`.*?`)", shield_replacer, body, flags=re.DOTALL
+    code_blocks = []
+    code_pattern = r"(```.*?```|`.*?`)"
+    code_shield = re.sub(code_pattern, shield_replacer, body, flags=re.DOTALL)
+
+    inline_math_pattern = r"(?<!\\|\$)\$([^$]+?)(?<!\\)\$(?!\$)"
+    code_shield = re.sub(inline_math_pattern, r"\\\\(\1\\\\)", code_shield)
+
+    for i, original_code in enumerate(code_blocks):
+        code_shield = code_shield.replace(f"%%CODE_BLOCK_{i}%%", original_code)
+
+    if math_mode == "inject_cdn":
+        code_shield += f"\n\n{mathjax_script}"
+    elif math_mode == "metadata":
+        frontmatter = f"math: true\n{frontmatter}"
+    else:
+        print(
+            'Math blocks detected but no rendering mode is selected. Please either set MATH_RENDERING_MODE = "inject_cdn" or "metadata".\n'
         )
 
-        # look for math block and apply changes first
-        code_shield = re.sub(
-            r"\s*\$\$(.*?)\$\$\s*", math_block_replacer, code_shield, flags=re.DOTALL
-        )
-        # replace $...$ to \(...\)
-        code_shield = re.sub(
-            r"(?<!\\)\$([^$]+?)(?<!\\)\$", r"\\\\(\1\\\\)", code_shield
-        )
-        # add this line at the end for html to recognize
-        code_shield += "\n\n{% include mathjax.html %}"
-
-        for i, original_code in enumerate(code_blocks):
-            code_shield = code_shield.replace(
-                f"%%CODE_BLOCK_PLACEHOLDER_{i}%%", original_code
-            )
-
-        return code_shield
-    return body
+    return code_shield, frontmatter

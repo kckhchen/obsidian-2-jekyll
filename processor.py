@@ -3,7 +3,8 @@ from utils import parse_md_file, get_dist_filepath, write_to_file
 from transformers import process_h1, process_images, process_wikilinks, process_math
 
 
-def build_posts(vault_dir, post_dist, img_dist, img_link, post_dir, layout):
+def build_posts(vault_dir, post_dist, img_dist, img_link, post_dir, layout, math_mode):
+    print(f"Start processing posts in folder [ {post_dir} ]...\n")
     setup_dir(post_dist, img_dist)
     img_map = build_file_map(vault_dir)
 
@@ -19,13 +20,14 @@ def build_posts(vault_dir, post_dist, img_dist, img_link, post_dir, layout):
                     body, frontmatter = process_h1(body, frontmatter, layout)
                     body = process_images(body, img_map, img_dist, img_link)
                     body = process_wikilinks(body)
-                    body = process_math(body)
+                    body, frontmatter = process_math(body, frontmatter, math_mode)
                     write_to_file(new_filepath, frontmatter, body)
                 else:
                     print(f"Skipping (Unchanged): {filename}")
 
             else:
                 print(f"Skipping (Not an md file): {filename}")
+    print("\nProcessing finished.")
 
 
 def build_file_map(directory):

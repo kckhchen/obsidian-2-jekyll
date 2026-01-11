@@ -5,27 +5,29 @@ layout: post
 
 This is a demo website for my tool [Obsidian-2-Jekyll](https://github.com/kckhchen/obsidian-2-jekyll).
 
-The file name will be `2026-01-11-my-main-post`, since the original file name is `My Main Post` and the creation date is 11th January, 2026. The `h1` header "This Should Be the Main Title" will be treated as post title on the website, and the header will be removed.
+The file name will be `2026-01-11-my-main-post`, since the original file name is `My Main Post` and the creation date is 11th January, 2026. The `h1` title "This Should Be the Main Title" will be treated as post title on the website, and the header will be removed.
 ## Math Processing
 
 Any math section like a simple \\(a^2 + b^{2} = c^{2}\\) will be rendered correctly, including math blocks:
 {: #secid10d1e3}
 
-\\[
+$$
 \mathbb{E}\left[ \bar{X} \right] = \mathbb{E}\left[ \frac{1}{n} \sum_{i=1}^{n} X_{i} \right] = \frac{1}{n} \mathbb{E}\left[ \sum_{i=1}^{n} X_{i} \right] = \frac{1}{n} \sum_{i=1}^{n} \mathbb{E} \left[ X_{1} \right] = \frac{1}{n} n\mu = \mu
-\\]
+$$
 {: #secid0f5bab}
 
 This also works with multi-linen and math block with environments:
 
+$$
 \begin{align}
 \mathbb{E} \left[ \frac{1}{n} \sum_{i=1}^{n} (X_{i} - \bar{X})^{2} \right]
-&= \frac{1}{n} \mathbb{E} \left[ \sum_{i=1}^{n} X_{i}^{2} - n\bar{X}^{2} \right] \\\\\\\\
-&= \frac{1}{n} \left( \sum_{i=1}^{n} \mathbb{E} \left[ X_{i}^{2} \right] - n\mathbb{E} \left[ \bar{X}^{2} \right] \right) \\\\\\\\
-&= \frac{1}{n}\left( n(\sigma^{2} + \mu^{2}) - n \left( \frac{\sigma^{2}}{n} + \mu^{2} \right) \right) \\\\\\\\
-&= \sigma^{2} + \mu^{2} - \frac{\sigma^{2}}{n} - \mu^{2} \\\\\\\\
+&= \frac{1}{n} \mathbb{E} \left[ \sum_{i=1}^{n} X_{i}^{2} - n\bar{X}^{2} \right] \\
+&= \frac{1}{n} \left( \sum_{i=1}^{n} \mathbb{E} \left[ X_{i}^{2} \right] - n\mathbb{E} \left[ \bar{X}^{2} \right] \right) \\
+&= \frac{1}{n}\left( n(\sigma^{2} + \mu^{2}) - n \left( \frac{\sigma^{2}}{n} + \mu^{2} \right) \right) \\
+&= \sigma^{2} + \mu^{2} - \frac{\sigma^{2}}{n} - \mu^{2} \\
 &= \frac{n-1}{n} \sigma^{2}
 \end{align}
+$$
 {: #secid2d1a9f}
 
 ### A Note on Code Blocks
@@ -72,4 +74,4 @@ The `.md` files found in the `_posts` folder might look broken and won't be rend
 
 [This points to a section in another post.](../my-another-post#amazing-h2-title)
 
-{% include mathjax.html %}
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>

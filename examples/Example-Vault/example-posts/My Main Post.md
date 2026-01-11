@@ -2,7 +2,7 @@
 
 This is a demo website for my tool [Obsidian-2-Jekyll](https://github.com/kckhchen/obsidian-2-jekyll).
 
-The file name will be `2026-01-11-my-main-post`, since the original file name is `My Main Post` and the creation date is 11th January, 2026. The `h1` header "This Should Be the Main Title" will be treated as post title on the website, and the header will be removed.
+The file name will be `2026-01-11-my-main-post`, since the original file name is `My Main Post` and the creation date is 11th January, 2026. The `h1` title "This Should Be the Main Title" will be treated as post title on the website, and the header will be removed.
 ## Math Processing
 
 Any math section like a simple $a^2 + b^{2} = c^{2}$ will be rendered correctly, including math blocks: ^10d1e3

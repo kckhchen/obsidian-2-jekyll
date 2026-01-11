@@ -10,7 +10,15 @@ def main(args):
     if args.cleanup:
         remove_stale_files(POST_DIST, post_dir)
     else:
-        build_posts(VAULT_DIR, POST_DIST, IMG_DIST, IMG_LINK, post_dir, args.layout)
+        build_posts(
+            VAULT_DIR,
+            POST_DIST,
+            IMG_DIST,
+            IMG_LINK,
+            post_dir,
+            args.layout,
+            MATH_RENDERING_MODE,
+        )
         if args.update:
             remove_stale_files(POST_DIST, post_dir)
 

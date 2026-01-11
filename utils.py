@@ -25,4 +25,3 @@ def get_dist_filepath(root, filename, frontmatter, dist_path):
 def write_to_file(filepath, frontmatter, body):
     with open(filepath, "w", encoding="utf-8") as f:
         f.write(f"---\n{frontmatter.strip()}\n---\n\n{body.strip()}")
-    print(f"Done: {filepath}")
