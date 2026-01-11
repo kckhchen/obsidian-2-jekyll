@@ -1,6 +1,6 @@
 # Obsidian2Jekyll
 
-Make your Obsidian articles Jekyll-ready.
+Make your Obsidian articles Jekyll-ready. Built for math writers.
 
 This is a python script that scans your obsidian folder, formats your articles to make them compatible with Jekyll's requirements, and saves them to your destination folder, waiting to be published, so you can keep your articles clean, while Jekyll gets its preferred flavor.
 
@@ -53,7 +53,7 @@ Open the `config.py` and configure the source paths and destination paths of you
 Then simply run this command in the folder:
 
 ```bash
-python3 process_posts.py
+python3 main.py
 ```
 
 Then you can find the formatted, Jekyll-ready posts, along with the images in the posts in your destination folder. If you set `POST_DIST` as `./_posts` then the posts can be instantly visible to Jekyll.
