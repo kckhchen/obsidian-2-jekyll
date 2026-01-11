@@ -1,52 +1,10 @@
 import os
 import re
 import shutil
-from datetime import datetime
-from config import *
-
-POST_DIR = os.path.join(VAULT_DIR, POST_FOLDER)
-IMG_DIR = os.path.join(VAULT_DIR, IMG_FOLDER)
 
 
-def build_file_map(directory):
-    file_map = {}
-    for root, _, files in os.walk(directory):
-        for f in files:
-            file_map[f.lower()] = os.path.join(root, f)
-    return file_map
-
-
-def setup_dir(post_dist, img_dist):
-    if os.path.exists(post_dist):
-        shutil.rmtree(post_dist)
-    if os.path.exists(img_dist):
-        shutil.rmtree(img_dist)
-    os.makedirs(post_dist, exist_ok=True)
-    os.makedirs(img_dist, exist_ok=True)
-
-
-def parse_md_file(root, filename):
-    if not filename.endswith(".md"):
-        return None, None
-    content = open(os.path.join(root, filename), "r", encoding="utf-8").read()
-    fm_match = re.search(r"^---\n(.*?)\n---\n", content, flags=re.DOTALL)
-    if not fm_match:
-        return "", content
-    return fm_match.group(1), content[fm_match.end() :]
-
-
-def update_filename(root, filename, frontmatter):
-    stat_info = os.stat(os.path.join(root, filename))
-    creation_date = datetime.fromtimestamp(stat_info.st_birthtime).strftime("%Y-%m-%d")
-    date_match = re.search(r"date:\s*(\d{4}-\d{2}-\d{2})", frontmatter)
-    date_str = date_match.group(1) if date_match else creation_date
-    clean_name = re.sub(r"\d{4}-\d{2}-\d{2}-", "", filename).replace(" ", "-").lower()
-    new_name = f"{date_str}-{clean_name}"
-    return new_name
-
-
-def process_h1(body, frontmatter):
-    frontmatter = f"layout: post\n{frontmatter}"
+def process_h1(body, frontmatter, layout="post"):
+    frontmatter = f"layout: {layout}\n{frontmatter}"
     h1_pattern = r"^\s*#\s+(.+?)$"
     h1_match = re.search(h1_pattern, body, flags=re.MULTILINE)
 
@@ -69,7 +27,7 @@ def process_images(body, img_map, img_dist):
         width = match.group(2)
 
         if img_name.lower() in img_map:
-            shutil.copy2(img_map[img_name.lower()], os.path.join(IMG_DIST, img_name))
+            shutil.copy2(img_map[img_name.lower()], os.path.join(img_dist, img_name))
             updated_link = f"![]({os.path.join(img_dist, img_name).lstrip('.')})"
             if width:
                 updated_link += f'{{: width="{width}" }}'
@@ -87,9 +45,9 @@ def process_wikilinks(body):
     anchor_pattern = r"(^|\s)\^([a-zA-Z0-9-]+)(?=\s|$)"
 
     def anchor_replacer(match):
-        preceeding_char = match.group(1)
+        preceding_char = match.group(1)
         anchor = match.group(2).strip()
-        if preceeding_char == " ":
+        if preceding_char == " ":
             return f"\n{{: #secid{anchor}}}"
         else:
             return f"{{: #secid{anchor}}}"
@@ -182,34 +140,3 @@ def process_math(body):
 
         return code_shield
     return body
-
-
-def write_to_file(post_dist, new_filename, frontmatter, body):
-    with open(os.path.join(post_dist, new_filename), "w", encoding="utf-8") as f:
-        f.write(f"---\n{frontmatter.strip()}\n---\n\n{body.strip()}")
-    print(f"Done: {new_filename}")
-
-
-# --- Main Logic ---
-
-
-def process_post():
-    setup_dir(POST_DIST, IMG_DIST)
-    img_map = build_file_map(IMG_DIR)
-
-    for root, _, files in os.walk(POST_DIR):
-        for filename in files:
-            frontmatter, body = parse_md_file(root, filename)
-
-            if not frontmatter is None:
-                new_filename = update_filename(root, filename, frontmatter)
-                body, frontmatter = process_h1(body, frontmatter)
-                body = process_images(body, img_map, IMG_DIST)
-                body = process_wikilinks(body)
-                body = process_math(body)
-
-                write_to_file(POST_DIST, new_filename, frontmatter, body)
-
-
-if __name__ == "__main__":
-    process_post()

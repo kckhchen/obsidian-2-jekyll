@@ -1,0 +1,29 @@
+import re
+import os
+from datetime import datetime
+
+
+def parse_md_file(root, filename):
+    if not filename.endswith(".md"):
+        return None, None
+    content = open(os.path.join(root, filename), "r", encoding="utf-8").read()
+    fm_match = re.search(r"^---\n(.*?)\n---\n", content, flags=re.DOTALL)
+    if not fm_match:
+        return "", content
+    return fm_match.group(1), content[fm_match.end() :]
+
+
+def update_filename(root, filename, frontmatter):
+    stat_info = os.stat(os.path.join(root, filename))
+    creation_date = datetime.fromtimestamp(stat_info.st_birthtime).strftime("%Y-%m-%d")
+    date_match = re.search(r"date:\s*(\d{4}-\d{2}-\d{2})", frontmatter)
+    date_str = date_match.group(1) if date_match else creation_date
+    clean_name = re.sub(r"\d{4}-\d{2}-\d{2}-", "", filename).replace(" ", "-").lower()
+    new_name = f"{date_str}-{clean_name}"
+    return new_name
+
+
+def write_to_file(post_dist, new_filename, frontmatter, body):
+    with open(os.path.join(post_dist, new_filename), "w", encoding="utf-8") as f:
+        f.write(f"---\n{frontmatter.strip()}\n---\n\n{body.strip()}")
+    print(f"Done: {new_filename}")

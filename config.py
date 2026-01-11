@@ -9,3 +9,5 @@ IMG_FOLDER = "example-images"
 # desired path to store the processed posts and the associated images.
 POST_DIST = "./_posts"
 IMG_DIST = "./assets/images"
+
+LAYOUT = "post"
