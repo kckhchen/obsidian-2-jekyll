@@ -2,7 +2,7 @@ import os
 import re
 import shutil
 from datetime import datetime
-from env import *
+from config import *
 
 POST_DIR = os.path.join(VAULT_DIR, POST_FOLDER)
 IMG_DIR = os.path.join(VAULT_DIR, IMG_FOLDER)
@@ -70,7 +70,7 @@ def process_images(body, img_map, img_dist):
 
         if img_name.lower() in img_map:
             shutil.copy2(img_map[img_name.lower()], os.path.join(IMG_DIST, img_name))
-            updated_link = f"![]({os.path.join(img_dist, img_name)})"
+            updated_link = f"![]({os.path.join(img_dist, img_name).lstrip('.')})"
             if width:
                 updated_link += f'{{: width="{width}" }}'
             return updated_link
