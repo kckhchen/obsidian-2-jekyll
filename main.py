@@ -10,8 +10,7 @@ def main():
     setup_dir(POST_DIST, IMG_DIST)
 
     post_dir = os.path.join(VAULT_DIR, POST_FOLDER)
-    img_dir = os.path.join(VAULT_DIR, IMG_FOLDER)
-    img_map = build_file_map(img_dir)
+    img_map = build_file_map(VAULT_DIR)
 
     for root, _, files in os.walk(post_dir):
         for filename in files:
