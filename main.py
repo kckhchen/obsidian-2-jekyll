@@ -1,26 +1,33 @@
 import os
 import argparse
+from pathlib import Path
 from config import *
 from processor import build_posts
 from cleanup import remove_stale_files
 
 
 def main(args):
-    post_dir = os.path.join(VAULT_DIR, POST_FOLDER)
+    vault_dir = Path(SOURCE_DIR).parent
+    if not os.path.exists(vault_dir) or not os.path.exists(SOURCE_DIR):
+        print(
+            "Source directory not found. Process aborted.\nThe source folder should be in your vault's root directory (i.e. must not be nested)."
+        )
+        return
+
     if args.cleanup:
-        remove_stale_files(POST_DIST, post_dir)
+        remove_stale_files(POST_DIST, SOURCE_DIR)
     else:
         build_posts(
-            VAULT_DIR,
+            vault_dir,
             POST_DIST,
             IMG_DIST,
             IMG_LINK,
-            post_dir,
+            SOURCE_DIR,
             args.layout,
             MATH_RENDERING_MODE,
         )
         if args.update:
-            remove_stale_files(POST_DIST, post_dir)
+            remove_stale_files(POST_DIST, SOURCE_DIR)
 
 
 if __name__ == "__main__":
