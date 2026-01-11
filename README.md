@@ -6,7 +6,7 @@ This is a python script that scans your obsidian folder, formats your articles t
 
 This script will do the following things (See [What It Does](#what-it-does) for more details):
 
-1. Adds a frontmatter with title and `layout: post`.
+1. Adds a frontmatter with `title:` and `layout:`.
 2. Prepends dates before file names.
 3. Copies associated images to a dedicated folder and updates image links.
 4. Updates any Wikilinks to Markdown links.
@@ -74,9 +74,9 @@ This repository comes with a demo website. Please visit [here](https://kckhchen.
 
 The script automatically does the following things to your posts:
 
-### 1. Adds a Frontmatter with Title and `layout: post`
+### 1. Adds a Frontmatter with `title:` and `layout:`
 
-If the post does not have a frontmatter yet, this script will create one for it. It will also automatically add `layout: post` to signal Jekyll which format to use. It will also looks for the first `h1`, treats it as the title, and update the `title:` accordingly, after which it will remove the `h1` to prevent duplicate titles.
+If the post does not have a frontmatter yet, this script will create one for it. It will also automatically add `layout: post` (or layout format of your choice) to signal Jekyll which format to use. It will also looks for the first `h1`, treats it as the title, and update the `title:` accordingly, after which it will remove the `h1` to prevent duplicate titles.
 
 If no `h1` is present, `title:` won't be added and Jekyll will generate a title based on the file name.
 
@@ -106,7 +106,7 @@ The script looks for anything in the form of `[[url|Displayed Text]]` and change
 
 It works with links to other posts `[[another-post]]`, header links `[[#some-h2-title]]`, block/section links `[[#^link-to-block]]`, and headers and blocks from other posts `[[another-post#some-h3-title]]`.
 
-However, please note that the script transforms links to other posts to `[Displayed Text](../another-post)`, i.e. it assumes the posts are in the same root folder. Please revise the permalink to `/.../title` or `/.../title:ext_output` to ensure this feature works.
+However, please note that the script transforms links to other posts to `[Displayed Text](../another-post)`, i.e. it assumes the posts are in the same root folder. Please revise the permalink to `/:title/` to ensure this feature works.
 
 > [!NOTE]
 > Section and block links are automatically prepended with a `secid` (e.g., `#^1e2t3` becomes `#secid1e2t3`) to ensure compatibility with HTML standards, which do not allow IDs to start with a number.
