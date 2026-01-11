@@ -83,30 +83,39 @@ def process_images(body, img_map, img_dist):
 def process_wikilinks(body):
     # Group 1: Target, Group 2: |Display (optional)
     pattern = r"(?<!\!)\[\[([^|\]]+)(?:\|([^\]]+))?\]\]"
+    # Look for "\n" or " " followed by the anchor "^hash" and ending with " " or end-of-file
+    anchor_pattern = r"(^|\s)\^([a-zA-Z0-9-]+)(?=\s|$)"
+
+    body = re.sub(anchor_pattern, r"\n{: #\2}", body, flags=re.MULTILINE)
 
     def link_replacer(match):
-
-        def clean_anchor(text):
-            text = text.lower()
-            text = re.sub(r"[^\w\s-]", "", text)
-            text = re.sub(r"\s+", "-", text)
-            return text.strip("-")
-
         target = match.group(1).strip()
         display = match.group(2).strip() if match.group(2) else target
 
-        if target.startswith("#"):
-            anchor = target.lower().replace(" ", "-")
-            return f"[{display}]({anchor})"
+        if "#^" in target:
+            parts = target.split("#^", 1)
+            filename = parts[0].strip()
+            block_id = parts[1].strip()
 
-        if "#" in target:
-            target, anchor = target.split("#", 1)
-            target_slug = target.replace(" ", "-").lower()
-            anchor_slug = clean_anchor(anchor)
-            return f"[{display}](../{target_slug}#{anchor_slug})"
+            if not filename:
+                return f"[{display}](#{block_id})"
+
+            slug = filename.replace(" ", "-").lower()
+            return f"[{display}](../{slug}#{block_id})"
+
+        elif "#" in target:
+            parts = target.split("#", 1)
+            filename = parts[0].strip()
+            section = parts[1].strip().lower().replace(" ", "-")
+
+            if not filename:
+                return f"[{display}](#{section})"
+
+            slug = filename.replace(" ", "-").lower()
+            return f"[{display}](../{slug}#{section})"
 
         slug = target.replace(" ", "-").lower()
-        return f"[{display}](../{slug}/)"
+        return f"[{display}](../{slug})"
 
     body = re.sub(pattern, link_replacer, body)
     return body
