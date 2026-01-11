@@ -13,17 +13,17 @@ def parse_md_file(root, filename):
     return fm_match.group(1), content[fm_match.end() :]
 
 
-def update_filename(root, filename, frontmatter):
+def get_dist_filepath(root, filename, frontmatter, dist_path):
     stat_info = os.stat(os.path.join(root, filename))
     creation_date = datetime.fromtimestamp(stat_info.st_birthtime).strftime("%Y-%m-%d")
     date_match = re.search(r"date:\s*(\d{4}-\d{2}-\d{2})", frontmatter)
     date_str = date_match.group(1) if date_match else creation_date
     clean_name = re.sub(r"\d{4}-\d{2}-\d{2}-", "", filename).replace(" ", "-").lower()
     new_name = f"{date_str}-{clean_name}"
-    return new_name
+    return os.path.join(dist_path, new_name)
 
 
-def write_to_file(post_dist, new_filename, frontmatter, body):
-    with open(os.path.join(post_dist, new_filename), "w", encoding="utf-8") as f:
+def write_to_file(filepath, frontmatter, body):
+    with open(filepath, "w", encoding="utf-8") as f:
         f.write(f"---\n{frontmatter.strip()}\n---\n\n{body.strip()}")
-    print(f"Done: {new_filename}")
+    print(f"Done: {filepath}")
