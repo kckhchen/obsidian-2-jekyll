@@ -68,6 +68,6 @@ The `.md` files found in the `_posts` folder might look broken and won't be rend
 
 [Block link to a paragraph in another post](../my-another-post#secidf07645)
 
-[This points to a section in another post.](../my-another-post#math-processing)
+[This points to a section in another post.](../my-another-post#amazing-h2-title)
 
 {% include mathjax.html %}
