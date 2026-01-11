@@ -17,3 +17,4 @@ dist/
 
 .obsidian
 .vscode/
+config_private.py
