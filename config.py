@@ -10,4 +10,8 @@ IMG_FOLDER = "example-images"
 POST_DIST = "./_posts"
 IMG_DIST = "./assets/images"
 
+# absolute path for Jekyll to locate the image folder
+# (please change this path to your image path. This is for the demo website.)
+IMG_LINK = "/obsidian-2-jekyll/assets/images"
+
 LAYOUT = "post"

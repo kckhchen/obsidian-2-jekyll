@@ -16,7 +16,7 @@ def process_h1(body, frontmatter, layout="post"):
     return body, frontmatter
 
 
-def process_images(body, img_map, img_dist):
+def process_images(body, img_map, img_dist, img_link):
     # 1. (.*?) -> The filename
     # 2. (?:\|(\d+))? -> Optional pipe followed by digits (Width)
     # 3. (?:\|(.*?))? -> Optional pipe followed by text (Alt/Alias)
@@ -28,7 +28,7 @@ def process_images(body, img_map, img_dist):
 
         if img_name.lower() in img_map:
             shutil.copy2(img_map[img_name.lower()], os.path.join(img_dist, img_name))
-            updated_link = f"![]({os.path.join(img_dist, img_name).lstrip('.')})"
+            updated_link = f"![]({os.path.join(img_link, img_name)})"
             if width:
                 updated_link += f'{{: width="{width}" }}'
             return updated_link

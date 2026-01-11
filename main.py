@@ -20,7 +20,7 @@ def main():
             if not frontmatter is None:
                 new_filename = update_filename(root, filename, frontmatter)
                 body, frontmatter = process_h1(body, frontmatter, LAYOUT)
-                body = process_images(body, img_map, IMG_DIST)
+                body = process_images(body, img_map, IMG_DIST, IMG_LINK)
                 body = process_wikilinks(body)
                 body = process_math(body)
 
