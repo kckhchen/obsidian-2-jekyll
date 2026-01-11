@@ -48,6 +48,7 @@ Open the `config.py` and configure the source paths and destination paths of you
 | `IMG_FOLDER`   | Name of your image folder (inside your vault)          |
 | `POST_DIST`    | Path to store your formatted posts                     |
 | `IMG_DIST`     | Path to store your images related to your posts        |
+| `IMG_LINK`     | **Absolute link** to your image folder for the website |
 | `LAYOUT`       | Layout style for the posts, default to `"post"`        |
 
 Then simply run this command in the folder:
@@ -98,7 +99,7 @@ For example, a `.md` file named `My New Note.md` will be renamed to `yyyy-mm-dd-
 
 ### 3. Copies Associated Images to a Dedicated Folder And Updates Image Links
 
-Image links `![[img.png|optional-width]]`, given that the actual images exist in the image folder, will be transformed to `![](IMG_DIST/img.png){: width="optional-width" }`. If no width parameter is given, only the image link is returned.
+Image links `![[img.png|optional-width]]`, given that the actual images exist in the image folder, will be transformed to `![](IMG_LINK/img.png){: width="optional-width" }`. If no width parameter is given, only the image link is returned.
 
 Also, all images associated with any of the processed posts will be copied to the dedicated image folder, while other irrelevant images will not be copied. This keeps your publication folder clean and tidy.
 
