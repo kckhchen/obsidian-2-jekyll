@@ -1,29 +1,28 @@
 import os
-import shutil
-
-IMG_EXT = (".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp")
-
-
-def build_file_map(directory):
-    file_map = {}
-    for root, _, files in os.walk(directory):
-        for f in files:
-            if f.lower().endswith(IMG_EXT):
-                file_map[f.lower()] = os.path.join(root, f)
-    return file_map
+import re
+from datetime import datetime
 
 
-def setup_dir(post_dist, img_dist):
-    if not os.path.exists(post_dist):
-        os.makedirs(post_dist, exist_ok=True)
-        print(f"destination post folder not found, creating {post_dist}...")
-    if not os.path.exists(img_dist):
-        os.makedirs(img_dist, exist_ok=True)
-        print(f"destination image folder not found, creating {img_dist}...")
+def parse_md_file(root, filename):
+    source_path = os.path.join(root, filename)
+    content = open(source_path, "r", encoding="utf-8").read()
+    fm_match = re.search(r"^---\n(.*?)\n---\n", content, flags=re.DOTALL)
+    if not fm_match:
+        return source_path, "", content
+    return source_path, fm_match.group(1), content[fm_match.end() :]
 
 
-def should_proceed(source_path, dest_path):
-    if not os.path.exists(dest_path):
-        return True
+def get_dist_filepath(root, filename, frontmatter, dist_path):
+    stat_info = os.stat(os.path.join(root, filename))
+    creation_date = datetime.fromtimestamp(stat_info.st_birthtime).strftime("%Y-%m-%d")
+    date_match = re.search(r"date:\s*(\d{4}-\d{2}-\d{2})", frontmatter)
+    date_str = date_match.group(1) if date_match else creation_date
+    clean_name = re.sub(r"\d{4}-\d{2}-\d{2}-", "", filename).replace(" ", "-").lower()
+    new_name = f"{date_str}-{clean_name}"
+    return new_name, os.path.join(dist_path, new_name)
 
-    return os.path.getmtime(source_path) > os.path.getmtime(dest_path)
+
+def write_to_file(filepath, frontmatter, body):
+    with open(filepath, "w", encoding="utf-8") as f:
+        f.write(f"---\n{frontmatter.strip()}\n---\n\n{body.strip()}")
+    print(f"Done: {filepath}")
