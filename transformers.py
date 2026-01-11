@@ -96,33 +96,39 @@ def needs_math(body):
 
 
 def process_math(body, frontmatter, math_mode):
-    if not needs_math(body):
-        return body, frontmatter
+    if needs_math(body):
+        mathjax_script = '<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>'
+        inline_math_pattern = r"(?<!\\|\$)\$([^$]+?)(?<!\\)\$(?!\$)"
+        body = re.sub(inline_math_pattern, r"\\\\(\1\\\\)", body)
+
+        if math_mode == "inject_cdn":
+            body += f"\n\n{mathjax_script}"
+        elif math_mode == "metadata":
+            frontmatter = f"math: true\n{frontmatter}"
+        else:
+            print(
+                'Math blocks detected but no rendering mode is selected. Please either set MATH_RENDERING_MODE = "inject_cdn" or "metadata".\n'
+            )
+    return body, frontmatter
+
+
+def create_code_shield(body):
 
     def shield_replacer(match):
-        placeholder = f"%%CODE_BLOCK_{len(code_blocks)}%%"
+        placeholder = f"&&CODE_BLOCK_{len(code_blocks)}&&"
         code_blocks.append(match.group(0))
         return placeholder
-
-    mathjax_script = '<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>'
 
     code_blocks = []
     code_pattern = r"(```.*?```|`.*?`)"
     code_shield = re.sub(code_pattern, shield_replacer, body, flags=re.DOTALL)
 
-    inline_math_pattern = r"(?<!\\|\$)\$([^$]+?)(?<!\\)\$(?!\$)"
-    code_shield = re.sub(inline_math_pattern, r"\\\\(\1\\\\)", code_shield)
+    return code_shield, code_blocks
 
+
+def unshield(code_shield, code_blocks):
     for i, original_code in enumerate(code_blocks):
-        code_shield = code_shield.replace(f"%%CODE_BLOCK_{i}%%", original_code)
+        code_shield = code_shield.replace(f"&&CODE_BLOCK_{i}&&", original_code)
+    unshield_content = code_shield
 
-    if math_mode == "inject_cdn":
-        code_shield += f"\n\n{mathjax_script}"
-    elif math_mode == "metadata":
-        frontmatter = f"math: true\n{frontmatter}"
-    else:
-        print(
-            'Math blocks detected but no rendering mode is selected. Please either set MATH_RENDERING_MODE = "inject_cdn" or "metadata".\n'
-        )
-
-    return code_shield, frontmatter
+    return unshield_content

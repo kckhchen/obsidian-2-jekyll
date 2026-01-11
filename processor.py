@@ -1,4 +1,5 @@
 import os
+import re
 from utils import parse_md_file, get_dist_filepath, write_to_file
 from transformers import process_h1, process_images, process_wikilinks, process_math
 
@@ -17,10 +18,14 @@ def build_posts(vault_dir, post_dist, img_dist, img_link, post_dir, layout, math
                 )
                 if should_proceed(source_path, new_filepath):
                     print(f"Processing: {filename} -> {new_filepath}")
+                    body, code_blocks = create_code_shield(body)
+
                     body, frontmatter = process_h1(body, frontmatter, layout)
                     body = process_images(body, img_map, img_dist, img_link)
                     body = process_wikilinks(body)
                     body, frontmatter = process_math(body, frontmatter, math_mode)
+
+                    body = unshield(body, code_blocks)
                     write_to_file(new_filepath, frontmatter, body)
                 else:
                     print(f"Skipping (Unchanged): {filename}")
@@ -54,3 +59,25 @@ def should_proceed(source_path, dest_path):
         return True
 
     return os.path.getmtime(source_path) > os.path.getmtime(dest_path)
+
+
+def create_code_shield(body):
+
+    def shield_replacer(match):
+        placeholder = f"&&CODE_BLOCK_{len(code_blocks)}&&"
+        code_blocks.append(match.group(0))
+        return placeholder
+
+    code_blocks = []
+    code_pattern = r"(```.*?```|`.*?`)"
+    code_shield = re.sub(code_pattern, shield_replacer, body, flags=re.DOTALL)
+
+    return code_shield, code_blocks
+
+
+def unshield(code_shield, code_blocks):
+    for i, original_code in enumerate(code_blocks):
+        code_shield = code_shield.replace(f"&&CODE_BLOCK_{i}&&", original_code)
+    unshield_content = code_shield
+
+    return unshield_content

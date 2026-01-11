@@ -74,4 +74,9 @@ The `.md` files found in the `_posts` folder might look broken and won't be rend
 
 [This points to a section in another post.](../my-another-post#amazing-h2-title)
 
+```
+A fake wikilink [[this]]
+A fake image link ![[something.img]]
+```
+
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>

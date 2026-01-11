@@ -72,3 +72,8 @@ The `.md` files found in the `_posts` folder might look broken and won't be rend
 [[My Another Post#^f07645|Block link to a paragraph in another post]]
 
 [[My Another Post#Amazing h2 Title|This points to a section in another post.]]
+
+```
+A fake wikilink [[this]]
+A fake image link ![[something.img]]
+```
