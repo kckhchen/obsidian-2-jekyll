@@ -66,9 +66,13 @@ You can also easily assign a GitHub Action to automatically parse the articles f
 
 ## Live Demo
 
-This repository comes with a demo website. Please visit [here](https://kckhchen.com/obsidian-2-jekyll/blog) to see the presentation on a Jekyll website, which includes most of the situations that will be handled by this script. Additionally, you can have a look inside the `examples/` folder for the raw Obsidian `.md` article, and you can find the processed version in the `_posts/` folder.
+This repository comes with a demo website. Please visit [here](https://kckhchen.com/obsidian-2-jekyll/my-main-post/) to see the presentation on a Jekyll website, which includes most of the situations that will be handled by this script. Additionally, you can have a look inside the `examples/` folder for the raw Obsidian `.md` article, and you can find the processed version in the `_posts/` folder.
 
-[[a screenshot placeholder]]
+A quick comparison between the original Obsidian article and the Jekyll site:
+
+<img src="./images/obsidian-screenshot.png" width="300">
+<img src="./images/jekyll-screenshot.png" width="300">
+
 
 ## What It Does
 
