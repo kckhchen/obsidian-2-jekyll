@@ -1,6 +1,6 @@
 ---
-title: This Should Be the Main Title
 layout: post
+title: This Should Be the Main Title
 ---
 
 This is a demo website for my tool [Obsidian-2-Jekyll](https://github.com/kckhchen/obsidian-2-jekyll).
@@ -11,12 +11,15 @@ The file name will be `2026-01-11-my-main-post`, since the original file name is
 Any math section like a simple \\(a^2 + b^{2} = c^{2}\\) will be rendered correctly, including math blocks:
 {: #secid10d1e3}
 
+
 $$
 \mathbb{E}\left[ \bar{X} \right] = \mathbb{E}\left[ \frac{1}{n} \sum_{i=1}^{n} X_{i} \right] = \frac{1}{n} \mathbb{E}\left[ \sum_{i=1}^{n} X_{i} \right] = \frac{1}{n} \sum_{i=1}^{n} \mathbb{E} \left[ X_{1} \right] = \frac{1}{n} n\mu = \mu
 $$
+
 {: #secid0f5bab}
 
 This also works with multi-linen and math block with environments:
+
 
 $$
 \begin{align}
@@ -28,6 +31,7 @@ $$
 &= \frac{n-1}{n} \sigma^{2}
 \end{align}
 $$
+
 {: #secid2d1a9f}
 
 ### A Note on Code Blocks

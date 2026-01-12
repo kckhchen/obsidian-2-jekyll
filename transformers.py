@@ -3,26 +3,27 @@ import re
 import shutil
 
 
-def process_h1(body, frontmatter, layout="post"):
-    frontmatter = f"layout: {layout}\n{frontmatter}"
+def process_h1(post, layout="post"):
+    post["layout"] = post.get("layout") or layout
     h1_pattern = r"^\s*#\s+(.+?)$"
-    h1_match = re.search(h1_pattern, body, flags=re.MULTILINE)
+    h1_match = re.search(h1_pattern, post.content, flags=re.MULTILINE)
 
     if h1_match:
-        if "title:" not in frontmatter:
-            title = h1_match.group(1).strip()
-            frontmatter = f"title: {title}\n{frontmatter}"
-        body = re.sub(h1_pattern, "", body, count=1, flags=re.MULTILINE).strip()
-    return body, frontmatter
+        title = h1_match.group(1).strip()
+        post["title"] = post.get("title") or title
+        post.content = re.sub(
+            h1_pattern, "", post.content, count=1, flags=re.MULTILINE
+        ).strip()
+    return post
 
 
-def strip_comments(body):
+def strip_comments(post):
     comment_pattern = r"%%.*?%%"
-    body = re.sub(comment_pattern, "", body, flags=re.DOTALL)
-    return body
+    post.content = re.sub(comment_pattern, "", post.content, flags=re.DOTALL)
+    return post
 
 
-def process_images(body, img_map, img_dist, img_link):
+def process_images(post, img_map, img_dest, img_link):
     # (.*?) The filename
     # (?:\|(\d+))? Optional pipe followed by digits (Width)
     # (?:\|(.*?))? Optional pipe followed by text (Alt/Alias)
@@ -33,7 +34,7 @@ def process_images(body, img_map, img_dist, img_link):
         width = match.group(2)
 
         if img_name.lower() in img_map:
-            shutil.copy2(img_map[img_name.lower()], os.path.join(img_dist, img_name))
+            shutil.copy2(img_map[img_name.lower()], os.path.join(img_dest, img_name))
             updated_link = f"![]({os.path.join(img_link, img_name)})"
             if width:
                 updated_link += f'{{: width="{width}" }}'
@@ -41,10 +42,11 @@ def process_images(body, img_map, img_dist, img_link):
 
         return match.group(0)
 
-    return re.sub(pattern, replacer, body)
+    post.content = re.sub(pattern, replacer, post.content)
+    return post
 
 
-def process_wikilinks(body):
+def process_wikilinks(post):
     # Group 1: Target, Group 2: |Display (optional)
     pattern = r"(?<!\!)\[\[([^|\]]+)(?:\|([^\]]+))?\]\]"
     # Look for "\n" or " " followed by the anchor "^hash" and ending with " " or end-of-file
@@ -58,7 +60,9 @@ def process_wikilinks(body):
         else:
             return f"{{: #secid{anchor}}}"
 
-    body = re.sub(anchor_pattern, anchor_replacer, body, flags=re.MULTILINE)
+    post.content = re.sub(
+        anchor_pattern, anchor_replacer, post.content, flags=re.MULTILINE
+    )
 
     def link_replacer(match):
         target = match.group(1).strip()
@@ -89,30 +93,33 @@ def process_wikilinks(body):
         slug = target.replace(" ", "-").lower()
         return f"[{display}](../{slug})"
 
-    body = re.sub(pattern, link_replacer, body)
-    return body
+    post.content = re.sub(pattern, link_replacer, post.content)
+    return post
 
 
-def needs_math(body):
-    no_code = re.sub(r"(```.*?```|`.*?`)", "", body, flags=re.DOTALL)
+def needs_math(post):
+    no_code = re.sub(r"(```.*?```|`.*?`)", "", post.content, flags=re.DOTALL)
     has_block_math = bool(re.search(r"\$\$.*?\$\$", no_code, flags=re.DOTALL))
     has_inline_math = bool(re.search(r"(?<!\\)\$[^ \t\n\$].*?\$", no_code))
 
     return has_block_math or has_inline_math
 
 
-def process_math(body, frontmatter, math_mode):
-    if needs_math(body):
+def process_math(post, math_mode):
+    if needs_math(post):
         mathjax_script = '<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>'
         inline_math_pattern = r"(?<!\\|\$)\$([^$]+?)(?<!\\)\$(?!\$)"
-        body = re.sub(inline_math_pattern, r"\\\\(\1\\\\)", body)
+        post.content = re.sub(inline_math_pattern, r"\\\\(\1\\\\)", post.content)
+        post.content = re.sub(
+            r"(\$\$.*?\$\$)", r"\n\1\n", post.content, flags=re.DOTALL
+        )
 
         if math_mode == "inject_cdn":
-            body += f"\n\n{mathjax_script}"
+            post.content += f"\n\n{mathjax_script}"
         elif math_mode == "metadata":
-            frontmatter = f"math: true\n{frontmatter}"
+            post["math"] = post.get("math") or True
         else:
             print(
                 'Math blocks detected but no rendering mode is selected. Please either set MATH_RENDERING_MODE = "inject_cdn" or "metadata".\n'
             )
-    return body, frontmatter
+    return post

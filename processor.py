@@ -1,6 +1,8 @@
 import os
 import re
-from utils import parse_md_file, get_dist_filepath, write_to_file
+import frontmatter
+
+from utils import parse_md_file, get_dest_filepath
 from transformers import (
     process_h1,
     process_images,
@@ -10,35 +12,33 @@ from transformers import (
 )
 
 
-def build_posts(vault_dir, post_dist, img_dist, img_link, post_dir, layout, math_mode):
+def build_posts(vault_dir, post_dest, img_dest, img_link, post_dir, layout, math_mode):
     print(f"Start processing posts in folder [ {post_dir} ]...\n")
-    setup_dir(post_dist, img_dist)
+    setup_dir(post_dest, img_dest)
     img_map = build_file_map(vault_dir)
 
     for root, _, files in os.walk(post_dir):
         for filename in files:
             if filename.endswith(".md"):
-                source_path, frontmatter, body = parse_md_file(root, filename)
-                _, new_filepath = get_dist_filepath(
-                    root, filename, frontmatter, post_dist
-                )
-                if should_proceed(source_path, new_filepath):
-                    print(f"Processing: {filename} -> {new_filepath}")
-                    body, code_blocks = create_code_shield(body)
+                source_path, post = parse_md_file(root, filename)
+                _, dest_path = get_dest_filepath(source_path, filename, post, post_dest)
+                if should_proceed(source_path, dest_path):
+                    print(f"Processing: {filename} -> {dest_path}")
+                    post, code_blocks = create_code_shield(post)
 
-                    body, frontmatter = process_h1(body, frontmatter, layout)
-                    body = strip_comments(body)
-                    body = process_images(body, img_map, img_dist, img_link)
-                    body = process_wikilinks(body)
-                    body, frontmatter = process_math(body, frontmatter, math_mode)
+                    post = process_h1(post, layout)
+                    post = strip_comments(post)
+                    post = process_images(post, img_map, img_dest, img_link)
+                    post = process_wikilinks(post)
+                    post = process_math(post, math_mode)
 
-                    body = unshield(body, code_blocks)
-                    write_to_file(new_filepath, frontmatter, body)
+                    post = unshield(post, code_blocks)
+                    frontmatter.dump(post, dest_path)
                 else:
                     print(f"Skipping (Unchanged): {filename}")
 
             else:
-                print(f"Skipping (Not an md file): {filename}")
+                print(f"Skipping (Not md file): {filename}")
     print("\nProcessing finished.")
 
 
@@ -52,13 +52,13 @@ def build_file_map(directory):
     return file_map
 
 
-def setup_dir(post_dist, img_dist):
-    if not os.path.exists(post_dist):
-        os.makedirs(post_dist, exist_ok=True)
-        print(f"destination post folder not found, creating {post_dist}...")
-    if not os.path.exists(img_dist):
-        os.makedirs(img_dist, exist_ok=True)
-        print(f"destination image folder not found, creating {img_dist}...")
+def setup_dir(post_dest, img_dest):
+    if not os.path.exists(post_dest):
+        os.makedirs(post_dest, exist_ok=True)
+        print(f"destination post folder not found, creating {post_dest}...")
+    if not os.path.exists(img_dest):
+        os.makedirs(img_dest, exist_ok=True)
+        print(f"destination image folder not found, creating {img_dest}...")
 
 
 def should_proceed(source_path, dest_path):
@@ -68,7 +68,7 @@ def should_proceed(source_path, dest_path):
     return os.path.getmtime(source_path) > os.path.getmtime(dest_path)
 
 
-def create_code_shield(body):
+def create_code_shield(post):
 
     def shield_replacer(match):
         placeholder = f"&&CODE_BLOCK_{len(code_blocks)}&&"
@@ -77,14 +77,16 @@ def create_code_shield(body):
 
     code_blocks = []
     code_pattern = r"(```.*?```|`.*?`)"
-    code_shield = re.sub(code_pattern, shield_replacer, body, flags=re.DOTALL)
+    post.content = re.sub(code_pattern, shield_replacer, post.content, flags=re.DOTALL)
 
-    return code_shield, code_blocks
+    return post, code_blocks
 
 
-def unshield(code_shield, code_blocks):
+def unshield(code_shielded_post, code_blocks):
     for i, original_code in enumerate(code_blocks):
-        code_shield = code_shield.replace(f"&&CODE_BLOCK_{i}&&", original_code)
-    unshield_content = code_shield
+        code_shielded_post.content = code_shielded_post.content.replace(
+            f"&&CODE_BLOCK_{i}&&", original_code
+        )
+    unshield_post = code_shielded_post
 
-    return unshield_content
+    return unshield_post

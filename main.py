@@ -15,19 +15,19 @@ def main(args):
         return
 
     if args.cleanup:
-        remove_stale_files(POST_DIST, SOURCE_DIR)
+        remove_stale_files(POST_DEST, SOURCE_DIR)
     else:
         build_posts(
             vault_dir,
-            POST_DIST,
-            IMG_DIST,
+            POST_DEST,
+            IMG_DEST,
             IMG_LINK,
             SOURCE_DIR,
             args.layout,
             MATH_RENDERING_MODE,
         )
         if args.update:
-            remove_stale_files(POST_DIST, SOURCE_DIR)
+            remove_stale_files(POST_DEST, SOURCE_DIR)
 
 
 if __name__ == "__main__":
