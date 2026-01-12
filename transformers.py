@@ -78,7 +78,7 @@ def process_wikilinks(post):
                 return f"[{display}](#{block_id})"
 
             slug = slugify(filename)
-            return f"[{display}](../{slug}{block_id})"  #
+            return f"[{display}](../{slug}#{block_id})"
 
         elif "#" in target:
             parts = target.split("#", 1)
