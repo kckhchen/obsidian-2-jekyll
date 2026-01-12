@@ -1,4 +1,5 @@
 import os
+import re
 from pathlib import Path
 from processor import parse_md_file, get_dest_filepath
 
@@ -29,7 +30,7 @@ def get_obs_formatted_filenames(post_dest, post_dir):
 def list_files_to_be_removed(post_dest, current_posts):
     to_be_removed = []
     for f in Path(post_dest).iterdir():
-        if f.is_file() and f.name.endswith(".md"):
+        if f.is_file() and re.match(r"\d{4}-\d{2}-\d{2}-.+\.md", f.name):
             filename = f.name
             if filename not in current_posts:
                 to_be_removed.append(filename)
