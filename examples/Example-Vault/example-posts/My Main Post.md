@@ -2,7 +2,8 @@
 
 This is a demo website for my tool [Obsidian-2-Jekyll](https://github.com/kckhchen/obsidian-2-jekyll).
 
-The file name will be `2026-01-11-my-main-post`, since the original file name is `My Main Post` and the creation date is 11th January, 2026. The `h1` title "This Should Be the Main Title" will be treated as post title on the website, and the header will be removed.
+The file name will be `2026-01-12-my-main-post`, since the original file name is `My Main Post` and the creation date is 12th January, 2026. The `h1` title "This Should Be the Main Title" will be treated as post title on the website, and the header will be removed.
+
 ## Math Processing
 
 Any math section like a simple $a^2 + b^{2} = c^{2}$ will be rendered correctly, including math blocks: ^10d1e3
@@ -13,7 +14,7 @@ $$
 
 ^0f5bab
 
-This also works with multi-linen and math block with environments:
+This also works with multi-line and math block with environments:
 
 $$
 \begin{align}
@@ -28,18 +29,26 @@ $$
 
 ^2d1a9f
 
-### A Note on Code Blocks
-
-The line breaks inside the math block will be changed to exactly eight "\\"s.
+### A Note on Code Shields
 
 Inline code with \$'s, such as `$a fake math block$` and code blocks with \$ will remain intact:
 
 ```
 $ echo "This block"
 $ echo "will be safe from math detector."
+
+$$
+A math block inside a code block.
+$$
 ```
 
 ^2863db
+
+Wikilinks also won't be affected when inside code blocks.
+```
+A fake Wikilink [[this]]
+A fake image link ![[something.img]]
+```
 
 
 If you have dollar signs \$ (e.g. The apple costs 10\$ and the banana costs 5\$), please escape them with \\ so that they won't get mistaken as math environments.
@@ -72,8 +81,3 @@ The `.md` files found in the `_posts` folder might look broken and won't be rend
 [[My Another Post#^f07645|Block link to a paragraph in another post]]
 
 [[My Another Post#Amazing h2 Title|This points to a section in another post.]]
-
-```
-A fake wikilink [[this]]
-A fake image link ![[something.img]]
-```
