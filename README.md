@@ -117,7 +117,7 @@ A quick side-by-side comparison between the original Obsidian article and the Je
 
 | Original Obsidian Article | Processed Jekyll Site |
 | :---: | :---: |
-| <img src="./images/obsidian-screenshot.png" width="500"> | <img src="./images/jekyll-screenshot.png" width="500"> |
+| <img src="./assets/images/obsidian-screenshot.png" width="500"> | <img src="./assets/images/jekyll-screenshot.png" width="500"> |
 
 If you'd like to see more examples, All posts in [my personal blog](https://kckhchen.com/blog/) are processed with this tool *(note: all the posts are in Mandarin Chinese)*.
 
