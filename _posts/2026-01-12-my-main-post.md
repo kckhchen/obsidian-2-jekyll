@@ -1,6 +1,6 @@
 ---
 layout: post
-title: This Should Be the Main Title
+title: Main Title
 ---
 
 This is a demo website for my tool [Obsidian-2-Jekyll](https://github.com/kckhchen/obsidian-2-jekyll).
@@ -51,8 +51,8 @@ $$
 
 Wikilinks also won't be affected when inside code blocks.
 ```
-A fake Wikilink [[this]]
-A fake image link ![[something.img]]
+A [[Wikilink inside a code block]] will not be processed.
+An ![[image-link-inside-code-block.img]] will not be processed.
 ```
 
 
@@ -83,7 +83,7 @@ The `.md` files found in the `_posts` folder might look broken and won't be rend
 [Block link to a math block with a math environment in this post](#secid2d1a9f)
 ### Links to Other Posts
 
-[Block link to a paragraph in another post](../my-another-postsecidf07645)
+[Block link to a paragraph in another post](../my-another-post#secidf07645)
 
 [This points to a section in another post.](../my-another-post#amazing-h2-title)
 

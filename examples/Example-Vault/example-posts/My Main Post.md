@@ -1,4 +1,4 @@
-# This Should Be the Main Title
+# Main Title
 
 This is a demo website for my tool [Obsidian-2-Jekyll](https://github.com/kckhchen/obsidian-2-jekyll).
 
@@ -46,8 +46,8 @@ $$
 
 Wikilinks also won't be affected when inside code blocks.
 ```
-A fake Wikilink [[this]]
-A fake image link ![[something.img]]
+A [[Wikilink inside a code block]] will not be processed.
+An ![[image-link-inside-code-block.img]] will not be processed.
 ```
 
 
