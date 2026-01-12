@@ -64,7 +64,7 @@ Wikilinks to [Another Post](../my-another-post) will be transformed into Markdow
 
 Image links such as
 
-![](/obsidian-2-jekyll/assets/images/random-image-abc.gif){: width="500" }
+![](./obsidian-2-jekyll/assets/images/random-image-abc.gif){: width="500" }
 
 will be rendered to be compatible with Jekyll, along with the specified `width` (if provided).
 
@@ -87,4 +87,58 @@ The `.md` files found in the `_posts` folder might look broken and won't be rend
 
 [This points to a section in another post.](../my-another-post#amazing-h2-title)
 
+## Callouts
+
+<div class="callout callout-info" markdown="1">
+<div class="callout-title">Info</div>
+If a callout does not have a title, the callout type will be the title.
+
+</div>
+
+<div class="callout callout-warning" markdown="1">
+<div class="callout-title">Callout Title (Warning callout)</div>
+Optionally, a callout can have a title.
+
+</div>
+
+<div class="callout callout-quote" markdown="1">
+<div class="callout-title">A Quote Callout</div>
+
+</div>
+
+<div class="callout callout-error" markdown="1">
+<div class="callout-title">An Error Callout</div>
+Just like the callout above, a callout can have no messages.
+
+</div>
+
+<div class="callout callout-hint" markdown="1">
+<div class="callout-title">A Hint Callout</div>
+Just another callout
+
+</div>
+
+<div class="callout callout-example" markdown="1">
+<details>
+    <summary class="callout-title">A Foldable Callout</summary>
+    Just like how you use it in Obsidian, a callout type followed be a +/- sign will make the callout foldable.
+
+</details>
+</div>
+
+<div class="callout callout-success" markdown="1">
+<details open>
+    <summary class="callout-title">A foldable callout but default open</summary>
+    Callout type followed by a + will make the callout open by default.
+
+</details>
+</div>
+
+<div class="callout callout-random" markdown="1">
+<div class="callout-title">A not yet support callout</div>
+A non-standard callout type or a callout type not yet supported will be in this default style.
+
+</div>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+
+{% include obsidian-callouts.html %}

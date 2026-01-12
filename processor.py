@@ -2,12 +2,14 @@ import os
 import re
 import frontmatter
 
+from templates import CALLOUT_CSS
 from utils import parse_md_file, get_dest_filepath
 from transformers import (
     process_h1,
     process_images,
     process_wikilinks,
     process_math,
+    process_callouts,
     strip_comments,
 )
 
@@ -15,6 +17,7 @@ from transformers import (
 def build_posts(
     vault_dir, post_dest, img_dest, img_link, post_dir, layout, math_mode, dry
 ):
+    ensure_css_exists()
     print(f"Start processing posts in folder [ {post_dir} ]...")
     print(f"Destination path: [ {post_dest} ]\n")
     if not dry:
@@ -38,6 +41,7 @@ def build_posts(
                         post = process_images(post, img_map, img_dest, img_link)
                         post = process_wikilinks(post)
                         post = process_math(post, math_mode)
+                        post = process_callouts(post)
 
                         post = unshield(post, code_blocks)
                         frontmatter.dump(post, dest_path)
@@ -97,3 +101,13 @@ def unshield(code_shielded_post, code_blocks):
     unshield_post = code_shielded_post
 
     return unshield_post
+
+
+def ensure_css_exists():
+    css_path = "./_includes/obsidian-callouts.html"
+
+    if not os.path.exists(css_path):
+        print(f"--> Creating default callout CSS at: {css_path}")
+        os.makedirs(os.path.dirname(css_path), exist_ok=True)
+        with open(css_path, "w", encoding="utf-8") as f:
+            f.write(CALLOUT_CSS)

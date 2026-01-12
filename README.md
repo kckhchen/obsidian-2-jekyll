@@ -15,7 +15,8 @@ This tool will do the following things (See "[What It Does](#what-it-does)" for 
 4. Copies associated images to a dedicated folder and updates image links.
 5. Updates any Wikilinks to Markdown links.
 6. Processes inline math (if any).
-7. Shields code blocks from all the operations above.
+7. Supports callouts
+8. Shields code blocks from all the operations above.
 
 ## Quick Start
 
@@ -178,7 +179,17 @@ Generally, if your Jekyll theme supports math mode then `metadata` should be pre
 > [!NOTE]
 > If you wish to use the dollar sign `$` normally outside code blocks, please escape it with a backslash so that the tool won't treat it as math blocks.
 
-### 6. Shields Code Blocks From All the Operations Above.
+### 6. Supports Callouts
+
+Obsidian callouts such as `> [!INFO]` or `> [!warning]` will be parsed and transformed into html elements. If callouts are used in a post, the tool will inject `{% include obsidian-callouts.html %}` at the bottom of the post. The `obsidian-callouts.html` file will be saved to your root folder, inside the `_includes` folder, meeting Jekyll's requirement.
+
+Supports every callout type, including their alias, specified in the [Obsidian callout site](https://help.obsidian.md/callouts). If a callout type is not in the list, a grey-ish default callout block will be assigned.
+
+A sneak peek at how the callouts look (you can view all the examples on the [demo website](https://kckhchen.com/obsidian-2-jekyll/my-main-post/)):
+
+<img src="assets/images/callouts.png" width="400">
+
+### 7. Shields Code Blocks From All the Operations Above.
 
 All the operations above will ignore code blocks, so that literal dollar signs `$` or Wikilinks `[[]]`, etc. inside code blocks will remain intact.
 
@@ -186,8 +197,7 @@ All the operations above will ignore code blocks, so that literal dollar signs `
 
 This tool is still under development and is actively updated and maintained. Some features to be implemented will be listed here.
 
-- [ ] Parses callouts (e.g., `> [!INFO]`) and renders them correctly.
-- [ ] Parse image alt texts.
+- [x] Parses callouts (e.g., `> [!INFO]`) and renders them correctly.
 - [ ] Prevents potential matching of `$` inside tricky areas like url, etc.
 - [ ] Auto-removes stale image files.
 - [ ] Shields math blocks too.

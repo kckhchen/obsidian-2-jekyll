@@ -27,8 +27,7 @@ def strip_comments(post):
 def process_images(post, img_map, img_dest, img_link):
     # (.*?) The filename
     # (?:\|(\d+))? Optional pipe followed by digits (Width)
-    # (?:\|(.*?))? Optional pipe followed by text (Alt/Alias)
-    pattern = r"!\[\[([^|\]]+)(?:\|(\d+))?(?:\|([^\]]+))?\]\]"
+    pattern = r"!\[\[([^|\]]+)(?:\|(\d+))?\]\]"
 
     def replacer(match):
         img_name = match.group(1).strip()
@@ -98,16 +97,15 @@ def process_wikilinks(post):
     return post
 
 
-def needs_math(post):
-    no_code = re.sub(r"(```.*?```|`.*?`)", "", post.content, flags=re.DOTALL)
-    has_block_math = bool(re.search(r"\$\$.*?\$\$", no_code, flags=re.DOTALL))
-    has_inline_math = bool(re.search(r"(?<!\\)\$[^ \t\n\$].*?\$", no_code))
+def needs_math(content):
+    has_block_math = bool(re.search(r"\$\$.*?\$\$", content, flags=re.DOTALL))
+    has_inline_math = bool(re.search(r"(?<!\\)\$[^ \t\n\$].*?\$", content))
 
     return has_block_math or has_inline_math
 
 
 def process_math(post, math_mode):
-    if needs_math(post):
+    if needs_math(post.content):
         mathjax_script = '<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>'
         inline_math_pattern = r"(?<!\\|\$)\$([^$]+?)(?<!\\)\$(?!\$)"
         post.content = re.sub(inline_math_pattern, r"\\\\(\1\\\\)", post.content)
@@ -124,3 +122,45 @@ def process_math(post, math_mode):
                 'Math blocks detected but no rendering mode is selected. Please either set MATH_RENDERING_MODE = "inject_cdn" or "metadata".\n'
             )
     return post
+
+
+def needs_callout(content, callout_pattern):
+    return bool(re.search(callout_pattern, content))
+
+
+def process_callouts(post):
+
+    def replacement(match):
+        callout_type = match.group(1).lower()
+        collapse = match.group(2)
+        title = match.group(3).strip()
+        body = re.sub(r"^>\s?", "", match.group(4), flags=re.MULTILINE)
+        return render_callout(callout_type, title, body, collapse)
+
+    callout_pattern = re.compile(
+        r"^> \[!\s*(\w+)\]([+\-]?)(.*?)\n((?:^>.*\n?)*)", re.MULTILINE
+    )
+
+    if needs_callout(post.content, callout_pattern):
+        post.content = callout_pattern.sub(replacement, post.content)
+        post.content += "\n\n{% include obsidian-callouts.html %}"
+
+    return post
+
+
+def render_callout(callout_type, title, body, collapse):
+    title = title or callout_type.capitalize()
+    tag_map = {"+": "details open", "-": "details"}
+    open_tag = tag_map.get(collapse)
+    if open_tag:
+        content = f"""<{open_tag}>
+    <summary class="callout-title">{title}</summary>
+    {body}
+</details>"""
+    else:
+        content = f"""<div class="callout-title">{title}</div>
+{body}"""
+
+    return (
+        f'<div class="callout callout-{callout_type}" markdown="1">\n{content}\n</div>'
+    )

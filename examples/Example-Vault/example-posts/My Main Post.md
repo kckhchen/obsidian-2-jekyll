@@ -81,3 +81,35 @@ The `.md` files found in the `_posts` folder might look broken and won't be rend
 [[My Another Post#^f07645|Block link to a paragraph in another post]]
 
 [[My Another Post#Amazing h2 Title|This points to a section in another post.]]
+
+## Callouts
+
+> [!INFO]
+> If a callout does not have a title, the callout type will be the title.
+
+
+> [!Warning] Callout Title (Warning callout)
+> Optionally, a callout can have a title.
+
+
+> [!quote] A Quote Callout
+
+
+> [!Error] An Error Callout
+> Just like the callout above, a callout can have no messages.
+
+
+> [!hint] A Hint Callout
+> Just another callout
+
+
+> [!example]- A Foldable Callout
+> Just like how you use it in Obsidian, a callout type followed be a +/- sign will make the callout foldable.
+
+
+> [!success]+ A foldable callout but default open
+> Callout type followed by a + will make the callout open by default.
+
+
+> [!random] A not yet support callout
+> A non-standard callout type or a callout type not yet supported will be in this default style.

@@ -1,6 +1,6 @@
 ---
-title: This is another post
 layout: post
+title: This is another post
 ---
 
 ## Amazing h2 Title

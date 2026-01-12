@@ -9,7 +9,7 @@ IMG_DEST = "./assets/images"
 
 # absolute path for Jekyll to locate the image folder
 # (please change this path to your image path. This is for the demo website.)
-IMG_LINK = "/obsidian-2-jekyll/assets/images"
+IMG_LINK = "./obsidian-2-jekyll/assets/images"
 
 # If the Jekyll theme supports math rendering and can recognize "math: true"
 # please uncomment "metadata".
