@@ -1,6 +1,7 @@
 import os
 import re
 import shutil
+from utils import slugify
 
 
 def process_h1(post, layout="post"):
@@ -76,21 +77,21 @@ def process_wikilinks(post):
             if not filename:
                 return f"[{display}](#{block_id})"
 
-            slug = filename.replace(" ", "-").lower()
-            return f"[{display}](../{slug}#{block_id})"
+            slug = slugify(filename)
+            return f"[{display}](../{slug}{block_id})"  #
 
         elif "#" in target:
             parts = target.split("#", 1)
             filename = parts[0].strip()
-            section = parts[1].strip().lower().replace(" ", "-")
+            section = slugify(parts[1])
 
             if not filename:
                 return f"[{display}](#{section})"
 
-            slug = filename.replace(" ", "-").lower()
+            slug = slugify(filename)
             return f"[{display}](../{slug}#{section})"
 
-        slug = target.replace(" ", "-").lower()
+        slug = slugify(target)
         return f"[{display}](../{slug})"
 
     post.content = re.sub(pattern, link_replacer, post.content)
