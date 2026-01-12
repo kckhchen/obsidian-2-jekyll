@@ -13,8 +13,11 @@ def main(args):
             "Source directory not found. Process aborted.\nThe source folder should be in your vault's root directory (i.e. must not be nested)."
         )
         return
+    if args.dry:
+        print("------------ DRY RUN MODE -------------")
+        print("Operations will be printed but files won't be changed.\n")
 
-    if args.cleanup:
+    if args.cleanup and not args.dry:
         remove_stale_files(POST_DEST, SOURCE_DIR)
     else:
         build_posts(
@@ -25,8 +28,9 @@ def main(args):
             SOURCE_DIR,
             args.layout,
             MATH_RENDERING_MODE,
+            args.dry,
         )
-        if args.update:
+        if args.update and not args.dry:
             remove_stale_files(POST_DEST, SOURCE_DIR)
 
 
@@ -44,6 +48,11 @@ if __name__ == "__main__":
         "--update",
         action="store_true",
         help="Updates the posts and cleans up stale posts (cannot be used with --cleanup).",
+    )
+    group.add_argument(
+        "--dry",
+        action="store_true",
+        help="Dry run if the flag is present. (cannot be used with --cleanup or --update).",
     )
     parser.add_argument(
         "--layout", default="post", help="Changes posts' Jekyll layout."

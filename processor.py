@@ -12,28 +12,35 @@ from transformers import (
 )
 
 
-def build_posts(vault_dir, post_dest, img_dest, img_link, post_dir, layout, math_mode):
-    print(f"Start processing posts in folder [ {post_dir} ]...\n")
-    setup_dir(post_dest, img_dest)
+def build_posts(
+    vault_dir, post_dest, img_dest, img_link, post_dir, layout, math_mode, dry
+):
+    print(f"Start processing posts in folder [ {post_dir} ]...")
+    print(f"Destination path: [ {post_dest} ]\n")
+    if not dry:
+        setup_dir(post_dest, img_dest)
     img_map = build_file_map(vault_dir)
 
     for root, _, files in os.walk(post_dir):
         for filename in files:
             if filename.endswith(".md"):
                 source_path, post = parse_md_file(root, filename)
-                _, dest_path = get_dest_filepath(source_path, filename, post, post_dest)
+                new_name, dest_path = get_dest_filepath(
+                    source_path, filename, post, post_dest
+                )
                 if should_proceed(source_path, dest_path):
-                    print(f"Processing: {filename} -> {dest_path}")
-                    post, code_blocks = create_code_shield(post)
+                    print(f"Processing: {filename} -> {new_name}")
+                    if not dry:
+                        post, code_blocks = create_code_shield(post)
 
-                    post = process_h1(post, layout)
-                    post = strip_comments(post)
-                    post = process_images(post, img_map, img_dest, img_link)
-                    post = process_wikilinks(post)
-                    post = process_math(post, math_mode)
+                        post = process_h1(post, layout)
+                        post = strip_comments(post)
+                        post = process_images(post, img_map, img_dest, img_link)
+                        post = process_wikilinks(post)
+                        post = process_math(post, math_mode)
 
-                    post = unshield(post, code_blocks)
-                    frontmatter.dump(post, dest_path)
+                        post = unshield(post, code_blocks)
+                        frontmatter.dump(post, dest_path)
                 else:
                     print(f"Skipping (Unchanged): {filename}")
 
