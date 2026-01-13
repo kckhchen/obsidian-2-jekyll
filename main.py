@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 from config import *
-from processor import build_posts
+from processor import process_posts
 from cleanup import remove_stale_files
 from utils import validate_inputs
 
@@ -17,7 +17,7 @@ def main(args):
         return
 
     if not args.cleanup:
-        build_posts(
+        process_posts(
             post_dest,
             img_dest,
             img_url_prefix,

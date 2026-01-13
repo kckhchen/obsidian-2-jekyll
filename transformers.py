@@ -4,6 +4,25 @@ from pathlib import Path
 from utils import slugify
 
 
+def process_single_post(post, img_map, img_dest, img_url_prefix, layout, math_mode):
+    post, code_blocks = shield_content(post, mode="code")
+    post, url_blocks = shield_content(post, mode="url")
+    post, math_blocks = shield_content(post, mode="math")
+
+    post = process_h1(post, layout)
+    post = strip_comments(post)
+    post = process_images(post, img_map, img_dest, img_url_prefix)
+    post = process_wikilinks(post)
+    post = process_callouts(post)
+
+    post = unshield(post, math_blocks)
+    post = process_math(post, math_mode)
+
+    post = unshield(post, url_blocks)
+    post = unshield(post, code_blocks)
+    return post
+
+
 def process_h1(post, layout="post"):
     post["layout"] = post.get("layout") or layout
     h1_pattern = r"^\s*#\s+(.+?)$"
@@ -130,7 +149,7 @@ def needs_callout(content, callout_pattern):
 
 def process_callouts(post):
 
-    def replacement(match):
+    def _replacer(match):
         callout_type = match.group(1).lower()
         collapse = match.group(2)
         title = match.group(3).strip()
@@ -142,7 +161,7 @@ def process_callouts(post):
     )
 
     if needs_callout(post.content, callout_pattern):
-        post.content = callout_pattern.sub(replacement, post.content)
+        post.content = callout_pattern.sub(_replacer, post.content)
         post.content += "\n\n{% include obsidian-callouts.html %}"
 
     return post
@@ -164,3 +183,30 @@ def render_callout(callout_type, title, body, collapse):
     return (
         f'<div class="callout callout-{callout_type}" markdown="1">\n{content}\n</div>'
     )
+
+
+def shield_content(post, mode):
+
+    def _replacer(match):
+        key = f"&&{mode.upper()}_{len(stash)}&&"
+        stash[key] = match.group(0)
+        return key
+
+    if mode == "code":
+        pattern = r"(```[\s\S]*?```|`[^`\n]+`)"
+    elif mode == "math":
+        pattern = r"(\$\$[\s\S]*?\$\$|(?<!\$)\$[^$]+\$(?!\$))"
+    elif mode == "url":
+        pattern = r"https?://[^)\s]+"
+    else:
+        raise ValueError(f"Unknown shield type: {mode}")
+
+    stash = {}
+    post.content = re.sub(pattern, _replacer, post.content)
+    return post, stash
+
+
+def unshield(post, stash):
+    for key, original_text in stash.items():
+        post.content = post.content.replace(key, original_text)
+    return post

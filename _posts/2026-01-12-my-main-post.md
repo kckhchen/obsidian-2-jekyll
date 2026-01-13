@@ -64,7 +64,7 @@ Wikilinks to [Another Post](../my-another-post) will be transformed into Markdow
 
 Image links such as
 
-![](./obsidian-2-jekyll/assets/images/random-image-abc.gif){: width="500" }
+![](/obsidian-2-jekyll/assets/images/random-image-abc.gif){: width="500" }
 
 will be rendered to be compatible with Jekyll, along with the specified `width` (if provided).
 
@@ -139,6 +139,18 @@ Just another callout
 A non-standard callout type or a callout type not yet supported will be in this default style.
 
 </div>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+<div class="callout callout-random" markdown="1">
+<div class="callout-title">A not yet support callout</div>
+A non-standard callout type or a callout type not yet supported will be in this default style.
+
+</div>
+
+<div class="callout callout-question" markdown="1">
+<div class="callout-title">Can callouts be nested?</div>
+> [!todo] Yes!, they can.
+> > [!example]  You can even use multiple layers of nesting.
+</div>
 
 {% include obsidian-callouts.html %}
+
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>

@@ -196,7 +196,7 @@ This tool is still under development and is actively updated and maintained. Som
 
 - [x] Parses callouts (e.g., `> [!INFO]`) and renders them correctly.
 - [x] Auto-removes stale image files.
-- [ ] More shielding mechanism for math blocks, urls, etc.
+- [x] More shielding mechanism for math blocks, urls, etc.
 - [ ] Wikilinks to math blocks might be slightly off (mistakenly referring to the paragraph below instead of the block itself).
 
 Any other suggestions are welcome.

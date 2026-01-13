@@ -113,3 +113,6 @@ The `.md` files found in the `_posts` folder might look broken and won't be rend
 
 > [!random] A not yet support callout
 > A non-standard callout type or a callout type not yet supported will be in this default style.
+
+> [!random] A not yet support callout
+> A non-standard callout type or a callout type not yet supported will be in this default style.
