@@ -18,3 +18,4 @@ dist/
 .obsidian
 .vscode/
 config_private.py
+config_local.py

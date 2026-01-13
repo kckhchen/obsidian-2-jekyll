@@ -1,6 +1,4 @@
-import re
 import frontmatter
-from pathlib import Path
 from templates import CALLOUT_CSS
 from utils import get_dest_filepath
 from transformers import process_single_post

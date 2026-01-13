@@ -1,6 +1,5 @@
 import re
 import shutil
-from pathlib import Path
 from utils import slugify
 
 

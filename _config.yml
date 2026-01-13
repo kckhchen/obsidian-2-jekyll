@@ -1,8 +1,0 @@
-title: Obsidian2Jekyll Demo
-
-url: 'https://kckhchen.com'
-baseurl: '/obsidian-2-jekyll'
-permalink: /:title/
-
-markdown: kramdown
-theme: minima
