@@ -48,7 +48,8 @@ Alternatively, add the layout in the frontmatter and the tool will respect the c
 | Variable              | Description                             | Default                      |
 | --------------------- | ------------------------------------------- | ---------------------------- |
 | `IMG_URL_PREFIX`      | Prefix to add to your image links  | `/assets/images` |
-| `MATH_RENDERING_MODE` | `metadata` adds `math: true` to frontmatter; `inject_cdn` injects MathJax CDN at the end of post. | `inject_cdn`           |
+| `MATH_RENDERING_MODE` | `metadata` adds `math: true` to frontmatter; `inject_cdn` injects MathJax CDN at the end of post | `inject_cdn`           |
+| `PREVENT_DOUBLE_BASEURL` | `True` to prevent double baseurl problem in Jekyll > 4.0 | `False`           |
 
 ## What This Tool Does
 
@@ -79,8 +80,6 @@ Also, all images associated with any of the processed posts will be copied to th
 The tool looks for `[[Wikilnks]]` and changes them to Markdown links `[displayed-text](url)`.
 
 It works with links to other posts `[[another-post]]`, header links `[[#some-h2-title]]`, block/section links `[[#^link-to-block]]`, and headers and blocks from other posts `[[another-post#some-h3-title]]`.
-
-However, please note that the tool transforms links to other posts to `[Displayed Text](../another-post)`, i.e. it assumes the posts folder is flat. Therefore, a permalink in the form of `/:title/` is suggested.
 
 > [!NOTE]
 > Section and block links are automatically prepended with a `secid` (e.g., `#^1e2t3` becomes `#secid1e2t3`) to ensure compatibility with HTML standards, which do not allow id's to start with a number. Don't worry if the id's don't look the same as in the original post.
