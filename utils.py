@@ -1,21 +1,19 @@
 import re
-import frontmatter
 from pathlib import Path
 from datetime import datetime
 
 
-def parse_md_file(root, filename):
-    source_path = Path(root) / filename
-    post = frontmatter.load(source_path)
-    return source_path, post
+def get_dest_filepath(source_path, post_dest, post):
+    date_val = post.get("date")
+    if date_val:
+        date_str = str(date_val)[:10]
+    else:
+        date_str = get_creation_time(source_path)
 
+    clean_stem = re.sub(r"^\d{4}-\d{2}-\d{2}[-_]?", "", source_path.stem)
+    new_name = f"{date_str}-{slugify(clean_stem)}{source_path.suffix}"
 
-def get_dest_filepath(source_path, filename, post, dest_path):
-    date_str = post.get("date") or get_creation_time(source_path)
-    file_obj = Path(filename)
-    slug = slugify(re.sub(r"^\d{4}-\d{2}-\d{2}-", "", file_obj.stem))
-    new_name = f"{date_str}-{slug}{file_obj.suffix}"
-    return new_name, Path(dest_path) / new_name
+    return post_dest / new_name
 
 
 def get_creation_time(filepath):
@@ -26,3 +24,10 @@ def get_creation_time(filepath):
 
 def slugify(name):
     return re.sub(r"[^a-zA-Z0-9.]+", "-", name).strip("-").lower()
+
+
+def validate_inputs(source_dir):
+    if not source_dir.exists():
+        print(f"Error: Source folder '{source_dir}' not found.")
+        return False
+    return True

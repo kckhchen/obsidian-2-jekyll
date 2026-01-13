@@ -1,6 +1,6 @@
-import os
 import re
 import shutil
+from pathlib import Path
 from utils import slugify
 
 
@@ -24,7 +24,7 @@ def strip_comments(post):
     return post
 
 
-def process_images(post, img_map, img_dest, img_link):
+def process_images(post, img_map, img_dest, url_prefix):
     # (.*?) The filename
     # (?:\|(\d+))? Optional pipe followed by digits (Width)
     pattern = r"!\[\[([^|\]]+)(?:\|(\d+))?\]\]"
@@ -34,8 +34,8 @@ def process_images(post, img_map, img_dest, img_link):
         width = match.group(2)
 
         if img_name.lower() in img_map:
-            shutil.copy2(img_map[img_name.lower()], os.path.join(img_dest, img_name))
-            updated_link = f"![]({os.path.join(img_link, img_name)})"
+            shutil.copy2(img_map[img_name.lower()], img_dest / img_name)
+            updated_link = f"![]({url_prefix / img_name})"
             if width:
                 updated_link += f'{{: width="{width}" }}'
             return updated_link

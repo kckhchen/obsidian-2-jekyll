@@ -1,15 +1,15 @@
 # path to the folder inside your vault for posts ready to publish.
-# note: all posts inside POST_FOLDER will be published.
+# note: all posts inside SOURCE_DIR will be published.
 # posts outside of this folder will not be published.
 SOURCE_DIR = "./examples/Example-Vault/example-posts"
 
-# desired path to store the processed posts and the associated images.
-POST_DEST = "./_posts"
-IMG_DEST = "./assets/images"
+# path to your Jekyll website's directory
+JEKYLL_DIR = "/Users/casey/Dev/obsidian-2-jekyll"
 
 # absolute path for Jekyll to locate the image folder
 # (please change this path to your image path. This is for the demo website.)
-IMG_LINK = "./obsidian-2-jekyll/assets/images"
+IMG_FOLDER = "assets/images"
+IMG_URL_PREFIX = "/obsidian-2-jekyll/" + IMG_FOLDER
 
 # If the Jekyll theme supports math rendering and can recognize "math: true"
 # please uncomment "metadata".
@@ -18,3 +18,9 @@ IMG_LINK = "./obsidian-2-jekyll/assets/images"
 
 # MATH_RENDERING_MODE = "metadata"
 MATH_RENDERING_MODE = "inject_cdn"
+
+# ------------------------------------------------------
+
+# These are the default paths for Jekyll
+POST_FOLDER = "_posts"
+INCLUDES_FOLDER = "_includes"

@@ -146,9 +146,6 @@ Image links `![[img.png|optional-width]]`, given that the actual images exist so
 
 Also, all images associated with any of the processed posts will be copied to the dedicated image folder, while other irrelevant images will not be copied. This keeps your destination folder clean and tidy.
 
-> [!NOTE]
-> The current cleanup tool has not yet been able to automatically remove stale images when none of the posts in the destination folder are referencing them. This feature will be implemented in future updates.
-
 ### 4. Updates Any Wikilinks to Markdown Links
 
 The tool looks for anything in the form of `[[url|optional-displayed-text]]` and changes them to Markdown links `[optional-displayed-text](url)`.
@@ -198,9 +195,8 @@ All the operations above will ignore code blocks, so that literal dollar signs `
 This tool is still under development and is actively updated and maintained. Some features to be implemented will be listed here.
 
 - [x] Parses callouts (e.g., `> [!INFO]`) and renders them correctly.
-- [ ] Prevents potential matching of `$` inside tricky areas like url, etc.
-- [ ] Auto-removes stale image files.
-- [ ] Shields math blocks too.
+- [x] Auto-removes stale image files.
+- [ ] More shielding mechanism for math blocks, urls, etc.
 - [ ] Wikilinks to math blocks might be slightly off (mistakenly referring to the paragraph below instead of the block itself).
 
 Any other suggestions are welcome.

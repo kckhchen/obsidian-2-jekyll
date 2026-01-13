@@ -1,7 +1,7 @@
-import os
 import re
+import frontmatter
 from pathlib import Path
-from processor import parse_md_file, get_dest_filepath
+from processor import get_dest_filepath
 
 
 def remove_stale_files(post_dir, post_dest, img_dest):
@@ -23,37 +23,15 @@ def scan_source_files(post_dir):
     formatted_filenames = set()
     all_images = set()
 
-    for root, _, files in os.walk(post_dir):
-        for filename in files:
-            if filename.endswith(".md"):
-                source_path, post = parse_md_file(root, filename)
-                new_filename, _ = get_dest_filepath(
-                    source_path, filename, post, "dummy_dest"
-                )
-                formatted_filenames.add(new_filename)
+    for source_path in post_dir.rglob("*.md"):
+        post = frontmatter.load(source_path)
+        new_path = get_dest_filepath(source_path, Path(""), post)
+        formatted_filenames.add(new_path.name)
 
-                img_list = scan_post_images(post)
-                all_images.update(img_list)
+        img_list = scan_post_images(post)
+        all_images.update(img_list)
 
     return formatted_filenames, all_images
-
-
-# def scan_source_files(post_dir):
-#     formatted_filenames = set()
-#     all_images = set()
-
-#     for file_path in Path(post_dir).rglob("*.md"):
-#         root = str(file_path.parent)
-#         filename = file_path.name
-
-#         source_path, post = parse_md_file(root, filename)
-#         new_filename, _ = get_dest_filepath(source_path, filename, post, "dummy_dest")
-#         formatted_filenames.add(new_filename)
-
-#         img_list = scan_post_images(post)
-#         all_images.update(img_list)
-
-#     return formatted_filenames, all_images
 
 
 def list_posts_to_be_removed(post_dest, current_posts):
@@ -67,7 +45,7 @@ def list_posts_to_be_removed(post_dest, current_posts):
 
 
 def list_imgs_to_be_removed(img_dest, all_post_images):
-    img_ext = [".png", ".jpg", ".jpeg", ".gif", ".bmp"]
+    img_ext = (".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp")
     to_be_removed = []
     for img in Path(img_dest).iterdir():
         if img.is_file() and img.suffix in img_ext:
