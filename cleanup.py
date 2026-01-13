@@ -4,47 +4,120 @@ from pathlib import Path
 from processor import parse_md_file, get_dest_filepath
 
 
-def remove_stale_files(post_dest, post_dir):
-    print(f"\nStarting cleaning up process in folder [ {post_dest} ]...\n")
-    obs_formatted_filenames = get_obs_formatted_filenames(post_dest, post_dir)
-    to_be_removed = list_files_to_be_removed(post_dest, obs_formatted_filenames)
+def remove_stale_files(post_dir, post_dest, img_dest):
+    print(f"\nStarting cleaning up process...")
+    print(f"Post folder: [ {post_dest} ]")
+    print(f"Image folder: [ {img_dest} ]\n")
+    obs_formatted_filenames, all_post_images = scan_source_files(post_dir)
+    to_be_removed = list_posts_to_be_removed(
+        post_dest, obs_formatted_filenames
+    ) + list_imgs_to_be_removed(img_dest, all_post_images)
+
     if to_be_removed:
-        remove_files(post_dest, to_be_removed)
+        remove_files(to_be_removed)
     else:
         print("No stale files found. Nothing will be removed.")
 
 
-def get_obs_formatted_filenames(post_dest, post_dir):
-    formatted_filename_list = []
+def scan_source_files(post_dir):
+    formatted_filenames = set()
+    all_images = set()
+
     for root, _, files in os.walk(post_dir):
         for filename in files:
             if filename.endswith(".md"):
                 source_path, post = parse_md_file(root, filename)
                 new_filename, _ = get_dest_filepath(
-                    source_path, filename, post, post_dest
+                    source_path, filename, post, "dummy_dest"
                 )
-                formatted_filename_list.append(new_filename)
-    return formatted_filename_list
+                formatted_filenames.add(new_filename)
+
+                img_list = scan_post_images(post)
+                all_images.update(img_list)
+
+    return formatted_filenames, all_images
 
 
-def list_files_to_be_removed(post_dest, current_posts):
+# def scan_source_files(post_dir):
+#     formatted_filenames = set()
+#     all_images = set()
+
+#     for file_path in Path(post_dir).rglob("*.md"):
+#         root = str(file_path.parent)
+#         filename = file_path.name
+
+#         source_path, post = parse_md_file(root, filename)
+#         new_filename, _ = get_dest_filepath(source_path, filename, post, "dummy_dest")
+#         formatted_filenames.add(new_filename)
+
+#         img_list = scan_post_images(post)
+#         all_images.update(img_list)
+
+#     return formatted_filenames, all_images
+
+
+def list_posts_to_be_removed(post_dest, current_posts):
     to_be_removed = []
     for f in Path(post_dest).iterdir():
         if f.is_file() and re.match(r"\d{4}-\d{2}-\d{2}-.+\.md", f.name):
             filename = f.name
             if filename not in current_posts:
-                to_be_removed.append(filename)
+                to_be_removed.append(Path(post_dest) / filename)
     return to_be_removed
 
 
-def remove_files(dir, file_list):
-    print("The following files will be removed:\n")
-    for name in file_list:
-        print(name)
+def list_imgs_to_be_removed(img_dest, all_post_images):
+    img_ext = [".png", ".jpg", ".jpeg", ".gif", ".bmp"]
+    to_be_removed = []
+    for img in Path(img_dest).iterdir():
+        if img.is_file() and img.suffix in img_ext:
+            filename = img.name
+            if filename not in all_post_images:
+                to_be_removed.append(Path(img_dest) / filename)
+    return to_be_removed
 
-    if input("\nConfirm removal? [y/n]: ") == "y":
-        for name in file_list:
-            os.remove(os.path.join(dir, name))
-        print("Files are removed.")
+
+def remove_files(file_path_list):
+    if not file_path_list:
+        return
+
+    print("The following files will be removed:\n")
+    for p in file_path_list:
+        print(f"[{p.parent.name}] {p.name}")
+
+    if input("\nConfirm removal? [y/n]: ").lower() == "y":
+        for p in file_path_list:
+            try:
+                p.unlink()
+            except FileNotFoundError:
+                print(f"Skipped {p.name} (not found)")
+        print("Files removed.")
     else:
         print("Process aborted.")
+
+
+def scan_post_images(post):
+    img_pattern = r"!\[\[(?P<wiki>[^|\]]+).*?\]\]|!\[[^\]]*\]\((?P<md>[^)]+)\)"
+
+    def extract_filename(match):
+        path_str = match.group("wiki") or match.group("md")
+        if match.group("md") and path_str.startswith(("http:", "https:")):
+            return None
+
+        return Path(path_str).name
+
+    img_list = [
+        name
+        for match in re.finditer(img_pattern, post.content)
+        if (name := extract_filename(match))
+    ]
+
+    return img_list
+
+
+if __name__ == "__main__":
+    remove_stale_files(
+        "/Users/casey/Dev/obsidian-2-jekyll/examples/Example-Vault/example-posts",
+        "/Users/casey/Dev/obsidian-2-jekyll/_posts",
+        "/Users/casey/Dev/obsidian-2-jekyll/assets/images",
+    )
