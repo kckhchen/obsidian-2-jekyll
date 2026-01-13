@@ -91,11 +91,11 @@ def process_wikilinks(post, source_dir):
         if "#^" in target:
             parts = target.split("#^", 1)
             filename = parts[0]
-            anchor_suffix = "secid" + parts[1].strip()
+            anchor_suffix = "#secid" + parts[1].strip()
         elif "#" in target:
             parts = target.split("#", 1)
             filename = parts[0]
-            anchor_suffix = slugify(parts[1])
+            anchor_suffix = "#" + slugify(parts[1])
 
         filename = filename.strip()
 
