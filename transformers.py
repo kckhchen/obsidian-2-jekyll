@@ -17,6 +17,7 @@ def process_single_post(post, img_map, img_dest, img_url_prefix, layout, math_mo
 
     post = unshield(post, math_blocks)
     post = process_math(post, math_mode)
+    post = fix_math_id(post)
 
     post = unshield(post, url_blocks)
     post = unshield(post, code_blocks)
@@ -209,4 +210,12 @@ def shield_content(post, mode):
 def unshield(post, stash):
     for key, original_text in stash.items():
         post.content = post.content.replace(key, original_text)
+    return post
+
+
+def fix_math_id(post):
+
+    pattern = r"\$\$[\s\n]+({: #secid.+})"
+    post.content = re.sub(pattern, r"$$\n\1", post.content)
+
     return post
