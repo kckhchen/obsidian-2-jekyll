@@ -25,8 +25,8 @@ def scan_source_files(post_dir):
 
     for source_path in post_dir.rglob("*.md"):
         post = frontmatter.load(source_path)
-        new_path = get_dest_filepath(source_path, Path(""), post)
-        formatted_filenames.add(new_path.name)
+        filename = get_dest_filepath(post, source_path)
+        formatted_filenames.add(filename)
 
         img_list = scan_post_images(post)
         all_images.update(img_list)

@@ -5,22 +5,35 @@ from transformers import process_single_post
 
 
 def process_posts(
-    post_dest, img_dest, img_url_prefix, post_dir, includes_dir, layout, math_mode, dry
+    post_dest,
+    img_dest,
+    img_url_prefix,
+    source_dir,
+    includes_dir,
+    layout,
+    math_mode,
+    dry,
 ):
-    announce_paths(post_dir, post_dest, dry)
+    announce_paths(source_dir, post_dest, dry)
     setup_dir(post_dest, img_dest, dry)
     ensure_css_exists(includes_dir, css_name="obsidian-callouts.html", dry=dry)
-    img_map = build_img_map(post_dir.parent)
+    img_map = build_img_map(source_dir.parent)
 
-    for source_path in post_dir.rglob("*.md"):
+    for source_path in source_dir.rglob("*.md"):
         post = frontmatter.load(source_path)
-        dest_path = get_dest_filepath(source_path, post_dest, post)
+        dest_path = get_dest_filepath(post, source_path, post_dest)
         filename, new_fname = source_path.name, dest_path.name
         if should_proceed(source_path, dest_path):
             print(f"Processing: {filename} -> {new_fname}")
             if not dry:
                 post = process_single_post(
-                    post, img_map, img_dest, img_url_prefix, layout, math_mode
+                    post,
+                    source_dir,
+                    img_map,
+                    img_dest,
+                    img_url_prefix,
+                    layout,
+                    math_mode,
                 )
                 frontmatter.dump(post, dest_path)
         else:
@@ -62,10 +75,10 @@ def ensure_css_exists(dir, css_name, dry):
             css_path.write_text(CALLOUT_CSS, encoding="utf-8")
 
 
-def announce_paths(post_dir, post_dest, dry):
+def announce_paths(source_dir, post_dest, dry):
     if dry:
         print("------------ DRY RUN MODE -------------")
         print("Operations will be printed but files won't be changed.\n")
 
-    print(f"Start processing posts in folder [ {post_dir} ]...")
+    print(f"Start processing posts in folder [ {source_dir} ]...")
     print(f"Destination path: [ {post_dest} ]\n")

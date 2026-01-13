@@ -3,7 +3,7 @@ from pathlib import Path
 from datetime import datetime
 
 
-def get_dest_filepath(source_path, post_dest, post):
+def get_dest_filepath(post, source_path, post_dest=None):
     date_val = post.get("date")
     if date_val:
         date_str = str(date_val)[:10]
@@ -13,7 +13,10 @@ def get_dest_filepath(source_path, post_dest, post):
     clean_stem = re.sub(r"^\d{4}-\d{2}-\d{2}[-_]?", "", source_path.stem)
     new_name = f"{date_str}-{slugify(clean_stem)}{source_path.suffix}"
 
-    return post_dest / new_name
+    if post_dest is not None:
+        return post_dest / new_name
+    else:
+        return new_name
 
 
 def get_creation_time(filepath):

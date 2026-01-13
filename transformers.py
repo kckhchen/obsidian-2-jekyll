@@ -1,9 +1,13 @@
 import re
 import shutil
-from utils import slugify
+import frontmatter
+from utils import slugify, get_dest_filepath
+from config import PREVENT_DOUBLE_BASEURL
 
 
-def process_single_post(post, img_map, img_dest, img_url_prefix, layout, math_mode):
+def process_single_post(
+    post, source_dir, img_map, img_dest, img_url_prefix, layout, math_mode
+):
     post, code_blocks = shield_content(post, mode="code")
     post, url_blocks = shield_content(post, mode="url")
     post, math_blocks = shield_content(post, mode="math")
@@ -11,7 +15,7 @@ def process_single_post(post, img_map, img_dest, img_url_prefix, layout, math_mo
     post = process_h1(post, layout)
     post = strip_comments(post)
     post = process_images(post, img_map, img_dest, img_url_prefix)
-    post = process_wikilinks(post)
+    post = process_wikilinks(post, source_dir)
     post = process_callouts(post)
 
     post = unshield(post, math_blocks)
@@ -65,13 +69,11 @@ def process_images(post, img_map, img_dest, url_prefix):
     return post
 
 
-def process_wikilinks(post):
-    # Group 1: Target, Group 2: |Display (optional)
+def process_wikilinks(post, source_dir):
     pattern = r"(?<!\!)\[\[([^|\]]+)(?:\|([^\]]+))?\]\]"
-    # Look for "\n" or " " followed by the anchor "^hash" and ending with " " or end-of-file
     anchor_pattern = r"(^|\s)\^([a-zA-Z0-9-]+)(?=\s|$)"
 
-    def anchor_replacer(match):
+    def _anchor_replacer(match):
         preceding_char = match.group(1)
         anchor = match.group(2).strip()
         if preceding_char == " ":
@@ -79,40 +81,44 @@ def process_wikilinks(post):
         else:
             return f"{{: #secid{anchor}}}"
 
-    post.content = re.sub(
-        anchor_pattern, anchor_replacer, post.content, flags=re.MULTILINE
-    )
-
-    def link_replacer(match):
+    def _link_replacer(match):
         target = match.group(1).strip()
         display = match.group(2).strip() if match.group(2) else target
 
+        filename = target
+        anchor_suffix = ""
+
         if "#^" in target:
             parts = target.split("#^", 1)
-            filename = parts[0].strip()
-            block_id = "secid" + parts[1].strip()
-
-            if not filename:
-                return f"[{display}](#{block_id})"
-
-            slug = slugify(filename)
-            return f"[{display}](../{slug}#{block_id})"
-
+            filename = parts[0]
+            anchor_suffix = "secid" + parts[1].strip()
         elif "#" in target:
             parts = target.split("#", 1)
-            filename = parts[0].strip()
-            section = slugify(parts[1])
+            filename = parts[0]
+            anchor_suffix = slugify(parts[1])
 
-            if not filename:
-                return f"[{display}](#{section})"
+        filename = filename.strip()
 
-            slug = slugify(filename)
-            return f"[{display}](../{slug}#{section})"
+        if not filename:
+            return f"[{display}]({anchor_suffix})"
 
-        slug = slugify(target)
-        return f"[{display}](../{slug})"
+        path = source_dir / (filename + ".md")
+        if not path.exists():
+            print(f"Warning: Wikilink target not found: '{filename}'")
+            return [{display}](filename)
 
-    post.content = re.sub(pattern, link_replacer, post.content)
+        post = frontmatter.load(path)
+        dest_filename = get_dest_filepath(post, path)
+
+        if PREVENT_DOUBLE_BASEURL:
+            return f"[{display}]({{% link _posts/{dest_filename} %}}{anchor_suffix})"
+        else:
+            return f"[{display}]({{{{ site.baseurl }}}}{{% link _posts/{dest_filename} %}}{anchor_suffix})"
+
+    post.content = re.sub(
+        anchor_pattern, _anchor_replacer, post.content, flags=re.MULTILINE
+    )
+    post.content = re.sub(pattern, _link_replacer, post.content)
     return post
 
 
