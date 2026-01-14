@@ -5,12 +5,10 @@ from . import settings
 
 
 def process_images(post, img_map, img_dir):
-    # (.*?) The filename
-    # (?:\|(\d+))? Optional pipe followed by digits (Width)
     pattern = r"!\[\[([^|\]]+)(?:\|(\d+))?\]\]"
     img_folder = Path(settings.config.IMG_FOLDER)
 
-    def replacer(match):
+    def _replacer(match):
         img_name = match.group(1).strip()
         width = match.group(2)
 
@@ -22,8 +20,9 @@ def process_images(post, img_map, img_dir):
             if width:
                 updated_link += f'{{: width="{width}" }}'
             return updated_link
+        else:
+            print(f"{img_name} not found in Vault.")
+            return match.group(0)
 
-        return match.group(0)
-
-    post.content = re.sub(pattern, replacer, post.content)
+    post.content = re.sub(pattern, _replacer, post.content)
     return post

@@ -43,7 +43,7 @@ def process_wikilinks(post, source_dir):
         path = source_dir / (filename + ".md")
         if not path.exists():
             print(f"Warning: Wikilink target not found: '{filename}'")
-            return [{display}](filename)
+            return f"[{display}]({filename})"
 
         post = frontmatter.load(path)
         dest_filename = get_dest_fpath(post, path)
