@@ -19,7 +19,7 @@ This is a tool build with python that scans your obsidian folder, formats your a
 
 | Original Obsidian Article | Processed Jekyll Site |
 | :---: | :---: |
-| <img src="./assets/images/obsidian-demo.gif" width="400"> | <img src="./assets/images/jekyll-demo.gif" width="400"> |
+| <img src="./assets/images/obsidian-demo.gif" width="350"> | <img src="./assets/images/jekyll-demo.gif" width="350"> |
 
   <p style="text-align: center">
     <a href="https://kckhchen.com/obsidian-2-jekyll-demo/my-main-post/"><b>Read the Blog Post</b></a>
@@ -52,13 +52,13 @@ cd obsidian-2-jekyll
 | --------------------- | ------------------------------------------- | ---------------------------- |
 | `SOURCE_DIR`          | A folder in your vault for publication      | `/Users/me/Obsidian/Publish` |
 | `JEKYLL_DIR`          | Your Jekyll project folder                  | `/Users/me/Jekyll`           |
-| `IMG_DEST`            | Image folder in your Jekyll project folder  | `assets/images`              |
+| `IMG_FOLDER`            | Image folder in your Jekyll project folder  | `assets/images`              |
 
 ```python
 # config.py
 SOURCE_DIR = "/Users/me/Obsidian/Publish"  # Path to Your Post Folder
 JEKYLL_DIR = "/Users/me/Jekyll"            # Your Site
-IMG_DEST   = "assets/images"               # Relative to Jekyll Root
+IMG_FOLDER   = "assets/images"               # Relative to Jekyll Root
 ```
 
 #### 3. Run the command
