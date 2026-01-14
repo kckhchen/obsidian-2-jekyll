@@ -108,7 +108,7 @@ Generally, if your Jekyll theme supports math mode then `metadata` should be pre
 
 ### 6. Supports Callouts
 
-Obsidian callouts such as `> [!INFO]` or `> [!warning]` (case-insensitive) will be parsed and transformed into html elements. If callouts are used in a post, the tool will inject `{% include obsidian-callouts.html %}` at the bottom of the post. The `obsidian-callouts.html` file will be saved to your root folder, inside the `_includes` folder, meeting Jekyll's requirement.
+Obsidian callouts such as `> [!INFO]` or `> [!warning]` (case-insensitive) will be parsed and transformed into html elements. If callouts are used in a post, the tool will inject `{% include obsidian-callouts.html %}`, [Lucide's](https://lucide.dev/) CDN (Obsidian's original icon source), and a small icon-generating script `lucide.createIcons(...)` at the bottom of the post. The `obsidian-callouts.html` file will be saved to your root folder, inside the `_includes` folder, meeting Jekyll's requirement.
 
 It supports every callout type, including their alias, specified in the [Obsidian callout site](https://help.obsidian.md/callouts). If a callout type is not in the list, a grey-ish default callout block will be assigned.
 
