@@ -68,15 +68,15 @@ If the file already has `yyyy-mm-dd` prepended to the file name, it will be remo
 
 For example, a `.md` file named `My New Note!.md` will be renamed to `yyyy-mm-dd-my-new-note.md`.
 
-### 3. Copies Associated Images to a Dedicated Folder And Updates Image Links
+### 3. Copies Associated Images to a Dedicated Folder And Updates Embedded Image Links
 
-Image links `![[img.png|optional-width]]`, given that the actual images exist somewhere in the vault, will be transformed to `![](IMG_URL_PREFIX/img.png){: width="optional-width" }`. If no width parameter is given, only the image link is returned.
+Embedded images `![[img.png|width]]` or `![width](img.png)`, given that the actual images exist somewhere in the vault, will be transformed to `![](path/to/image.png){: width="width" }`. If no width is given, only the image link is returned.
 
 Also, all images associated with any of the processed posts will be copied to the dedicated image folder, while other irrelevant images will not be copied. This keeps your destination folder clean and tidy.
 
-### 4. Updates Any Wikilinks to Markdown Links
+### 4. Updates Internal Links
 
-The tool looks for `[[Wikilnks]]` and changes them to Markdown links `[displayed-text](url)`.
+The tool looks for `[[another post|displayed text]]` or `[displayed text](another post)` and changes them to Markdown links `[displayed-text](path/to/post)`.
 
 It works with links to other posts `[[another-post]]`, header links `[[#some-h2-title]]`, block/section links `[[#^link-to-block]]`, and headers and blocks from other posts `[[another-post#some-h3-title]]`.
 
@@ -84,7 +84,7 @@ It works with links to other posts `[[another-post]]`, header links `[[#some-h2-
 > Section and block links are automatically prepended with a `secid` (e.g., `#^1e2t3` becomes `#secid1e2t3`) to ensure compatibility with HTML standards, which do not allow id's to start with a number. Don't worry if the id's don't look the same as in the original post.
 
 > [!NOTE]
-> The tool transforms wikilinks into [Jekyll Liquids](https://jekyllrb.com/docs/liquid/) `[display]({{ site.baseurl }}{% link path/to/post(or image) %})`. For Jekyll version 3.x the `{{ site.baseurl }}` is necessary if you use a baseurl. However, in Jekyll >= 4.0 the `{% link %}` Liquid adds base urls natively. Please set `PREVENT_DOUBLE_BASEURL` to `False` to prevent excessive addition of base urls.
+> The tool transforms wikilinks into [Jekyll Liquids](https://jekyllrb.com/docs/liquid/) `[display text]({{ site.baseurl }}{% link path/to/post(or image) %})`. For Jekyll version 3.x the `{{ site.baseurl }}` is necessary if you use a baseurl. However, in Jekyll >= 4.0 the `{% link %}` Liquid adds base urls natively. Please set `PREVENT_DOUBLE_BASEURL` to `False` to prevent excessive addition of base urls.
 
 
 ### 5. Process Inline Math
@@ -93,11 +93,11 @@ The tool will look for inline math `$...$` and swap it into `\(...\)` so that mo
 
 If the post contains math (be it inline math or math blocks), the tool will do one of the following things, depending on your configuration.
 
-#### If `MATH_RENDERING_MODE = "metadata"`
+- ##### If `MATH_RENDERING_MODE = "metadata"`
 
 The tool will add `math: true` to the frontmatter. If the Jekyll theme you use supports math modes then the math will be rendered by whatever renderer the theme chooses.
 
-#### If `MATH_RENDERING_MODE = "inject_cdn"`
+- ##### If `MATH_RENDERING_MODE = "inject_cdn"`
 
 The tool will automatically inject a [MathJax](https://www.mathjax.org/) script at the bottom of the post so that the browser will be able to render the math, even if your theme doesn't.
 
@@ -108,7 +108,7 @@ Generally, if your Jekyll theme supports math mode then `metadata` should be pre
 
 ### 6. Supports Callouts
 
-Obsidian callouts such as `> [!INFO]` or `> [!warning]` will be parsed and transformed into html elements. If callouts are used in a post, the tool will inject `{% include obsidian-callouts.html %}` at the bottom of the post. The `obsidian-callouts.html` file will be saved to your root folder, inside the `_includes` folder, meeting Jekyll's requirement.
+Obsidian callouts such as `> [!INFO]` or `> [!warning]` (case-insensitive) will be parsed and transformed into html elements. If callouts are used in a post, the tool will inject `{% include obsidian-callouts.html %}` at the bottom of the post. The `obsidian-callouts.html` file will be saved to your root folder, inside the `_includes` folder, meeting Jekyll's requirement.
 
 It supports every callout type, including their alias, specified in the [Obsidian callout site](https://help.obsidian.md/callouts). If a callout type is not in the list, a grey-ish default callout block will be assigned.
 
