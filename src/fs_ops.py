@@ -1,4 +1,6 @@
+from pathlib import Path
 from .templates import CALLOUT_CSS
+from . import settings
 
 
 def build_img_map(dir):
@@ -19,8 +21,9 @@ def setup_dir(post_dir, img_dir, dry):
                 path.mkdir(parents=True, exist_ok=True)
 
 
-def ensure_css_exists(dir, css_name, dry):
-    css_path = dir / css_name
+def ensure_css_exists(css_name, dry):
+    includes_dir = Path(settings.config.JEKYLL_DIR) / settings.config.INCLUDES_FOLDER
+    css_path = includes_dir / css_name
     if not css_path.exists():
         print(f"--> Creating default callout CSS at: {css_path}")
         if not dry:

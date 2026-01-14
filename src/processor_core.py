@@ -4,22 +4,15 @@ from .utils import get_dest_fpath, shield_content, unshield
 from .fs_ops import announce_paths, setup_dir, ensure_css_exists, build_img_map
 from .text_cleanup import process_h1, strip_comments
 from .process_math import process_math
-from .process_images import process_images
+from .process_images import process_embedded_images
 from .process_links import process_wikilinks
 from .process_callouts import process_callouts
 
 
-def process_posts(
-    source_dir,
-    post_dir,
-    img_dir,
-    includes_dir,
-    dry,
-    layout,
-):
+def process_posts(source_dir, post_dir, img_dir, dry, layout):
     announce_paths(source_dir, post_dir, dry)
     setup_dir(post_dir, img_dir, dry)
-    ensure_css_exists(includes_dir, css_name="obsidian-callouts.html", dry=dry)
+    ensure_css_exists("obsidian-callouts.html", dry)
     img_map = build_img_map(source_dir.parent)
     skipped = 0
 
@@ -34,8 +27,8 @@ def process_posts(
                 frontmatter.dump(post, dest_fpath)
         else:
             skipped += 1
-            # print(f"Skipping (Unchanged): {filename}")
-    print(f"\nProcessing finished. Skipped {skipped} unchanged files")
+
+    print(f"\nProcessing finished. Skipped {skipped} unchanged files.")
 
 
 def should_proceed(source_fpath, dest_fpath):
@@ -52,7 +45,7 @@ def process_single_post(post, source_dir, img_map, img_dir, layout):
 
     post = process_h1(post, layout)
     post = strip_comments(post)
-    post = process_images(post, img_map, img_dir)
+    post = process_embedded_images(post, img_map, img_dir)
     post = process_wikilinks(post, source_dir)
     post = process_callouts(post)
 

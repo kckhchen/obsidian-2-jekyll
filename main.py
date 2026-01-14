@@ -9,28 +9,12 @@ from src import settings
 
 def main(args):
     settings.init(user_config)
-    source_dir = Path(user_config.SOURCE_DIR)
-    post_dir, img_dir, includes_dir = [
-        Path(user_config.JEKYLL_DIR) / folder
-        for folder in (
-            user_config.POST_FOLDER,
-            user_config.IMG_FOLDER,
-            user_config.INCLUDES_FOLDER,
-        )
-    ]
-
+    source_dir, post_dir, img_dir = make_paths()
     if not validate_inputs(source_dir):
         return
 
     if not args.cleanup:
-        process_posts(
-            source_dir,
-            post_dir,
-            img_dir,
-            includes_dir,
-            args.dry,
-            args.layout,
-        )
+        process_posts(source_dir, post_dir, img_dir, args.dry, args.layout)
 
     if args.update or args.cleanup:
         remove_stale_files(source_dir, post_dir, img_dir)
@@ -58,6 +42,15 @@ def setup_parser():
     )
 
     return parser
+
+
+def make_paths():
+    source_dir = Path(user_config.SOURCE_DIR)
+    post_dir, img_dir = [
+        Path(user_config.JEKYLL_DIR) / folder
+        for folder in (user_config.POST_FOLDER, user_config.IMG_FOLDER)
+    ]
+    return source_dir, post_dir, img_dir
 
 
 if __name__ == "__main__":
