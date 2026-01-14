@@ -31,18 +31,6 @@ ICONS = {
     "others": "book-check",
 }
 
-LUCIDE_CDN = """
-<script src="https://unpkg.com/lucide@latest"></script>
-<script>
-    lucide.createIcons({
-    attrs: {
-        'stroke-width': 2.5,
-        stroke: 'currentColor',
-    },
-    });
-</script>
-"""
-
 
 def process_callouts(post):
 
@@ -61,7 +49,6 @@ def process_callouts(post):
     if needs_callout(post.content, callout_pattern):
         post.content = callout_pattern.sub(_replacer, post.content)
         post.content += "\n\n{% include obsidian-callouts.html %}"
-        post.content += f"\n{LUCIDE_CDN}"
 
     return post
 
