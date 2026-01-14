@@ -4,13 +4,19 @@ from pathlib import Path
 from . import settings
 
 
-def process_images(post, img_map, img_dir):
-    pattern = r"!\[\[([^|\]]+)(?:\|(\d+))?\]\]"
+def process_embedded_images(post, img_map, img_dir):
+    img_ext = (".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp")
+    pattern = r"!\[\[(?P<wikilink>[^|\]]+)(?:\|(?P<wiki_width>\d+)[^\]]*)?\]\]|!\[(?P<md_width>\d*)[^\]]*\]\((?P<mdlink>[^)]+)\)"
     img_folder = Path(settings.config.IMG_FOLDER)
 
     def _replacer(match):
-        img_name = match.group(1).strip()
-        width = match.group(2)
+        img_name = match.group("wikilink") or match.group("mdlink")
+        img_name = img_name.strip()
+        width = match.group("wiki_width") or match.group("md_width") or ""
+
+        if Path(img_name).suffix not in img_ext:
+            print(f"Skipping {img_name}: not an image.")
+            return f"![{width}]({img_name})"
 
         if img_name.lower() in img_map:
             shutil.copy2(img_map[img_name.lower()], img_dir / img_name)
@@ -22,7 +28,7 @@ def process_images(post, img_map, img_dir):
             return updated_link
         else:
             print(f"Image target not found in Vault: {img_name}")
-            return match.group(0)
+            return f"![{width}]({img_name})"
 
     post.content = re.sub(pattern, _replacer, post.content)
     return post
