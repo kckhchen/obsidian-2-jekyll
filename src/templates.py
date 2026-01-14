@@ -10,6 +10,7 @@ CALLOUT_CSS = """
   }
 
   .callout-title {
+    width: 80%;
     font-weight: bold;
     margin-bottom: 8px;
     display: flex;
