@@ -47,9 +47,8 @@ Alternatively, add the layout in the frontmatter and the tool will respect the c
 
 | Variable              | Description                             | Default                      |
 | --------------------- | ------------------------------------------- | ---------------------------- |
-| `IMG_URL_PREFIX`      | Prefix to add to your image links  | `/assets/images` |
 | `MATH_RENDERING_MODE` | `metadata` adds `math: true` to frontmatter; `inject_cdn` injects MathJax CDN at the end of post | `inject_cdn`           |
-| `PREVENT_DOUBLE_BASEURL` | `True` to prevent double baseurl problem in Jekyll > 4.0 | `False`           |
+| `PREVENT_DOUBLE_BASEURL` | `True` to prevent double baseurl problem in Jekyll >= 4.0. [See Why](#4-updates-any-wikilinks-to-markdown-links) | `False`           |
 
 ## What This Tool Does
 
@@ -84,6 +83,10 @@ It works with links to other posts `[[another-post]]`, header links `[[#some-h2-
 > [!NOTE]
 > Section and block links are automatically prepended with a `secid` (e.g., `#^1e2t3` becomes `#secid1e2t3`) to ensure compatibility with HTML standards, which do not allow id's to start with a number. Don't worry if the id's don't look the same as in the original post.
 
+> [!NOTE]
+> The tool transforms wikilinks into [Jekyll Liquids](https://jekyllrb.com/docs/liquid/) `[display]({{ site.baseurl }}{% link path/to/post(or image) %})`. For Jekyll version 3.x the `{{ site.baseurl }}` is necessary if you use a baseurl. However, in Jekyll >= 4.0 the `{% link %}` Liquid adds base urls natively. Please set `PREVENT_DOUBLE_BASEURL` to `False` to prevent excessive addition of base urls.
+
+
 ### 5. Process Inline Math
 
 The tool will look for inline math `$...$` and swap it into `\(...\)` so that most $\LaTeX$ math renderers will render it correctly. Math blocks `$$...$$` will be left as-is.
@@ -108,3 +111,17 @@ Generally, if your Jekyll theme supports math mode then `metadata` should be pre
 Obsidian callouts such as `> [!INFO]` or `> [!warning]` will be parsed and transformed into html elements. If callouts are used in a post, the tool will inject `{% include obsidian-callouts.html %}` at the bottom of the post. The `obsidian-callouts.html` file will be saved to your root folder, inside the `_includes` folder, meeting Jekyll's requirement.
 
 It supports every callout type, including their alias, specified in the [Obsidian callout site](https://help.obsidian.md/callouts). If a callout type is not in the list, a grey-ish default callout block will be assigned.
+
+
+## Workflow
+
+```mermaid
+graph TB
+    A[Obsidian .md] --> B(Obsidian2Jekyll)
+    B -->|Frontmatter| D[Add Title/Date/Layout]
+    B -->|Body| E[Process Math/Callouts/Links]
+    B -->|Assets| F[Move Images]
+    D --> G[Jekyll _posts]
+    E --> G
+    F --> H[Jekyll assets/images]
+```
