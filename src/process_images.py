@@ -21,7 +21,7 @@ def process_images(post, img_map, img_dir):
                 updated_link += f'{{: width="{width}" }}'
             return updated_link
         else:
-            print(f"{img_name} not found in Vault.")
+            print(f"Image target not found in Vault: {img_name}")
             return match.group(0)
 
     post.content = re.sub(pattern, _replacer, post.content)
