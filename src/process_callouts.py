@@ -4,14 +4,15 @@ import re
 def process_callouts(post):
 
     def _replacer(match):
-        callout_type = match.group(1).lower()
-        collapse = match.group(2)
-        title = match.group(3).strip()
-        body = re.sub(r"^>\s?", "", match.group(4), flags=re.MULTILINE)
+        callout_type = match.group("ctype").lower()
+        collapse = match.group("collapse")
+        title = match.group("title").strip()
+        body = re.sub(r"^>\s?", "", match.group("body"), flags=re.MULTILINE)
         return render_callout(callout_type, title, body, collapse)
 
     callout_pattern = re.compile(
-        r"^> \[!\s*(\w+)\]([+\-]?)(.*?)\n((?:^>.*\n?)*)", re.MULTILINE
+        r"^> \[!\s*(?P<ctype>\w+)\](?P<collapse>[+\-]?)(?P<title>.*?)\n(?P<body>(?:^>.*\n?)*)",
+        re.MULTILINE,
     )
 
     if needs_callout(post.content, callout_pattern):

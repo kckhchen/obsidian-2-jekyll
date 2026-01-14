@@ -7,21 +7,26 @@ from .utils import slugify, get_dest_fpath
 
 
 def process_wikilinks(post, source_dir):
-    pattern = r"(?<!\!)\[\[([^|\]]+)(?:\|([^\]]+))?\]\]"
-    anchor_pattern = r"(^|\s)\^([a-zA-Z0-9-]+)(?=\s|$)"
+    pattern = r"(?<!\!)\[\[(?P<wikilink>[^|\]]+)(?:\|(?P<wiki_display>[^\]]+))?\]\]|(?<!\!)\[(?P<md_display>[^\]]*)\]\((?P<mdlink>[^\)]+)\)"
+    anchor_pattern = r"(^|\s)\^(?P<anchor>[a-zA-Z0-9-]+)(?=\s|$)"
     post_folder = Path(settings.config.POST_FOLDER)
 
     def _anchor_replacer(match):
         preceding_char = match.group(1)
-        anchor = match.group(2).strip()
+        anchor = match.group("anchor").strip()
         if preceding_char == " ":
             return f"\n{{: #secid{anchor}}}"
         else:
             return f"{{: #secid{anchor}}}"
 
     def _link_replacer(match):
-        target = match.group(1).strip()
-        display = match.group(2).strip() if match.group(2) else target
+        target = match.group("wikilink") or match.group("mdlink")
+        target = target.strip()
+        display = match.group("wiki_display") or match.group("md_display") or target
+
+        # skip shielding placeholders
+        if re.match(r"^&&\w+_\d+&&$", target) and match.group("mdlink"):
+            return f"[{display}]({target})"
 
         filename = target
         anchor_suffix = ""
@@ -40,7 +45,7 @@ def process_wikilinks(post, source_dir):
         if not filename:
             return f"[{display}]({anchor_suffix})"
 
-        path = source_dir / (filename + ".md")
+        path = source_dir / (Path(filename).stem + ".md")
         if not path.exists():
             print(f"Warning: Wikilink target not found: '{filename}'")
             return f"[{display}]({filename})"
