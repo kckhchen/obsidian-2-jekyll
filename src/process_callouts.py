@@ -1,5 +1,48 @@
 import re
 
+ICONS = {
+    "note": "pen",
+    "info": "info",
+    "todo": "circle-check",
+    "question": "circle-question-mark",
+    "help": "circle-question-mark",
+    "faq": "circle-question-mark",
+    "warning": "circle-alert",
+    "caution": "circle-alert",
+    "attention": "circle-alert",
+    "failure": "x",
+    "fail": "x",
+    "missing": "x",
+    "danger": "zap",
+    "error": "zap",
+    "bug": "bug",
+    "abstract": "clipboard-list",
+    "summary": "clipboard-list",
+    "tldr": "clipboard-list",
+    "tip": "flame",
+    "hint": "flame",
+    "important": "flame",
+    "success": "check",
+    "check": "check",
+    "done": "check",
+    "example": "list",
+    "quote": "quote",
+    "cite": "quote",
+    "others": "book-check",
+}
+
+LUCIDE_CDN = """
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+    lucide.createIcons({
+    attrs: {
+        'stroke-width': 2.5,
+        stroke: 'currentColor',
+    },
+    });
+</script>
+"""
+
 
 def process_callouts(post):
 
@@ -18,6 +61,7 @@ def process_callouts(post):
     if needs_callout(post.content, callout_pattern):
         post.content = callout_pattern.sub(_replacer, post.content)
         post.content += "\n\n{% include obsidian-callouts.html %}"
+        post.content += f"\n{LUCIDE_CDN}"
 
     return post
 
@@ -27,16 +71,17 @@ def needs_callout(content, callout_pattern):
 
 
 def render_callout(callout_type, title, body, collapse):
+    icon = ICONS.get(callout_type, ICONS["others"])
     title = title or callout_type.capitalize()
     tag_map = {"+": "details open", "-": "details"}
     open_tag = tag_map.get(collapse)
     if open_tag:
         content = f"""<{open_tag}>
-    <summary class="callout-title">{title}</summary>
+    <summary class="callout-title"><i class="callout-icon" data-lucide="{icon}"></i>{title}</summary>
     {body}
 </details>"""
     else:
-        content = f"""<div class="callout-title">{title}</div>
+        content = f"""<div class="callout-title"><i class="callout-icon" data-lucide="{icon}"></i>{title}</div>
 {body}"""
 
     return (
