@@ -1,16 +1,16 @@
 import re
 import frontmatter
 from pathlib import Path
-from processor import get_dest_filepath
+from .utils import get_dest_fpath
 
 
 def remove_stale_files(post_dir, post_dest, img_dest):
     print(f"\nStarting cleaning up process...")
     print(f"Post folder: [ {post_dest} ]")
     print(f"Image folder: [ {img_dest} ]\n")
-    obs_formatted_filenames, all_post_images = scan_source_files(post_dir)
+    jekyll_filenames, all_post_images = scan_source_files(post_dir)
     to_be_removed = list_posts_to_be_removed(
-        post_dest, obs_formatted_filenames
+        post_dest, jekyll_filenames
     ) + list_imgs_to_be_removed(img_dest, all_post_images)
 
     if to_be_removed:
@@ -20,18 +20,18 @@ def remove_stale_files(post_dir, post_dest, img_dest):
 
 
 def scan_source_files(post_dir):
-    formatted_filenames = set()
+    jekyll_filenames = set()
     all_images = set()
 
-    for source_path in post_dir.rglob("*.md"):
-        post = frontmatter.load(source_path)
-        filename = get_dest_filepath(post, source_path)
-        formatted_filenames.add(filename)
+    for source_fpath in post_dir.rglob("*.md"):
+        post = frontmatter.load(source_fpath)
+        dest_filename = get_dest_fpath(post, source_fpath)
+        jekyll_filenames.add(dest_filename)
 
         img_list = scan_post_images(post)
         all_images.update(img_list)
 
-    return formatted_filenames, all_images
+    return jekyll_filenames, all_images
 
 
 def list_posts_to_be_removed(post_dest, current_posts):
@@ -91,11 +91,3 @@ def scan_post_images(post):
     ]
 
     return img_list
-
-
-if __name__ == "__main__":
-    remove_stale_files(
-        "/Users/casey/Dev/obsidian-2-jekyll/examples/Example-Vault/example-posts",
-        "/Users/casey/Dev/obsidian-2-jekyll/_posts",
-        "/Users/casey/Dev/obsidian-2-jekyll/assets/images",
-    )

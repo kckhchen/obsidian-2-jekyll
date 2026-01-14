@@ -6,7 +6,6 @@ CALLOUT_CSS = """
     margin: 1em 0;
     border-radius: 4px;
     background-color: rgba(200, 200, 200, 0.3);
-    border-left: 4px solid #9c9c9c;
     --accent-clr: #9c9c9c;
   }
 

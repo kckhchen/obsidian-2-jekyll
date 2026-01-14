@@ -12,9 +12,6 @@ IMG_FOLDER = "assets/images"
 
 # ---------------- More Settings -----------------------
 
-# absolute path for Jekyll to locate the image folder
-IMG_URL_PREFIX = "/assets/images"
-
 # If the Jekyll theme supports math rendering and can recognize "math: true"
 # please uncomment "metadata".
 # If the Jekyll theme does not support math rendering
