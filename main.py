@@ -14,7 +14,7 @@ def main(args):
         return
 
     if not args.cleanup:
-        process_posts(source_dir, post_dir, img_dir, args.dry, args.layout)
+        process_posts(source_dir, post_dir, img_dir, args.dry, args.layout, args.force)
 
     if args.update or args.cleanup:
         remove_stale_files(source_dir, post_dir, img_dir)
@@ -36,6 +36,12 @@ def setup_parser():
 
     parser.add_argument(
         "--dry", action="store_true", help="Dry run: simulate without changes."
+    )
+    parser.add_argument(
+        "-f",
+        "--force",
+        action="store_true",
+        help="Processes every files regardless of change states.",
     )
     parser.add_argument(
         "--layout", default="post", help="Jekyll layout to use (default: post)."

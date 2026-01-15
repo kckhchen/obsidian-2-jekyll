@@ -9,7 +9,7 @@ from .process_links import process_wikilinks
 from .process_callouts import process_callouts
 
 
-def process_posts(source_dir, post_dir, img_dir, dry, layout):
+def process_posts(source_dir, post_dir, img_dir, dry, layout, force):
     announce_paths(source_dir, post_dir, dry)
     setup_dir(post_dir, img_dir, dry)
     ensure_css_exists("obsidian-callouts.html", dry)
@@ -20,7 +20,7 @@ def process_posts(source_dir, post_dir, img_dir, dry, layout):
         post = frontmatter.load(source_fpath)
         dest_fpath = get_dest_fpath(post, source_fpath, post_dir)
         filename, new_fname = source_fpath.name, dest_fpath.name
-        if _should_proceed(source_fpath, dest_fpath):
+        if _should_proceed(source_fpath, dest_fpath, force):
             print(f"Processing: {filename} -> {new_fname}")
             if not dry:
                 post = _process_single_post(post, source_dir, img_map, img_dir, layout)
@@ -31,8 +31,8 @@ def process_posts(source_dir, post_dir, img_dir, dry, layout):
     print(f"\nProcessing finished. Skipped {skipped} unchanged files.")
 
 
-def _should_proceed(source_fpath, dest_fpath):
-    if not dest_fpath.exists():
+def _should_proceed(source_fpath, dest_fpath, force):
+    if not dest_fpath.exists() or force:
         return True
 
     return source_fpath.stat().st_mtime > dest_fpath.stat().st_mtime
