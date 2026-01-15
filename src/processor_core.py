@@ -9,14 +9,16 @@ from .process_links import process_wikilinks
 from .process_callouts import process_callouts
 
 
-def process_posts(source_dir, post_dir, img_dir, dry, layout, force):
+def process_posts(source_dir, post_dir, img_dir, dry, layout, force, only=None):
     announce_paths(source_dir, post_dir, dry)
     setup_dir(post_dir, img_dir, dry)
     ensure_css_exists("obsidian-callouts.html", dry)
     img_map = build_img_map(source_dir.parent)
     skipped = 0
 
-    for source_fpath in source_dir.rglob("*.md"):
+    files_to_process = _list_files(source_dir, only)
+
+    for source_fpath in files_to_process:
         post = frontmatter.load(source_fpath)
         dest_fpath = get_dest_fpath(post, source_fpath, post_dir)
         filename, new_fname = source_fpath.name, dest_fpath.name
@@ -55,3 +57,14 @@ def _process_single_post(post, source_dir, img_map, img_dir, layout):
     post = unshield(post, url_blocks)
     post = unshield(post, code_blocks)
     return post
+
+
+def _list_files(source_dir, only):
+    if only:
+        target_path = source_dir / only
+        if not target_path.exists():
+            print(f"Cannot find {only} in source directory. Process aborted.")
+            return
+        return [target_path]
+    else:
+        return source_dir.rglob("*.md")

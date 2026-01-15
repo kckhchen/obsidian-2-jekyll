@@ -14,7 +14,9 @@ def main(args):
         return
 
     if not args.cleanup:
-        process_posts(source_dir, post_dir, img_dir, args.dry, args.layout, args.force)
+        process_posts(
+            source_dir, post_dir, img_dir, args.dry, args.layout, args.force, args.only
+        )
 
     if args.update or args.cleanup:
         remove_stale_files(source_dir, post_dir, img_dir)
@@ -46,6 +48,7 @@ def setup_parser():
     parser.add_argument(
         "--layout", default="post", help="Jekyll layout to use (default: post)."
     )
+    parser.add_argument("--only", default=None, help="Only process the selected post.")
 
     return parser
 
