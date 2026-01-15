@@ -63,10 +63,9 @@ def render_callout(callout_type, title, body, collapse):
     tag_map = {"+": "details open", "-": "details"}
     open_tag = tag_map.get(collapse)
     if open_tag:
-        content = f"""<{open_tag}>
-    <summary class="callout-title"><i class="callout-icon" data-lucide="{icon}"></i>{title}</summary>
-    {body}
-</details>"""
+        content = f"""<{open_tag} markdown="1">
+<summary class="callout-title"><i class="callout-icon" data-lucide="{icon}"></i>{title}</summary>
+{body}</details>"""
     else:
         content = f"""<div class="callout-title"><i class="callout-icon" data-lucide="{icon}"></i>{title}</div>
 {body}"""
