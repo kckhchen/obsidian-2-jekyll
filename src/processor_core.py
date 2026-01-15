@@ -20,10 +20,10 @@ def process_posts(source_dir, post_dir, img_dir, dry, layout):
         post = frontmatter.load(source_fpath)
         dest_fpath = get_dest_fpath(post, source_fpath, post_dir)
         filename, new_fname = source_fpath.name, dest_fpath.name
-        if should_proceed(source_fpath, dest_fpath):
+        if _should_proceed(source_fpath, dest_fpath):
             print(f"Processing: {filename} -> {new_fname}")
             if not dry:
-                post = process_single_post(post, source_dir, img_map, img_dir, layout)
+                post = _process_single_post(post, source_dir, img_map, img_dir, layout)
                 frontmatter.dump(post, dest_fpath)
         else:
             skipped += 1
@@ -31,14 +31,14 @@ def process_posts(source_dir, post_dir, img_dir, dry, layout):
     print(f"\nProcessing finished. Skipped {skipped} unchanged files.")
 
 
-def should_proceed(source_fpath, dest_fpath):
+def _should_proceed(source_fpath, dest_fpath):
     if not dest_fpath.exists():
         return True
 
     return source_fpath.stat().st_mtime > dest_fpath.stat().st_mtime
 
 
-def process_single_post(post, source_dir, img_map, img_dir, layout):
+def _process_single_post(post, source_dir, img_map, img_dir, layout):
     post, code_blocks = shield_content(post, mode="code")
     post, url_blocks = shield_content(post, mode="url")
     post, math_blocks = shield_content(post, mode="math")

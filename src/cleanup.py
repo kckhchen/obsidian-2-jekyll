@@ -8,18 +8,18 @@ def remove_stale_files(post_dir, post_dest, img_dest):
     print(f"\nStarting cleaning up process...")
     print(f"Post folder: [ {post_dest} ]")
     print(f"Image folder: [ {img_dest} ]\n")
-    jekyll_filenames, all_post_images = scan_source_files(post_dir)
-    to_be_removed = list_posts_to_be_removed(
+    jekyll_filenames, all_post_images = _scan_source_files(post_dir)
+    to_be_removed = _list_posts_to_be_removed(
         post_dest, jekyll_filenames
-    ) + list_imgs_to_be_removed(img_dest, all_post_images)
+    ) + _list_imgs_to_be_removed(img_dest, all_post_images)
 
     if to_be_removed:
-        remove_files(to_be_removed)
+        _remove_files(to_be_removed)
     else:
         print("No stale files found. Nothing will be removed.")
 
 
-def scan_source_files(post_dir):
+def _scan_source_files(post_dir):
     jekyll_filenames = set()
     all_images = set()
 
@@ -28,13 +28,13 @@ def scan_source_files(post_dir):
         dest_filename = get_dest_fpath(post, source_fpath)
         jekyll_filenames.add(dest_filename)
 
-        img_list = scan_post_images(post)
+        img_list = _scan_post_images(post)
         all_images.update(img_list)
 
     return jekyll_filenames, all_images
 
 
-def list_posts_to_be_removed(post_dest, current_posts):
+def _list_posts_to_be_removed(post_dest, current_posts):
     to_be_removed = []
     for f in Path(post_dest).iterdir():
         if f.is_file() and re.match(r"\d{4}-\d{2}-\d{2}-.+\.md", f.name):
@@ -44,7 +44,7 @@ def list_posts_to_be_removed(post_dest, current_posts):
     return to_be_removed
 
 
-def list_imgs_to_be_removed(img_dest, all_post_images):
+def _list_imgs_to_be_removed(img_dest, all_post_images):
     img_ext = (".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp")
     to_be_removed = []
     for img in Path(img_dest).iterdir():
@@ -55,7 +55,7 @@ def list_imgs_to_be_removed(img_dest, all_post_images):
     return to_be_removed
 
 
-def remove_files(file_path_list):
+def _remove_files(file_path_list):
     if not file_path_list:
         return
 
@@ -74,7 +74,7 @@ def remove_files(file_path_list):
         print("Process aborted.")
 
 
-def scan_post_images(post):
+def _scan_post_images(post):
     img_pattern = r"!\[\[(?P<wiki>[^|\]]+).*?\]\]|!\[[^\]]*\]\((?P<md>[^)]+)\)"
 
     def extract_filename(match):
