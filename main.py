@@ -1,17 +1,22 @@
+import sys
 import argparse
 from pathlib import Path
 import config as user_config
 from src.processor_core import process_posts
 from src.cleanup import remove_stale_files
-from src.utils import validate_inputs
+from src.utils import validate_configs
 from src import settings
 
 
 def main(args):
     settings.init(user_config)
     source_dir, post_dir, img_dir = make_paths()
-    if not validate_inputs(source_dir):
-        return
+    try:
+        validate_configs(source_dir, user_config)
+
+    except (FileNotFoundError, ValueError) as e:
+        print(e)
+        sys.exit(1)
 
     if not args.cleanup:
         process_posts(
@@ -46,7 +51,10 @@ def setup_parser():
         help="Processes every files regardless of change states.",
     )
     parser.add_argument(
-        "--layout", default="post", help="Jekyll layout to use (default: post)."
+        "--layout",
+        type=str,
+        default="post",
+        help="Jekyll layout to use (default: post).",
     )
     parser.add_argument("--only", default=None, help="Only process the selected post.")
 

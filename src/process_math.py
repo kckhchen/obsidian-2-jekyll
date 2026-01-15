@@ -15,10 +15,6 @@ def process_math(post):
             post.content += f"\n\n{mathjax_script}"
         elif settings.config.MATH_RENDERING_MODE == "metadata":
             post["math"] = post.get("math") or True
-        else:
-            print(
-                'Math blocks detected but no rendering mode is selected. Please either set MATH_RENDERING_MODE = "inject_cdn" or "metadata".\n'
-            )
 
         post = _fix_math_id(post)
 

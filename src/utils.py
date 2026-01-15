@@ -29,11 +29,17 @@ def slugify(name):
     return re.sub(r"[^a-zA-Z0-9.]+", "-", name).strip("-").lower()
 
 
-def validate_inputs(source_dir):
+def validate_configs(source_dir, config):
+    valid_modes = ["metadata", "inject_cdn"]
+    mode = config.MATH_RENDERING_MODE
     if not source_dir.exists():
-        print(f"Error: Source folder '{source_dir}' not found.")
-        return False
-    return True
+        raise FileNotFoundError(f"Error: Source folder '{source_dir}' not found.")
+
+    if mode not in valid_modes:
+        raise ValueError(
+            f"Invalid MATH_RENDERING_MODE: '{config.MATH_RENDERING_MODE}'. "
+            f"Must be one of: {valid_modes}."
+        )
 
 
 def shield_content(post, mode):

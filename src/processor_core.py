@@ -1,4 +1,5 @@
 import frontmatter
+from pathlib import Path
 
 from .utils import get_dest_fpath, shield_content, unshield
 from .fs_ops import announce_paths, setup_dir, ensure_css_exists, build_img_map
@@ -16,19 +17,23 @@ def process_posts(source_dir, post_dir, img_dir, dry, layout, force, only=None):
     img_map = build_img_map(source_dir.parent)
     skipped = 0
 
-    files_to_process = _list_files(source_dir, only)
+    try:
+        for source_fpath in _iter_files(source_dir, only):
+            post = frontmatter.load(source_fpath)
+            dest_fpath = get_dest_fpath(post, source_fpath, post_dir)
+            if _should_proceed(source_fpath, dest_fpath, force):
+                print(f"Processing: {source_fpath.name} -> {dest_fpath.name}")
+                if not dry:
+                    post = _process_single_post(
+                        post, source_dir, img_map, img_dir, layout
+                    )
+                    frontmatter.dump(post, dest_fpath)
+            else:
+                skipped += 1
 
-    for source_fpath in files_to_process:
-        post = frontmatter.load(source_fpath)
-        dest_fpath = get_dest_fpath(post, source_fpath, post_dir)
-        filename, new_fname = source_fpath.name, dest_fpath.name
-        if _should_proceed(source_fpath, dest_fpath, force):
-            print(f"Processing: {filename} -> {new_fname}")
-            if not dry:
-                post = _process_single_post(post, source_dir, img_map, img_dir, layout)
-                frontmatter.dump(post, dest_fpath)
-        else:
-            skipped += 1
+    except (ValueError, FileNotFoundError) as e:
+        print(e)
+        return
 
     print(f"\nProcessing finished. Skipped {skipped} unchanged files.")
 
@@ -59,12 +64,22 @@ def _process_single_post(post, source_dir, img_map, img_dir, layout):
     return post
 
 
-def _list_files(source_dir, only):
-    if only:
-        target_path = source_dir / only
+def _iter_files(source_dir, only_file=None):
+    if only_file:
+        path = Path(only_file)
+
+        if not path.suffix:
+            path = path.with_suffix(".md")
+
+        if path.suffix.lower() != ".md":
+            raise ValueError(f"Error: '{only_file}' is not a .md file.")
+
+        target_path = source_dir / path
+
         if not target_path.exists():
-            print(f"Cannot find {only} in source directory. Process aborted.")
-            return
-        return [target_path]
+            raise FileNotFoundError(f"Error: Cannot find '{path}' in source directory.")
+
+        yield target_path
+
     else:
-        return source_dir.rglob("*.md")
+        yield from source_dir.rglob("*.md")

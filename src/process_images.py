@@ -22,7 +22,6 @@ def _embedded_image_replacer(match, img_map, img_dir):
     width = match.group("wiki_width") or match.group("md_width") or ""
 
     if Path(img_name).suffix not in img_ext:
-        print(f"Skipping {img_name}: not an image.")
         return f"![{width}]({img_name})"
 
     if img_name.lower() in img_map:
