@@ -25,6 +25,10 @@ def _scan_source_files(post_dir):
 
     for source_fpath in post_dir.rglob("*.md"):
         post = frontmatter.load(source_fpath)
+
+        if post.get("share", True) is False:
+            continue
+
         dest_filename = get_dest_fpath(post, source_fpath)
         jekyll_filenames.add(dest_filename)
 
