@@ -1,21 +1,6 @@
-# Jekyll's compiled output
-_site/
-.jekyll-cache/
-.jekyll-metadata
-.sass-cache
-.jekyll-metadata
-
-# Ruby / Bundler files
-vendor/
-.bundle/
-*.gem
-
-# OS / Python clutter
 .DS_Store
 __pycache__/
-dist/
 
-.obsidian
 .vscode/
 config_private.py
 config_local.py
