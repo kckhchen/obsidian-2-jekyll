@@ -6,8 +6,8 @@
 3. [How it Works](#what-this-tool-does)
     - [Frontmatter](#1-adds-a-frontmatter-with-title-and-layout)
     - [Dates & Renaming](#2-prepends-dates-before-file-names)
-    - [Images](#3-copies-associated-images-to-a-dedicated-folder-and-updates-image-links)
-    - [Wikilinks](#4-updates-any-wikilinks-to-markdown-links)
+    - [Images](#3-copies-associated-images-to-a-dedicated-folder-and-updates-embedded-image-links)
+    - [Internal Links](#4-updates-internal-links)
     - [Math](#5-process-inline-math)
     - [Callouts](#6-supports-callouts)
 
@@ -43,12 +43,24 @@ python3 main.py --layout YOUR_LAYOUT
 
 Alternatively, add the layout in the frontmatter and the tool will respect the configuration.
 
+The tool uses the modification date to decide whether to process a post. If you would like to force processing a post (due to, for example, an update of css) you can use the `--force` flag.
+
+```
+python3 main.py --force
+```
+
 ### Environmental Variables
 
 | Variable              | Description                             | Default                      |
 | --------------------- | ------------------------------------------- | ---------------------------- |
 | `MATH_RENDERING_MODE` | `metadata` adds `math: true` to frontmatter; `inject_cdn` injects MathJax CDN at the end of post | `inject_cdn`           |
-| `PREVENT_DOUBLE_BASEURL` | `True` to prevent double baseurl problem in Jekyll >= 4.0. [See Why](#4-updates-any-wikilinks-to-markdown-links) | `False`           |
+| `PREVENT_DOUBLE_BASEURL` | `True` to prevent double baseurl problem in Jekyll >= 4.0. [See Why](#4-updates-internal-links) | `False`           |
+
+### Frontmatters
+
+All configurations manually added in the frontmatter will not be overridden by this tool.
+
+If you like to keep a post in the publication folder but don't want to publish it yet, or wish to remove it without moving it out of the folder, you can add `share: false` in the frontmatter. The post won't be processed and all internal links to that post will not be transformed.
 
 ## What This Tool Does
 
@@ -67,6 +79,9 @@ If you have set `date:` in the frontmatter, the tool will respect your parameter
 If the file already has `yyyy-mm-dd` prepended to the file name, it will be removed, and the new date will be prepended (if you'd like to specify the date, please add it in the frontmatter).
 
 For example, a `.md` file named `My New Note!.md` will be renamed to `yyyy-mm-dd-my-new-note.md`.
+
+> [!note]
+> That being said, it is recommended that you still manually add dates in the frontmatter since the creation date of a post can change due to several reasons, e.g. copying, cloning, etc.
 
 ### 3. Copies Associated Images to a Dedicated Folder And Updates Embedded Image Links
 
@@ -110,7 +125,7 @@ Generally, if your Jekyll theme supports math mode then `metadata` should be pre
 
 Obsidian callouts such as `> [!INFO]` or `> [!warning]` (case-insensitive) will be parsed and transformed into html elements. If callouts are used in a post, the tool will inject `{% include obsidian-callouts.html %}`, [Lucide's](https://lucide.dev/) CDN (Obsidian's original icon source), and a small icon-generating script `lucide.createIcons(...)` at the bottom of the post. The `obsidian-callouts.html` file will be saved to your root folder, inside the `_includes` folder, meeting Jekyll's requirement.
 
-It supports every callout type, including their alias, specified in the [Obsidian callout site](https://help.obsidian.md/callouts). If a callout type is not in the list, a grey-ish default callout block will be assigned.
+It supports every callout type, including their alias, specified on the [Obsidian callout site](https://help.obsidian.md/callouts). If a callout type is not in the list, a grey-ish default callout block will be assigned.
 
 
 ## Workflow

@@ -17,9 +17,6 @@ This is a tool build with python that scans your obsidian folder, formats your a
 - Syncs to your vault; removed posts get deleted on you Jekyll site too.
 - Your original Obsidian article remains intact, the way you want it to be.
 
-> [!warning]
-> To display callouts, the tool will add a `obsidian-callouts.html` in your Jekyll project's `_includes` folder. You can modify how you want callouts to look there.
-
 ## Live Demo
 
 | Original Obsidian Article | Processed Jekyll Site |
@@ -55,13 +52,16 @@ cd obsidian-2-jekyll
 
 | Variable              | Description                                 | Example                      |
 | --------------------- | ------------------------------------------- | ---------------------------- |
-| `SOURCE_DIR`          | A folder in your vault for publication      | `/Users/me/Obsidian/Publish` |
-| `JEKYLL_DIR`          | Your Jekyll project folder                  | `/Users/me/Jekyll`           |
+| `VAULT_DIR`          | Path to your Obsidian Vault      | `/Users/me/Obsidian-Vault` |
+| `SOURCE_FOLDER`          | A folder in your vault for publication      | `publish` |
+| `JEKYLL_DIR`          | Your Jekyll project folder                  | `/Users/me/Jekyll-Website`           |
 | `IMG_FOLDER`          | Image folder in your Jekyll project folder  | `assets/images`              |
+
 
 ```python
 # config.py
-SOURCE_DIR = "/Users/me/Obsidian/Publish"  # Path to Your Post Folder
+VAULT_DIR = "/Users/me/Obsidian-Vault"     # Path to Your Vault
+SOURCE_FOLDER = "publish"                  # Relative to Your Vault
 JEKYLL_DIR = "/Users/me/Jekyll"            # Your Site
 IMG_FOLDER = "assets/images"               # Relative to Jekyll Root
 ```
@@ -72,9 +72,15 @@ IMG_FOLDER = "assets/images"               # Relative to Jekyll Root
 # Process new posts
 python3 main.py
 
-# Process and clean up deleted posts
+# Process posts and clean up deleted posts
 python3 main.py --update
+
+# Process only one post
+python3 main.py --only "My Post.md"
 ```
+
+> [!note] 
+> **A Note on Styling**: The first time you run the tool, it will create `_includes/obsidian-callouts.html`. This file handles the icons and colors for your callouts. Feel free to customize it.
 
 ## User Guide
 
