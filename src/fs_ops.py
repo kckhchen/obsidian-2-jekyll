@@ -16,7 +16,7 @@ def build_img_map(dir):
 def setup_dir(post_dir, img_dir, dry):
     for path in [post_dir, img_dir]:
         if not path.exists():
-            print(f"Destination folder not found, creating {path}...")
+            print(f"---- Destination folder not found, creating {path} ----")
             if not dry:
                 path.mkdir(parents=True, exist_ok=True)
 
@@ -25,7 +25,7 @@ def ensure_css_exists(css_name, dry):
     includes_dir = Path(settings.config.JEKYLL_DIR) / settings.config.INCLUDES_FOLDER
     css_path = includes_dir / css_name
     if not css_path.exists():
-        print(f"--> Creating default callout CSS at: {css_path}")
+        print(f"---- Creating default callout CSS at: {css_path} ----")
         if not dry:
             css_path.parent.mkdir(parents=True, exist_ok=True)
             css_path.write_text(CALLOUT_CSS, encoding="utf-8")
