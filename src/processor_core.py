@@ -1,6 +1,7 @@
 import frontmatter
 from pathlib import Path
 
+from . import settings
 from .utils import get_dest_fpath, shield_content, unshield
 from .fs_ops import announce_paths, setup_dir, ensure_css_exists, build_img_map
 from .text_cleanup import process_h1, strip_comments
@@ -18,10 +19,10 @@ def process_posts(source_dir, post_dir, img_dir, dry, layout, force, only=None):
     skipped = 0
 
     try:
-        for source_fpath in _iter_files(source_dir, only):
+        for source_fpath in sorted(_iter_files(source_dir, only)):
             post = frontmatter.load(source_fpath)
             dest_fpath = get_dest_fpath(post, source_fpath, post_dir)
-            if _should_proceed(source_fpath, dest_fpath, force):
+            if _should_proceed(source_fpath, dest_fpath, post, force):
                 print(f"Processing: {source_fpath.name} -> {dest_fpath.name}")
                 if not dry:
                     post = _process_single_post(
@@ -29,7 +30,7 @@ def process_posts(source_dir, post_dir, img_dir, dry, layout, force, only=None):
                     )
                     frontmatter.dump(post, dest_fpath)
             else:
-                skipped += 1
+                skipped += 1 if post.get("share", True) is not False else 0
 
     except (ValueError, FileNotFoundError) as e:
         print(e)
@@ -38,7 +39,10 @@ def process_posts(source_dir, post_dir, img_dir, dry, layout, force, only=None):
     print(f"\nProcessing finished. Skipped {skipped} unchanged files.")
 
 
-def _should_proceed(source_fpath, dest_fpath, force):
+def _should_proceed(source_fpath, dest_fpath, post, force):
+    if post.get("share", True) is False:
+        return False
+
     if not dest_fpath.exists() or force:
         return True
 

@@ -57,11 +57,12 @@ def _link_replacer(match, source_dir):
         return f"[{display}]({anchor_suffix})"
 
     path = source_dir / (Path(filename).stem + ".md")
-    if not path.exists():
-        print(f"Warning: Wikilink target not found: '{filename}'")
+    post = frontmatter.load(path)
+
+    if not path.exists() or post.get("share", True) is False:
+        print(f"  |  Warning: Wikilink target not found: '{filename}'")
         return f"[{display}]({filename})"
 
-    post = frontmatter.load(path)
     dest_filename = get_dest_fpath(post, path)
 
     if settings.config.PREVENT_DOUBLE_BASEURL:
