@@ -15,7 +15,7 @@ def process_posts(source_dir, post_dir, img_dir, dry, layout, force, only=None):
     announce_paths(source_dir, post_dir, dry)
     setup_dir(post_dir, img_dir, dry)
     ensure_css_exists("obsidian-callouts.html", dry)
-    img_map = build_img_map(source_dir.parent)
+    img_map = build_img_map(Path(settings.config.VAULT_DIR))
     skipped = 0
 
     try:

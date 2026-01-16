@@ -1,12 +1,17 @@
-# path to the folder inside your vault for posts ready to publish.
-# note: all posts inside SOURCE_DIR will be published.
-# posts outside of this folder will not be published.
-SOURCE_DIR = "/User/me/path/to/my-vault/published"
+# Path to your Obsidian Vault.
+# This will be used as the scope within which images are searched.
+VAULT_DIR = "/User/me/path/to/obsidian-vault"
 
-# path to your Jekyll website's directory
-JEKYLL_DIR = "/Users/me/path/to/my/jekyll/project"
+# The folder in your vault that stores your posts for publication.
+# All posts inside this folder will be processed
+# unless you explicitly add "share: false" in the frontmatter.
+# Everything outside this folder will not be visible to this tool and won't be processed.
+SOURCE_FOLDER = "published"
 
-# The image folder in your Jekyll project folder
+# Path to your Jekyll website's directory.
+JEKYLL_DIR = "/Users/me/path/to/my/jekyll-project"
+
+# The image folder in your Jekyll project folder.
 IMG_FOLDER = "assets/images"
 
 
@@ -20,13 +25,18 @@ IMG_FOLDER = "assets/images"
 # MATH_RENDERING_MODE = "metadata"
 MATH_RENDERING_MODE = "inject_cdn"
 
-# Only switch this to "True" if you are using Jekyll 4.X or newer versions AND you use a baseurl.
-# This is due to a change of how {% link %} works after Jekyll 4.X
+# Only switch this to True if you are using Jekyll 4.X or newer versions
+# and you see duplicate baseurls in your internal links.
+# This is due to a change of how {% link %} works after Jekyll 4.0.
 PREVENT_DOUBLE_BASEURL = False
 
-# These are the default paths for Jekyll
+# These are the default paths for Jekyll.
+# Do not change this unless necessary.
 POST_FOLDER = "_posts"
 INCLUDES_FOLDER = "_includes"
+
+# You can also create a config_local.py to store your configs.
+# Those values will be prioritized by the tool.
 
 try:
     from config_local import *

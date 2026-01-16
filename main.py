@@ -62,7 +62,7 @@ def setup_parser():
 
 
 def make_paths():
-    source_dir = Path(user_config.SOURCE_DIR)
+    source_dir = Path(user_config.VAULT_DIR) / user_config.SOURCE_FOLDER
     post_dir, img_dir = [
         Path(user_config.JEKYLL_DIR) / folder
         for folder in (user_config.POST_FOLDER, user_config.IMG_FOLDER)
