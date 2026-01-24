@@ -1,6 +1,7 @@
 import sys
 import argparse
 from pathlib import Path
+
 import config as user_config
 from src.processor_core import pre_process, process_posts
 from src.cleanup import remove_stale_files
@@ -84,8 +85,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.dry and (args.cleanup or args.update):
-        parser.error(
-            "--dry cannot be combined with --cleanup or --update. --cleanup and --update have confirmation by default."
-        )
+        parser.error("--dry cannot be combined with --cleanup or --update.")
+
+    if args.only and (args.cleanup or args.update):
+        parser.error("--only cannot be combined with --cleanup or --update.")
 
     main(args)
