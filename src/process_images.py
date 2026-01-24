@@ -33,5 +33,7 @@ def _embedded_image_replacer(match, img_map, img_dir):
             updated_link += f'{{: width="{width}" }}'
         return updated_link
     else:
-        print(f"  |  Warning: Image target not found in Vault: {img_name}")
-        return f"![{width}]({img_name})"
+        print(
+            f"  |  Warning: Image target not found in Vault: {img_name}. Removed image tag."
+        )
+        return ""
