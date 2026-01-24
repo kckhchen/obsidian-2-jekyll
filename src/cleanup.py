@@ -1,17 +1,16 @@
 import re
 import frontmatter
 from pathlib import Path
-from .utils import get_dest_fpath
 
 
-def remove_stale_files(post_dir, post_dest, img_dest):
+def remove_stale_files(valid_files, post_dir, img_dir):
     print(f"\nStarting cleaning up process...")
-    print(f"Post folder: [ {post_dest} ]")
-    print(f"Image folder: [ {img_dest} ]\n")
-    jekyll_filenames, all_post_images = _scan_source_files(post_dir)
+    print(f"Post folder: [ {post_dir} ]")
+    print(f"Image folder: [ {img_dir} ]\n")
+    all_post_images = _get_post_images(valid_files)
     to_be_removed = _list_posts_to_be_removed(
-        post_dest, jekyll_filenames
-    ) + _list_imgs_to_be_removed(img_dest, all_post_images)
+        post_dir, valid_files
+    ) + _list_imgs_to_be_removed(img_dir, all_post_images)
 
     if to_be_removed:
         _remove_files(to_be_removed)
@@ -19,43 +18,35 @@ def remove_stale_files(post_dir, post_dest, img_dest):
         print("No stale files found. Nothing will be removed.")
 
 
-def _scan_source_files(post_dir):
-    jekyll_filenames = set()
+def _get_post_images(valid_files):
     all_images = set()
-
-    for source_fpath in post_dir.rglob("*.md"):
-        post = frontmatter.load(source_fpath)
-
-        if post.get("share", True) is False:
-            continue
-
-        dest_filename = get_dest_fpath(post, source_fpath)
-        jekyll_filenames.add(dest_filename)
-
+    for data in valid_files.values():
+        src = data["source_path"]
+        post = frontmatter.load(src)
         img_list = _scan_post_images(post)
         all_images.update(img_list)
+    return all_images
 
-    return jekyll_filenames, all_images
 
-
-def _list_posts_to_be_removed(post_dest, current_posts):
+def _list_posts_to_be_removed(post_dir, valid_files):
     to_be_removed = []
-    for f in Path(post_dest).iterdir():
+    current_posts = [data["dest_path"].name for data in valid_files.values()]
+    for f in Path(post_dir).iterdir():
         if f.is_file() and re.match(r"\d{4}-\d{2}-\d{2}-.+\.md", f.name):
             filename = f.name
             if filename not in current_posts:
-                to_be_removed.append(Path(post_dest) / filename)
+                to_be_removed.append(Path(post_dir) / filename)
     return to_be_removed
 
 
-def _list_imgs_to_be_removed(img_dest, all_post_images):
+def _list_imgs_to_be_removed(img_dir, all_post_images):
     img_ext = (".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp")
     to_be_removed = []
-    for img in Path(img_dest).iterdir():
+    for img in Path(img_dir).iterdir():
         if img.is_file() and img.suffix in img_ext:
             filename = img.name
             if filename not in all_post_images:
-                to_be_removed.append(Path(img_dest) / filename)
+                to_be_removed.append(Path(img_dir) / filename)
     return to_be_removed
 
 

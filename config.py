@@ -2,12 +2,6 @@
 # This will be used as the scope within which images are searched.
 VAULT_DIR = "/User/me/path/to/obsidian-vault"
 
-# The folder in your vault that stores your posts for publication.
-# All posts inside this folder will be processed
-# unless you explicitly add "share: false" in the frontmatter.
-# Everything outside this folder will not be visible to this tool and won't be processed.
-SOURCE_FOLDER = "published"
-
 # Path to your Jekyll website's directory.
 JEKYLL_DIR = "/Users/me/path/to/my/jekyll-project"
 

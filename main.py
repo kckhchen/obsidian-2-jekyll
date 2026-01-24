@@ -2,29 +2,38 @@ import sys
 import argparse
 from pathlib import Path
 import config as user_config
-from src.processor_core import process_posts
+from src.processor_core import pre_process, process_posts
 from src.cleanup import remove_stale_files
-from src.utils import validate_configs
+from src.utils import validate_configs, get_valid_files
 from src import settings
 
 
 def main(args):
     settings.init(user_config)
-    source_dir, post_dir, img_dir = make_paths()
+    vault_dir, post_dir, img_dir = make_paths()
     try:
-        validate_configs(source_dir, user_config)
+        validate_configs(vault_dir, user_config)
 
     except (FileNotFoundError, ValueError) as e:
         print(e)
         sys.exit(1)
 
+    valid_files = get_valid_files(vault_dir, post_dir)
+
     if not args.cleanup:
+        img_map = pre_process(vault_dir, post_dir, img_dir, args.dry)
         process_posts(
-            source_dir, post_dir, img_dir, args.dry, args.layout, args.force, args.only
+            valid_files,
+            img_map,
+            img_dir,
+            args.dry,
+            args.layout,
+            args.force,
+            args.only,
         )
 
     if args.update or args.cleanup:
-        remove_stale_files(source_dir, post_dir, img_dir)
+        remove_stale_files(valid_files, post_dir, img_dir)
 
 
 def setup_parser():
@@ -62,12 +71,12 @@ def setup_parser():
 
 
 def make_paths():
-    source_dir = Path(user_config.VAULT_DIR) / user_config.SOURCE_FOLDER
+    vault_dir = Path(user_config.VAULT_DIR)
     post_dir, img_dir = [
         Path(user_config.JEKYLL_DIR) / folder
         for folder in (user_config.POST_FOLDER, user_config.IMG_FOLDER)
     ]
-    return source_dir, post_dir, img_dir
+    return vault_dir, post_dir, img_dir
 
 
 if __name__ == "__main__":

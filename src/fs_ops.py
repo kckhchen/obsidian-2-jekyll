@@ -31,10 +31,10 @@ def ensure_css_exists(css_name, dry):
             css_path.write_text(CALLOUT_CSS, encoding="utf-8")
 
 
-def announce_paths(source_dir, post_dir, dry):
+def announce_paths(vault_dir, post_dir, dry):
     if dry:
         print("------------ DRY RUN MODE -------------")
         print("Operations will be printed but files won't be changed.\n")
 
-    print(f"Start processing posts in folder [ {source_dir} ]...")
+    print(f"Start processing posts in Vault [ {vault_dir} ]...")
     print(f"Destination path: [ {post_dir} ]\n")
