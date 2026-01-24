@@ -19,19 +19,19 @@ def pre_process(vault_dir, post_dir, img_dir, dry):
 
 
 def process_posts(valid_files, img_map, img_dir, dry, layout, force, only=None):
-    skipped = 0
-
     try:
+        skipped = 0
         for src, dest, post in sorted(_iter_files(valid_files, only)):
-            if _should_proceed(src, dest, force):
-                print(f"Processing: {Path(src.parent.name) / src.name} -> {dest.name}")
-                if not dry:
-                    post = _process_single_post(
-                        post, valid_files, img_map, img_dir, layout
-                    )
-                    frontmatter.dump(post, dest)
-            else:
+
+            if not _should_proceed(src, dest, force):
                 skipped += 1
+                continue
+
+            print(f"Processing: {Path(src.parent.name) / src.name} -> {dest.name}")
+
+            if not dry:
+                post = _process_single_post(post, valid_files, img_map, img_dir, layout)
+                frontmatter.dump(post, dest)
 
     except (ValueError, FileNotFoundError) as e:
         print(e)
