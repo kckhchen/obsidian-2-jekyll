@@ -67,8 +67,15 @@ def get_valid_files(vault_dir, post_dir):
                 f.seek(0)
                 post = frontmatter.load(f)
 
-                if post.get("share") is True:
+                if str(post.get("share")).lower() == "true":
                     dest_path = _get_dest_fpath(post, path, post_dir)
+
+                    if path.stem in valid_files:
+                        print(
+                            f"Warning: Duplicate filename found: '{path.stem}'. {path} will be skipped."
+                        )
+                        continue
+
                     valid_files[path.stem] = {
                         "source_path": path,
                         "dest_path": dest_path,
