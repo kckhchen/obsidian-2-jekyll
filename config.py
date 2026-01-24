@@ -1,13 +1,8 @@
 # Path to your Obsidian Vault.
-# This will be used as the scope within which images are searched.
 VAULT_DIR = "/User/me/path/to/obsidian-vault"
 
 # Path to your Jekyll website's directory.
 JEKYLL_DIR = "/Users/me/path/to/my/jekyll-project"
-
-# The image folder in your Jekyll project folder.
-IMG_FOLDER = "assets/images"
-
 
 # ---------------- More Settings -----------------------
 
@@ -28,6 +23,7 @@ PREVENT_DOUBLE_BASEURL = False
 # Do not change this unless necessary.
 POST_FOLDER = "_posts"
 INCLUDES_FOLDER = "_includes"
+IMG_FOLDER = "assets/images"
 
 # You can also create a config_local.py to store your configs.
 # Those values will be prioritized by the tool.
