@@ -1,3 +1,4 @@
+import re
 import frontmatter
 from pathlib import Path
 
@@ -58,7 +59,7 @@ def _process_single_post(post, valid_files, img_map, img_dir, layout):
     post = process_wikilinks(post, valid_files)
     post = process_callouts(post)
 
-    post = unshield(post, math_blocks)
+    post = unshield(post, math_blocks, lambda x: re.sub(r"\|", r" \\vert ", x))
     post = process_math(post)
 
     post = unshield(post, url_blocks)

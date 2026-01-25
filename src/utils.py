@@ -48,8 +48,10 @@ def shield_content(post, mode):
     return post, stash
 
 
-def unshield(post, stash):
+def unshield(post, stash, convert_func=None):
     for key, original_text in stash.items():
+        if convert_func:
+            original_text = convert_func(original_text)
         post.content = post.content.replace(key, original_text)
     return post
 
