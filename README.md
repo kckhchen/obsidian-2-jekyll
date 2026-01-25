@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)
 
-Make your Obsidian articles Jekyll-ready.
+A theme-agnostic tool that makes your Obsidian articles Jekyll-ready.
 
 This is a tool build with python that scans your obsidian vault, formats your articles to make them compatible with Jekyll's requirements, and saves them to your Jekyll project folder, waiting to be published, so you can keep your articles clean, while Jekyll gets its preferred flavor.
 
@@ -50,16 +50,16 @@ cd obsidian-2-jekyll
 #### 2. Configure `config.py` to locate your vault:
 
 
-| Variable              | Description                                 | Example                      |
-| --------------------- | ------------------------------------------- | ---------------------------- |
-| `VAULT_DIR`          | Path to your Obsidian Vault      | `/Users/me/Obsidian-Vault` |
-| `JEKYLL_DIR`          | Your Jekyll project folder                  | `/Users/me/Jekyll-Website`           |
+| Variable      | Description                  | Example                     |
+| ------------- | ---------------------------- | --------------------------- |
+| `VAULT_DIR`   | Path to your Obsidian Vault  | `/Users/me/Obsidian-Vault`  |
+| `JEKYLL_DIR`  | Your Jekyll project folder   | `/Users/me/Jekyll-Website`  |
 
 
 ```python
 # config.py
-VAULT_DIR = "/Users/me/Obsidian-Vault"     # Path to Your Vault
-JEKYLL_DIR = "/Users/me/Jekyll-Website"            # Your Site
+VAULT_DIR = "/Users/me/Obsidian-Vault"      # Path to Your Vault Folder
+JEKYLL_DIR = "/Users/me/Jekyll-Website"     # Path to Your Jekyll Folder
 ```
 
 #### 3. Setup Your Posts
