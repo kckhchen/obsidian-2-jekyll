@@ -6,7 +6,7 @@ from .utils import slugify
 
 
 def process_wikilinks(post, valid_files):
-    pattern = r"(?<!\!)\[\[(?P<wikilink>[^|\]]+)(?:\|(?P<wiki_display>[^\]]+))?\]\]|(?<!\!)\[(?P<md_display>[^\]]*)\]\((?P<mdlink>[^\)]+)\)"
+    pattern = r"(?<!\!)\[\[(?P<wikilink>[^|\]]+)(?:\|(?P<wiki_display>[^\]]*))?\]\]|(?<!\!)\[(?P<md_display>[^\]]*)\]\((?P<mdlink>[^\)]+)\)"
     anchor_pattern = r"(^|\s)\^(?P<anchor>[a-zA-Z0-9-]+)(?=\s|$)"
 
     post.content = re.sub(
