@@ -19,3 +19,11 @@ def strip_comments(post):
     comment_pattern = r"%%.*?%%"
     post.content = re.sub(comment_pattern, "", post.content, flags=re.DOTALL)
     return post
+
+
+def process_highlights(post):
+    highlight_pattern = r"==(.*?)=="
+    post.content = re.sub(
+        highlight_pattern, "<mark>" + r"\g<1>" + "</mark>", post.content
+    )
+    return post

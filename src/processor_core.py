@@ -4,7 +4,7 @@ from pathlib import Path
 
 from .utils import shield_content, unshield
 from .fs_ops import announce_paths, setup_dir, ensure_css_exists, build_img_map
-from .text_cleanup import process_h1, strip_comments
+from .text_cleanup import process_h1, strip_comments, process_highlights
 from .process_math import process_math
 from .process_images import process_embedded_images
 from .process_links import process_wikilinks
@@ -55,6 +55,7 @@ def _process_single_post(post, valid_files, img_map, img_dir, layout):
 
     post = process_h1(post, layout)
     post = strip_comments(post)
+    post = process_highlights(post)
     post = process_embedded_images(post, img_map, img_dir)
     post = process_wikilinks(post, valid_files)
     post = process_callouts(post)
