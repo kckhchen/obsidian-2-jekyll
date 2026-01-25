@@ -1,60 +1,32 @@
 import re
+from .icons import ICONS
 
-ICONS = {
-    "note": "pen",
-    "info": "info",
-    "todo": "circle-check",
-    "question": "circle-question-mark",
-    "help": "circle-question-mark",
-    "faq": "circle-question-mark",
-    "warning": "circle-alert",
-    "caution": "circle-alert",
-    "attention": "circle-alert",
-    "failure": "x",
-    "fail": "x",
-    "missing": "x",
-    "danger": "zap",
-    "error": "zap",
-    "bug": "bug",
-    "abstract": "clipboard-list",
-    "summary": "clipboard-list",
-    "tldr": "clipboard-list",
-    "tip": "flame",
-    "hint": "flame",
-    "important": "flame",
-    "success": "check",
-    "check": "check",
-    "done": "check",
-    "example": "list",
-    "quote": "quote",
-    "cite": "quote",
-    "others": "book-check",
-}
+
+CALLOUT_PATTERN = re.compile(
+    r"^> \[!\s*(?P<ctype>\w+)\](?P<collapse>[+\-]?)(?P<title>.*?)\n(?P<body>(?:^>.*\n?)*)",
+    re.MULTILINE,
+)
 
 
 def process_callouts(post):
-    callout_pattern = re.compile(
-        r"^> \[!\s*(?P<ctype>\w+)\](?P<collapse>[+\-]?)(?P<title>.*?)\n(?P<body>(?:^>.*\n?)*)",
-        re.MULTILINE,
-    )
+    new_content, count = CALLOUT_PATTERN.subn(_callout_replacer, post.content)
 
-    if _needs_callout(post.content, callout_pattern):
-        post.content = callout_pattern.sub(_callout_replacer, post.content)
+    if count > 0:
+        post.content = new_content
         post.content += "\n\n{% include obsidian-callouts.html %}"
 
     return post
 
 
 def _callout_replacer(match):
-    callout_type = match.group("ctype").lower()
+    ctype = match.group("ctype").lower()
     collapse = match.group("collapse")
     title = match.group("title").strip()
     body = re.sub(r"^>\s?", "", match.group("body"), flags=re.MULTILINE)
-    return _render_callout(callout_type, title, body, collapse)
 
+    body = CALLOUT_PATTERN.sub(_callout_replacer, body)
 
-def _needs_callout(content, callout_pattern):
-    return bool(re.search(callout_pattern, content))
+    return _render_callout(ctype, title, body, collapse)
 
 
 def _render_callout(callout_type, title, body, collapse):
@@ -70,6 +42,4 @@ def _render_callout(callout_type, title, body, collapse):
         content = f"""<div class="callout-title"><i class="callout-icon" data-lucide="{icon}"></i>{title}</div>
 {body}"""
 
-    return (
-        f'<div class="callout callout-{callout_type}" markdown="1">\n{content}\n</div>'
-    )
+    return f'<div class="callout callout-{callout_type}" markdown="1">{content}</div>'
