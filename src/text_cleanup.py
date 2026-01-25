@@ -27,3 +27,9 @@ def process_highlights(post):
         highlight_pattern, "<mark>" + r"\g<1>" + "</mark>", post.content
     )
     return post
+
+
+def ensure_table_spacing(post):
+    pattern = r"(?<!\n)\n(\|.*\|\n\|[\s:-]+\|)"
+    post.content = re.sub(pattern, r"\n\n\1", post.content)
+    return post
