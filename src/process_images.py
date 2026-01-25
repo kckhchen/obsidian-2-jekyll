@@ -5,7 +5,7 @@ from . import settings
 
 
 def process_embedded_images(post, img_map, img_dir):
-    pattern = r"!\[\[(?P<wikilink>[^|\]]+)(?:\|(?P<wiki_width>\d+)[^\]]*)?\]\]|!\[(?P<md_width>\d*)[^\]]*\]\((?P<mdlink>[^)]+)\)"
+    pattern = r"!\[\[(?P<wikilink>[^|\]]+?)(?:\\?\|(?P<wiki_width>\d+)[^\]]*)?\]\]|!\[(?P<md_width>\d*)[^\]]*\]\((?P<mdlink>[^)]+)\)"
 
     post.content = re.sub(
         pattern, lambda m: _embedded_image_replacer(m, img_map, img_dir), post.content
