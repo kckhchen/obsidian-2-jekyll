@@ -1,6 +1,15 @@
 import re
 
 
+def text_cleanup(post, layout="post"):
+    post = process_h1(post, layout)
+    post = strip_comments(post)
+    post = process_highlights(post)
+    post = ensure_table_spacing(post)
+
+    return post
+
+
 def process_h1(post, layout="post"):
     post["layout"] = post.get("layout") or layout
     h1_pattern = r"^\s*#\s+(?P<h1>.+?)$"
