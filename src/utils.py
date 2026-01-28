@@ -11,7 +11,7 @@ def get_creation_time(filepath):
 
 
 def slugify(name):
-    return re.sub(r"[^a-zA-Z0-9.]+", "-", name).strip("-").lower()
+    return re.sub(r"[^\w.]+", "-", name).strip("-").lower()
 
 
 def validate_configs(vault_dir, config):
