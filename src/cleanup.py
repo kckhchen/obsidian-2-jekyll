@@ -36,7 +36,7 @@ def _list_posts_to_be_removed(post_dir, valid_files):
     current_posts = [data["dest_path"].name for data in valid_files.values()]
 
     for f in Path(post_dir).iterdir():
-        if f.is_file() and re.match(r"\d{4}-\d{2}-\d{2}-.+\.md", f.name):
+        if f.is_file() and re.match(r"\d{4}-\d{2}-\d{2}-.+\.(md|markdown)", f.name):
             filename = f.name
 
             if filename not in current_posts:
