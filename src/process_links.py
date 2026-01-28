@@ -33,6 +33,7 @@ def _link_replacer(match, valid_files):
     target = match.group("wikilink") or match.group("mdlink")
     target = target.strip()
     display = match.group("wiki_display") or match.group("md_display") or target
+    display = display.strip("#")
 
     # skip shielding placeholders
     if re.match(r"^&&\w+_\d+&&$", target) and match.group("mdlink"):
