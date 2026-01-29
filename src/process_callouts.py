@@ -36,10 +36,10 @@ def _render_callout(callout_type, title, body, collapse):
     open_tag = tag_map.get(collapse)
     if open_tag:
         content = f"""<{open_tag} markdown="1">
-<summary class="callout-title"><i class="callout-icon" data-lucide="{icon}"></i>{title}</summary>
+<summary class="callout-title"><i class="callout-icon" data-lucide="{icon}"></i><span class="callout-title-text">{title}</span></summary>
 {body}</details>"""
     else:
-        content = f"""<div class="callout-title"><i class="callout-icon" data-lucide="{icon}"></i>{title}</div>
+        content = f"""<div class="callout-title"><i class="callout-icon" data-lucide="{icon}"></i><span class="callout-title-text">{title}</span></div>
 {body}"""
 
     return f'<div class="callout callout-{callout_type}" markdown="1">{content}</div>'
