@@ -65,6 +65,23 @@ class TestValidation:
             validate_configs(tmp_path, mock_config)
         assert "Invalid MATH_RENDERING_MODE" in str(exc.value)
 
+    def test_explodes_if_config_is_empty(self, tmp_path):
+        class EmptyConfig:
+            pass
+
+        with pytest.raises(AttributeError, match="missing required configurations"):
+            validate_configs(tmp_path, EmptyConfig)
+
+    def test_explodes_if_vault_is_a_file(self, tmp_path):
+        not_a_dir = tmp_path / "my_file.txt"
+        not_a_dir.touch()
+
+        class GoodConfig:
+            MATH_RENDERING_MODE = "inject_cdn"
+
+        with pytest.raises(NotADirectoryError):
+            validate_configs(not_a_dir, GoodConfig)
+
 
 class TestShielding:
 
