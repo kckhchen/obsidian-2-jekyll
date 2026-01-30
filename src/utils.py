@@ -14,16 +14,46 @@ def slugify(name):
     return re.sub(r"[^\w.]+", "-", name).strip("-").lower()
 
 
-def validate_configs(vault_dir, config):
-    valid_modes = ["metadata", "inject_cdn"]
-    mode = config.MATH_RENDERING_MODE
-    if not vault_dir.exists():
-        raise FileNotFoundError(f"Error: Vault '{vault_dir}' not found.")
+# def validate_configs(vault_dir, config):
+#     valid_modes = ["metadata", "inject_cdn"]
+#     mode = config.MATH_RENDERING_MODE
+#     if not vault_dir.exists():
+#         raise FileNotFoundError(f"Error: Vault '{vault_dir}' not found.")
 
-    if mode not in valid_modes:
+#     if mode not in valid_modes:
+#         raise ValueError(
+#             f"Invalid MATH_RENDERING_MODE: '{config.MATH_RENDERING_MODE}'. "
+#             f"Must be one of: {valid_modes}."
+#         )
+
+
+def validate_configs(vault_dir, config):
+    REQUIRED_KEYS = [
+        "MATH_RENDERING_MODE",
+        "IMG_FOLDER",
+        "JEKYLL_DIR",
+        "INCLUDES_FOLDER",
+    ]
+    VALID_MODES = {"metadata", "inject_cdn"}
+
+    if not vault_dir.exists():
+        raise FileNotFoundError(f"CRITICAL: Vault path '{vault_dir}' does not exist.")
+
+    if not vault_dir.is_dir():
+        raise NotADirectoryError(
+            f"CRITICAL: Vault path '{vault_dir}' is a file, expected a directory."
+        )
+
+    missing_keys = [key for key in REQUIRED_KEYS if not hasattr(config, key)]
+    if missing_keys:
+        raise AttributeError(
+            f"CRITICAL: Your settings.py is missing required configurations: {missing_keys}"
+        )
+
+    mode = config.MATH_RENDERING_MODE
+    if mode not in VALID_MODES:
         raise ValueError(
-            f"Invalid MATH_RENDERING_MODE: '{config.MATH_RENDERING_MODE}'. "
-            f"Must be one of: {valid_modes}."
+            f"Invalid MATH_RENDERING_MODE: '{mode}'. " f"Must be one of: {VALID_MODES}."
         )
 
 
