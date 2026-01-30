@@ -26,10 +26,6 @@ def valid_files_map():
     }
 
 
-def _postify(content):
-    return frontmatter.Post(content)
-
-
 class TestProcessWikilinks:
 
     @pytest.mark.parametrize(
@@ -94,7 +90,9 @@ class TestProcessWikilinks:
             ),
         ],
     )
-    def test_process_wikilinks_scenarios(self, input_text, expected, valid_files_map):
-        post = _postify(input_text)
+    def test_process_wikilinks_scenarios(
+        self, input_text, expected, valid_files_map, postify
+    ):
+        post = postify(input_text)
         result_post = process_wikilinks(post, valid_files_map)
         assert result_post.content == expected
