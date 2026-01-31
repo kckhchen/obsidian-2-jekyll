@@ -14,19 +14,6 @@ def slugify(name):
     return re.sub(r"[^\w.]+", "-", name).strip("-").lower()
 
 
-# def validate_configs(vault_dir, config):
-#     valid_modes = ["metadata", "inject_cdn"]
-#     mode = config.MATH_RENDERING_MODE
-#     if not vault_dir.exists():
-#         raise FileNotFoundError(f"Error: Vault '{vault_dir}' not found.")
-
-#     if mode not in valid_modes:
-#         raise ValueError(
-#             f"Invalid MATH_RENDERING_MODE: '{config.MATH_RENDERING_MODE}'. "
-#             f"Must be one of: {valid_modes}."
-#         )
-
-
 def validate_configs(vault_dir, config):
     REQUIRED_KEYS = [
         "MATH_RENDERING_MODE",
