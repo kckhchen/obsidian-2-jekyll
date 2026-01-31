@@ -23,16 +23,18 @@ def process_posts(valid_files, img_map, img_dir, dry, layout, force, only=None):
     try:
         skipped = 0
         for src, dest, post in sorted(_iter_files(valid_files, only)):
+            reason = _should_proceed(src, dest, force)
 
-            if not _should_proceed(src, dest, force):
+            if reason:
+                print(f"{reason}: {Path(src.parent.name) / src.name} -> {dest.name}")
+
+                if not dry:
+                    post = _process_single_post(
+                        post, valid_files, img_map, img_dir, layout
+                    )
+                    frontmatter.dump(post, dest)
+            else:
                 skipped += 1
-                continue
-
-            print(f"Processing: {Path(src.parent.name) / src.name} -> {dest.name}")
-
-            if not dry:
-                post = _process_single_post(post, valid_files, img_map, img_dir, layout)
-                frontmatter.dump(post, dest)
 
     except (ValueError, FileNotFoundError) as e:
         print(e)
@@ -42,10 +44,16 @@ def process_posts(valid_files, img_map, img_dir, dry, layout, force, only=None):
 
 
 def _should_proceed(src, dest, force):
-    if not dest.exists() or force:
-        return True
+    if force:
+        return "Force Updating"
 
-    return src.stat().st_mtime > dest.stat().st_mtime
+    if not dest.exists():
+        return "Creating"
+
+    if src.stat().st_mtime > dest.stat().st_mtime:
+        return "Updating"
+
+    return False
 
 
 def _process_single_post(post, valid_files, img_map, img_dir, layout):
