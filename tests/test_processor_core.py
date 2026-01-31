@@ -11,7 +11,7 @@ def test_should_proceed_logic(tmp_path):
     dest = tmp_path / "dest.md"
     src.touch()
 
-    assert _should_proceed(src, dest, force=False) is True
+    assert _should_proceed(src, dest, force=False) == "Creating"
 
     dest.touch()
 
@@ -19,10 +19,10 @@ def test_should_proceed_logic(tmp_path):
     os.utime(dest, (200, 200))
     assert _should_proceed(src, dest, force=False) is False
 
-    assert _should_proceed(src, dest, force=True) is True
+    assert _should_proceed(src, dest, force=True) == "Force Updating"
 
     os.utime(src, (300, 300))
-    assert _should_proceed(src, dest, force=False) is True
+    assert _should_proceed(src, dest, force=False) == "Updating"
 
 
 @pytest.fixture
@@ -73,7 +73,7 @@ def test_process_posts_flow(mock_dump, mock_process, mock_proceed, mock_iter, ca
         (src3, dest3, "post3"),
     ]
 
-    mock_proceed.side_effect = [False, True, True]
+    mock_proceed.side_effect = [False, "Creating", "Creating"]
 
     process_posts({}, {}, Path("."), False, "post", False)
 
@@ -83,7 +83,7 @@ def test_process_posts_flow(mock_dump, mock_process, mock_proceed, mock_iter, ca
 
     captured = capsys.readouterr()
     assert "Skipped 1 unchanged files" in captured.out
-    assert "Processing: s2" in captured.out
+    assert "Creating: s2" in captured.out
 
 
 def test_process_posts_handles_errors_gracefully(capsys):
