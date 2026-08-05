@@ -61,7 +61,9 @@ def shield_content(post, mode):
     if mode == "code":
         pattern = r"(```[\s\S]*?```|~~~[\s\S]*?~~~|`[^`\n]+`)"
     elif mode == "math":
-        pattern = rf"(\$\$[\s\S]*?\$\$|{INLINE_MATH}"
+        pattern = (
+            r"(\$\$[\s\S]*?\$\$|(?<!\\|\$)\$(?!\s|\$)([^$]+?)(?<!\\|\$|\s)\$(?!\$))"
+        )
     elif mode == "url":
         pattern = r"https?://[^)\s]+"
     else:
