@@ -89,10 +89,10 @@ class TestShielding:
 
         post, stash = shield_content(post, mode="code")
 
-        assert "\x00CODE_0\x00" in post.content
+        assert "\x00FENCE_0\x00" in post.content
         assert "print(1)" not in post.content
 
-        assert stash["\x00CODE_0\x00"] == "```python\nprint(1)\n```"
+        assert stash["\x00FENCE_0\x00"] == "```python\nprint(1)\n```"
 
     def test_shield_urls(self, postify):
         content = "Check https://google.com now."
