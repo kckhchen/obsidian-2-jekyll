@@ -49,8 +49,8 @@ class TestProcessWikilinks:
                 id="standard_md_links",
             ),
             pytest.param(
-                "[display](&&URL_1&&)",
-                "[display](&&URL_1&&)",
+                "[display](\x00URL_1\x00)",
+                "[display](\x00URL_1\x00)",
                 id="ignores_shielded_content",
             ),
             pytest.param(
