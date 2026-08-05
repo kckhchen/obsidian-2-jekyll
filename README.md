@@ -32,10 +32,10 @@ This is a tool build with python that scans your obsidian vault, formats your ar
 ### Prerequisites
 
 - Python 3.8+
-- The `python-frontmatter` package. You can install it with:
+- The `python-frontmatter` package. Install with:
 
 ```
-pip install python-frontmatter
+pip install -r requirements.txt
 ```
 
 ### Run the Tool
@@ -47,20 +47,36 @@ git clone https://github.com/kckhchen/obsidian-2-jekyll.git
 cd obsidian-2-jekyll
 ```
 
-#### 2. Configure `config.py` to locate your vault:
+#### 2. Configure your paths
 
+Create a `config_local.py` in the project root. It is git-ignored, so your
+personal paths stay out of version control and `git pull` will never conflict.
 
-| Variable      | Description                  | Example                     |
-| ------------- | ---------------------------- | --------------------------- |
-| `VAULT_DIR`   | Path to your Obsidian Vault  | `/Users/me/Obsidian-Vault`  |
-| `JEKYLL_DIR`  | Your Jekyll project folder   | `/Users/me/Jekyll-Website`  |
+```bash
+cp config.py config_local.py
+```
 
+Then edit `config_local.py`:
+
+| Variable     | Description                 | Example                    |
+| ------------ | --------------------------- | -------------------------- |
+| `VAULT_DIR`  | Path to your Obsidian Vault | `/Users/me/Obsidian-Vault` |
+| `JEKYLL_DIR` | Your Jekyll project folder  | `/Users/me/Jekyll-Website` |
 
 ```python
-# config.py
+# config_local.py
 VAULT_DIR = "/Users/me/Obsidian-Vault"      # Path to Your Vault Folder
 JEKYLL_DIR = "/Users/me/Jekyll-Website"     # Path to Your Jekyll Folder
 ```
+
+Any value set in `config_local.py` overrides the matching one in `config.py`.
+You only need to include the settings you actually want to change.
+
+> [!TIP]
+> **Don't edit `config.py` directly.** It is tracked by git and receives new
+> settings as the tool evolves, so local edits there will collide the next time
+> you `git pull`. Keeping your paths in `config_local.py` lets you update with a
+> plain `git pull` forever.
 
 #### 3. Setup Your Posts
 
