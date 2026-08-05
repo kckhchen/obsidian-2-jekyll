@@ -1,13 +1,13 @@
 from pathlib import Path
 from .templates import CALLOUT_CSS
 from . import settings
+from .patterns import IMG_EXT
 
 
 def build_img_map(dir):
-    extensions = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp"}
     img_map = {}
     for p in dir.rglob("*"):
-        if p.is_file() and p.suffix.lower() in extensions:
+        if p.is_file() and p.suffix.lower() in IMG_EXT:
             img_map[p.name.lower()] = p
 
     return img_map

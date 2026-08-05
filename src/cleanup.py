@@ -2,6 +2,8 @@ import re
 import frontmatter
 from pathlib import Path
 
+from .patterns import IMG_EXT
+
 
 def remove_stale_files(valid_files, post_dir, img_dir):
     print(f"\nStarting cleaning up process...")
@@ -46,11 +48,10 @@ def _list_posts_to_be_removed(post_dir, valid_files):
 
 
 def _list_imgs_to_be_removed(img_dir, all_post_images):
-    img_ext = (".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp")
     to_be_removed = []
 
     for img in Path(img_dir).iterdir():
-        if img.is_file() and img.suffix in img_ext:
+        if img.is_file() and img.suffix in IMG_EXT:
             filename = img.name
 
             if filename not in all_post_images:

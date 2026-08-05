@@ -2,6 +2,7 @@ import re
 import shutil
 from pathlib import Path
 from . import settings
+from .patterns import IMG_EXT
 
 
 def process_embedded_images(post, img_map, img_dir):
@@ -14,14 +15,13 @@ def process_embedded_images(post, img_map, img_dir):
 
 
 def _embedded_image_replacer(match, img_map, img_dir):
-    img_ext = (".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp")
     img_folder = Path(settings.config.IMG_FOLDER)
 
     img_name = match.group("wikilink") or match.group("mdlink")
     img_name = img_name.strip()
     width = match.group("wiki_width") or match.group("md_width") or ""
 
-    if Path(img_name).suffix.lower() not in img_ext:
+    if Path(img_name).suffix.lower() not in IMG_EXT:
         return f"![{width}]({img_name})"
 
     if img_name.lower() in img_map:
