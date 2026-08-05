@@ -92,7 +92,10 @@ Embedded images `![[img.png|width]]` or `![width](img.png)`, given that the actu
 
 Also, all images associated with any of the processed posts will be copied to the dedicated image folder, while other irrelevant images will not be copied. This keeps your destination folder clean and tidy. Stale images will be cleaned up by `--cleanup` and `--update`, if the associated post is unpublished and no other posts are using the image.
 
-If the image cannot be found in the vault, the embed link will be removed and a warning will be raised.
+If the image cannot be found in the vault, the embed link will be kept as-as and a warning will be raised. This is to induce an error raising on Jekyll's side to prevent silent fails. 
+
+> [!IMPORTANT]
+> Please avoid having multiple images with the exact same names inside the vault as the script scans the entire vault for images.
 
 ### 4. Updates Internal Links
 
