@@ -31,7 +31,7 @@ def strip_comments(post):
 
 
 def process_highlights(post):
-    highlight_pattern = r"==(.*?)=="
+    highlight_pattern = r"==(?![\s=])(.+?)(?<![\s=])=="
     post.content = re.sub(
         highlight_pattern, "<mark>" + r"\g<1>" + "</mark>", post.content
     )
