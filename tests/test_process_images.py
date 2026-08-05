@@ -137,3 +137,31 @@ class TestProcessEmbeddedImages:
 
         assert "My Cool Image.png" in result.content
         assert mock_shutil.called
+
+
+class TestProcessAltText:
+    @pytest.mark.parametrize(
+        "md, expected_alt, expected_attrs",
+        [
+            pytest.param("![[image.png]]", "", ""),
+            pytest.param("![[image.png|300]]", "", 'width="300"'),
+            pytest.param("![[image.png|300x200]]", "", 'width="300" height="200"'),
+            pytest.param("![alt text](image.png)", "alt text", ""),
+            pytest.param("![alt text|400](image.png)", "alt text", 'width="400"'),
+            pytest.param("![400](image.png)", "", 'width="400"'),
+            pytest.param("![](image.png)", "", ""),
+        ],
+    )
+    def test_alt_and_size(
+        self,
+        md,
+        expected_alt,
+        expected_attrs,
+        postify,
+        img_map,
+        mock_settings,
+        mock_shutil,
+    ):
+        out = process_embedded_images(postify(md), img_map, Path("/tmp")).content
+        assert out.startswith(f"![{expected_alt}](")
+        assert expected_attrs in out
