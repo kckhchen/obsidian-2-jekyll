@@ -48,7 +48,7 @@ def setup_parser():
         "-u",
         "--update",
         action="store_true",
-        help="Update posts and clean up stale posts adn images.",
+        help="Update posts and clean up stale posts and images.",
     )
 
     parser.add_argument(
@@ -58,7 +58,7 @@ def setup_parser():
         "-f",
         "--force",
         action="store_true",
-        help="Processes every files regardless of change states.",
+        help="Processes every file regardless of change states.",
     )
     parser.add_argument(
         "--layout",
