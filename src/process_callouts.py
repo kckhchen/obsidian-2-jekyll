@@ -50,4 +50,4 @@ def _render_callout(callout_type, title, body, collapse):
         content = f"""<div class="callout-title"><i class="callout-icon" data-lucide="{icon}"></i><span class="callout-title-text">{title}</span></div>
 {body}"""
 
-    return f'<div class="callout callout-{callout_type}" markdown="1">{content}</div>'
+    return f'<div class="callout callout-{callout_type}" markdown="1">{content}\n</div>'
