@@ -50,8 +50,10 @@ def validate_configs(vault_dir, config):
 def shield_content(post, mode):
 
     def _replacer(match):
-        key = f"\x00{mode.upper()}_{len(stash)}\x00"
-        stash[key] = match.group(0)
+        text = match.group(0)
+        kind = "FENCE" if text[:3] in ("```", "~~~") else mode.upper()
+        key = f"\x00{kind}_{len(stash)}\x00"
+        stash[key] = text
         return key
 
     if mode == "code":

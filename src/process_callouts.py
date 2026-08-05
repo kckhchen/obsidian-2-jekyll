@@ -6,7 +6,7 @@ CALLOUT_PATTERN = re.compile(
     r"^> \[!\s*(?P<ctype>\w+)\](?P<collapse>[+\-]?)(?P<title>.*?)\n(?P<body>(?:^>.*\n?)*)",
     re.MULTILINE,
 )
-FENCE_IN_BODY = re.compile(r"^>\s*(```|~~~)", re.MULTILINE)
+FENCE_IN_BODY = re.compile(r"\x00FENCE_\d+\x00")
 
 
 def process_callouts(post):
