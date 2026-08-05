@@ -1,10 +1,9 @@
 import re
 from datetime import datetime
 from pathlib import Path
-import yaml
-import frontmatter
 
-from .patterns import INLINE_MATH
+import frontmatter
+import yaml
 
 local_tz = datetime.now().astimezone().tzinfo
 
