@@ -1,6 +1,7 @@
 import re
-import frontmatter
 from pathlib import Path
+
+import frontmatter
 
 from .patterns import IMG_EXT
 

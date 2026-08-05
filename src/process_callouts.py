@@ -1,4 +1,5 @@
 import re
+
 from .icons import ICONS
 
 CALLOUT_PATTERN = re.compile(

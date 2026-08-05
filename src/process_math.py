@@ -1,4 +1,5 @@
 import re
+
 from . import settings
 from .patterns import INLINE_MATH
 

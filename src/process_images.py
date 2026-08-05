@@ -1,6 +1,7 @@
 import re
 import shutil
 from pathlib import Path
+
 from . import settings
 from .patterns import IMG_EXT
 

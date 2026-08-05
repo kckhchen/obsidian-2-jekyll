@@ -1,12 +1,12 @@
-import sys
 import argparse
+import sys
 from pathlib import Path
 
 import config as user_config
-from src.processor_core import pre_process, process_posts
-from src.cleanup import remove_stale_files
-from src.utils import validate_configs, get_valid_files
 from src import settings
+from src.cleanup import remove_stale_files
+from src.processor_core import pre_process, process_posts
+from src.utils import get_valid_files, validate_configs
 
 
 def main(args):

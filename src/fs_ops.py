@@ -1,7 +1,8 @@
 from pathlib import Path
-from .templates import CALLOUT_CSS
+
 from . import settings
 from .patterns import IMG_EXT
+from .templates import CALLOUT_CSS
 
 
 def build_img_map(dir):
