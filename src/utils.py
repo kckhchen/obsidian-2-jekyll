@@ -1,13 +1,16 @@
 import re
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+
 import frontmatter
+
+local_tz = datetime.now().astimezone().tzinfo
 
 
 def get_creation_time(filepath):
     stat = Path(filepath).stat()
     timestamp = getattr(stat, "st_birthtime", getattr(stat, "st_ctime", stat.st_mtime))
-    return datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d")
+    return datetime.fromtimestamp(timestamp, tz=local_tz).strftime("%Y-%m-%d")
 
 
 def slugify(name):
@@ -80,36 +83,31 @@ def get_valid_files(vault_dir, post_dir):
         if any(part.startswith(".") for part in path.relative_to(vault_dir).parts):
             continue
 
-        try:
-            if path.suffix not in (".md", ".markdown"):
-                # more robust check here
+        if path.suffix not in (".md", ".markdown"):
+            # more robust check here
+            continue
+
+        with open(path, "r", encoding="utf-8") as f:
+
+            if f.readline().strip() != "---":
                 continue
 
-            with open(path, "r", encoding="utf-8") as f:
+            f.seek(0)
+            post = frontmatter.load(f)
 
-                if f.readline().strip() != "---":
+            if str(post.get("share")).lower() == "true":
+                dest_path = _get_dest_fpath(post, path, post_dir)
+
+                if path.stem in valid_files:
+                    print(
+                        f"Warning: Duplicate filename found: '{path.stem}'. {path} will be skipped."
+                    )
                     continue
 
-                f.seek(0)
-                post = frontmatter.load(f)
-
-                if str(post.get("share")).lower() == "true":
-                    dest_path = _get_dest_fpath(post, path, post_dir)
-
-                    if path.stem in valid_files:
-                        print(
-                            f"Warning: Duplicate filename found: '{path.stem}'. {path} will be skipped."
-                        )
-                        continue
-
-                    valid_files[path.stem] = {
-                        "source_path": path,
-                        "dest_path": dest_path,
-                    }
-
-        except Exception as e:
-            print(f"Warning: Could not process '{path.name}'. {e}")
-            continue
+                valid_files[path.stem] = {
+                    "source_path": path,
+                    "dest_path": dest_path,
+                }
 
     return valid_files
 
