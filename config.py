@@ -27,7 +27,7 @@ IMG_FOLDER = "assets/images/obsidian"
 
 # You can also create a config_local.py to store your configs.
 # Those values will be prioritized by the tool.
-
+# --- Do not copy the lines below into config_local.py ---
 try:
     from config_local import *
 except ImportError:
