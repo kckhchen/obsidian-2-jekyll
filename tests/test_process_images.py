@@ -99,7 +99,7 @@ class TestProcessEmbeddedImages:
 
         assert str(dest_dir) in str(mock_shutil.call_args)
 
-    def test_removes_tag_if_image_not_in_map(
+    def test_keeps_tag_if_image_not_in_map(
         self, postify, img_map, mock_settings, capsys
     ):
         post = postify("![[missing_file.png]]")
@@ -107,7 +107,7 @@ class TestProcessEmbeddedImages:
 
         result = process_embedded_images(post, img_map, dest_dir)
 
-        assert result.content.strip() == ""
+        assert result.content.strip() == "![[missing_file.png]]"
 
         captured = capsys.readouterr()
         assert "Warning: Image target not found" in captured.out
