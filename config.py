@@ -23,7 +23,7 @@ PREVENT_DOUBLE_BASEURL = False
 # Do not change this unless necessary.
 POST_FOLDER = "_posts"
 INCLUDES_FOLDER = "_includes"
-IMG_FOLDER = "assets/images"
+IMG_FOLDER = "assets/images/obsidian"
 
 # You can also create a config_local.py to store your configs.
 # Those values will be prioritized by the tool.
