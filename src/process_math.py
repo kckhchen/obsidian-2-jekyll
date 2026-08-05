@@ -1,12 +1,12 @@
 import re
 from . import settings
+from .patterns import INLINE_MATH
 
 
 def process_math(post):
     if _needs_math(post.content):
         mathjax_script = '<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>'
-        inline_math_pattern = r"(?<!\\|\$)\$([^$]+?)(?<!\\)\$(?!\$)"
-        post.content = re.sub(inline_math_pattern, r"\\\\(\1\\\\)", post.content)
+        post.content = re.sub(INLINE_MATH, r"\\\\(\1\\\\)", post.content)
         post.content = re.sub(
             r"(\$\$.*?\$\$)", r"\n\1\n", post.content, flags=re.DOTALL
         )
@@ -23,7 +23,7 @@ def process_math(post):
 
 def _needs_math(content):
     has_block_math = bool(re.search(r"\$\$.*?\$\$", content, flags=re.DOTALL))
-    has_inline_math = bool(re.search(r"(?<!\\)\$[^ \t\n\$].*?\$", content))
+    has_inline_math = bool(re.search(INLINE_MATH, content))
 
     return has_block_math or has_inline_math
 
