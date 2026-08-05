@@ -58,7 +58,7 @@ def _link_replacer(match, valid_files):
 
     filename = Path(filename).stem
 
-    if not filename in valid_files:
+    if filename not in valid_files:
         print(
             f"  |  Warning: Link target not found: '{filename}'. Converted to plain text."
         )
