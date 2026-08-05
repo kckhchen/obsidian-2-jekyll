@@ -4,6 +4,8 @@ from pathlib import Path
 import yaml
 import frontmatter
 
+from .patterns import INLINE_MATH
+
 local_tz = datetime.now().astimezone().tzinfo
 
 
@@ -59,7 +61,7 @@ def shield_content(post, mode):
     if mode == "code":
         pattern = r"(```[\s\S]*?```|~~~[\s\S]*?~~~|`[^`\n]+`)"
     elif mode == "math":
-        pattern = r"(\$\$[\s\S]*?\$\$|(?<!\$)\$[^$]+(?<!\s)\$(?!\$))"
+        pattern = rf"(\$\$[\s\S]*?\$\$|{INLINE_MATH}"
     elif mode == "url":
         pattern = r"https?://[^)\s]+"
     else:
@@ -83,10 +85,6 @@ def get_valid_files(vault_dir, post_dir):
 
     for path in sorted(vault_dir.rglob("*.md")) + sorted(vault_dir.rglob("*.markdown")):
         if any(part.startswith(".") for part in path.relative_to(vault_dir).parts):
-            continue
-
-        if path.suffix not in (".md", ".markdown"):
-            # more robust check here
             continue
 
         try:
