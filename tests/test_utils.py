@@ -91,10 +91,10 @@ class TestShielding:
 
         post, stash = shield_content(post, mode="code")
 
-        assert "&&CODE_0&&" in post.content
+        assert "\x00CODE_0\x00" in post.content
         assert "print(1)" not in post.content
 
-        assert stash["&&CODE_0&&"] == "```python\nprint(1)\n```"
+        assert stash["\x00CODE_0\x00"] == "```python\nprint(1)\n```"
 
     def test_shield_urls(self, postify):
         content = "Check https://google.com now."
@@ -102,12 +102,12 @@ class TestShielding:
 
         post, stash = shield_content(post, mode="url")
 
-        assert "Check &&URL_0&& now." == post.content
-        assert stash["&&URL_0&&"] == "https://google.com"
+        assert "Check \x00URL_0\x00 now." == post.content
+        assert stash["\x00URL_0\x00"] == "https://google.com"
 
     def test_unshield_restores_content(self, postify):
-        post = postify("Check &&URL_0&&.")
-        stash = {"&&URL_0&&": "https://google.com"}
+        post = postify("Check \x00URL_0\x00.")
+        stash = {"\x00URL_0\x00": "https://google.com"}
 
         unshield(post, stash)
 
@@ -115,8 +115,8 @@ class TestShielding:
 
     def test_unshield_with_convert_func(self, postify):
 
-        post = postify("Code: &&CODE_0&&")
-        stash = {"&&CODE_0&&": "my_code"}
+        post = postify("Code: \x00CODE_0\x00")
+        stash = {"\x00CODE_0\x00": "my_code"}
 
         def converter(text):
             return text.upper()
