@@ -1,7 +1,7 @@
 import pytest
 import frontmatter
 from pathlib import Path
-from unittest.mock import patch, Mock, call
+from unittest.mock import patch
 from src.cleanup import (
     remove_stale_files,
     _scan_post_images,
@@ -144,7 +144,7 @@ class TestFullFlow:
             "valid": {"source_path": Path("source/has_img.md"), "dest_path": valid_dest}
         }
 
-        with patch("builtins.input", return_value="y") as mock_input:
+        with patch("builtins.input", return_value="y"):
             remove_stale_files(valid_files, post_dir, img_dir)
 
         assert valid_dest.exists()

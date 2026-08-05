@@ -1,7 +1,7 @@
 import pytest
 import frontmatter
 from pathlib import Path
-from unittest.mock import patch, ANY
+from unittest.mock import patch
 from src.process_images import process_embedded_images
 
 
@@ -90,12 +90,6 @@ class TestProcessEmbeddedImages:
         assert result.content == expected_output
 
         assert mock_shutil.called
-
-        filename = (
-            input_text.split("]")[-1].split("(")[-1].strip(")")
-            if "(" in input_text
-            else input_text.strip("[]|0123456789")
-        )
 
         assert str(dest_dir) in str(mock_shutil.call_args)
 

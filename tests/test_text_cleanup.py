@@ -1,5 +1,4 @@
 import pytest
-import frontmatter
 from src.text_cleanup import (
     text_cleanup,
     process_h1,

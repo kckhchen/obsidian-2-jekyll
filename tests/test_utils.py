@@ -1,8 +1,6 @@
 import pytest
-import frontmatter
 from unittest.mock import patch, Mock
 from pathlib import Path
-from datetime import datetime
 from src.utils import (
     get_creation_time,
     slugify,
