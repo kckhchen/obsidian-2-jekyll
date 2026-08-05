@@ -47,7 +47,7 @@ def validate_configs(vault_dir, config):
 def shield_content(post, mode):
 
     def _replacer(match):
-        key = f"&&{mode.upper()}_{len(stash)}&&"
+        key = f"\x00{mode.upper()}_{len(stash)}\x00"
         stash[key] = match.group(0)
         return key
 
