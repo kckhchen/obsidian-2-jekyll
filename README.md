@@ -65,8 +65,8 @@ Then edit `config_local.py`:
 
 ```python
 # config_local.py
-VAULT_DIR = "/Users/me/Obsidian-Vault"      # Path to Your Vault Folder
-JEKYLL_DIR = "/Users/me/Jekyll-Website"     # Path to Your Jekyll Folder
+VAULT_DIR = "/Users/me/Obsidian-Vault"  # Path to Your Vault Folder
+JEKYLL_DIR = "/Users/me/Jekyll-Website"  # Path to Your Jekyll Folder
 ```
 
 Any value set in `config_local.py` overrides the matching one in `config.py`.
