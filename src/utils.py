@@ -10,7 +10,7 @@ local_tz = datetime.now().astimezone().tzinfo
 
 def get_creation_time(filepath):
     stat = Path(filepath).stat()
-    timestamp = getattr(stat, "st_birthtime", getattr(stat, "st_ctime", stat.st_mtime))
+    timestamp = getattr(stat, "st_birthtime", None) or stat.st_mtime
     return datetime.fromtimestamp(timestamp, tz=local_tz).strftime("%Y-%m-%d")
 
 
