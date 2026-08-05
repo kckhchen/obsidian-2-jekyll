@@ -1,7 +1,7 @@
 import re
 from datetime import datetime
 from pathlib import Path
-
+import yaml
 import frontmatter
 
 local_tz = datetime.now().astimezone().tzinfo
@@ -89,27 +89,34 @@ def get_valid_files(vault_dir, post_dir):
             # more robust check here
             continue
 
-        with open(path, "r", encoding="utf-8") as f:
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                if f.readline().strip() != "---":
+                    continue
+                f.seek(0)
+                post = frontmatter.load(f)
+        except UnicodeDecodeError:
+            print(f"Warning: Skipping non-UTF-8 file: {path}")
+            continue
+        except yaml.YAMLError as e:
+            print(
+                f"Warning: Skipping malformed frontmatter in {path}: {e.__class__.__name__}"
+            )
+            continue
 
-            if f.readline().strip() != "---":
+        if str(post.get("share")).lower() == "true":
+            dest_path = _get_dest_fpath(post, path, post_dir)
+
+            if path.stem in valid_files:
+                print(
+                    f"Warning: Duplicate filename found: '{path.stem}'. {path} will be skipped."
+                )
                 continue
 
-            f.seek(0)
-            post = frontmatter.load(f)
-
-            if str(post.get("share")).lower() == "true":
-                dest_path = _get_dest_fpath(post, path, post_dir)
-
-                if path.stem in valid_files:
-                    print(
-                        f"Warning: Duplicate filename found: '{path.stem}'. {path} will be skipped."
-                    )
-                    continue
-
-                valid_files[path.stem] = {
-                    "source_path": path,
-                    "dest_path": dest_path,
-                }
+            valid_files[path.stem] = {
+                "source_path": path,
+                "dest_path": dest_path,
+            }
 
     return valid_files
 
