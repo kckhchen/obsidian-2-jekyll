@@ -76,8 +76,10 @@ def unshield(post, stash, convert_func=None):
 def get_valid_files(vault_dir, post_dir):
     valid_files = {}
 
-    for path in vault_dir.rglob("*.m[ad]*"):
-        # not strict. matches .md(+anything) or .ma(+anything).
+    for path in sorted(vault_dir.rglob("*.md")) + sorted(vault_dir.rglob("*.markdown")):
+        if any(part.startswith(".") for part in path.relative_to(vault_dir).parts):
+            continue
+
         try:
             if path.suffix not in (".md", ".markdown"):
                 # more robust check here
