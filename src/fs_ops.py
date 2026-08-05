@@ -6,10 +6,16 @@ from .patterns import IMG_EXT
 
 def build_img_map(dir):
     img_map = {}
-    for p in dir.rglob("*"):
+    for p in sorted(dir.rglob("*")):
         if p.is_file() and p.suffix.lower() in IMG_EXT:
-            img_map[p.name.lower()] = p
-
+            key = p.name.lower()
+            if key in img_map:
+                print(
+                    f"Warning: Duplicate image name '{p.name}'. "
+                    f"Using {img_map[key]}, ignoring {p}"
+                )
+                continue
+            img_map[key] = p
     return img_map
 
 
