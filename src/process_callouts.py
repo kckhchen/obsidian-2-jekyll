@@ -1,11 +1,11 @@
 import re
 from .icons import ICONS
 
-
 CALLOUT_PATTERN = re.compile(
     r"^> \[!\s*(?P<ctype>\w+)\](?P<collapse>[+\-]?)(?P<title>.*?)\n(?P<body>(?:^>.*\n?)*)",
     re.MULTILINE,
 )
+FENCE_IN_BODY = re.compile(r"^>\s*(```|~~~)", re.MULTILINE)
 
 
 def process_callouts(post):
@@ -19,6 +19,13 @@ def process_callouts(post):
 
 
 def _callout_replacer(match):
+    if FENCE_IN_BODY.search(match.group("body")):
+        print(
+            "  |  Warning: Fenced code block inside a callout is not supported; "
+            "callout left as a plain blockquote."
+        )
+        return match.group(0)
+
     ctype = match.group("ctype").lower()
     collapse = match.group("collapse")
     title = match.group("title").strip()
