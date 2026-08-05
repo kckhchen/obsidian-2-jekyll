@@ -34,6 +34,6 @@ def _embedded_image_replacer(match, img_map, img_dir):
         return updated_link
     else:
         print(
-            f"  |  Warning: Image target not found in Vault: {img_name}. Removed image tag."
+            f"  |  Warning: Image target not found in Vault: {img_name}. Link kept as-is."
         )
-        return ""
+        return match.group(0)
