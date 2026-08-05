@@ -6,7 +6,7 @@ from .patterns import IMG_EXT
 
 
 def remove_stale_files(valid_files, post_dir, img_dir):
-    print(f"\nStarting cleaning up process...")
+    print("\nStarting cleaning up process...")
     print(f"Post folder: [ {post_dir} ]")
     print(f"Image folder: [ {img_dir} ]\n")
 
