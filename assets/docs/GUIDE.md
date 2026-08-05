@@ -88,7 +88,7 @@ For example, a `.md` file named `My New Note!.md` will be renamed to `yyyy-mm-dd
 
 ### 3. Copies Associated Images to a Dedicated Folder And Updates Embedded Image Links
 
-Embedded images `![[img.png|width]]` or `![width](img.png)`, given that the actual images exist somewhere in the vault, will be transformed to `![](path/to/image.png){: width="width" }`. If no width is given, only the image link is returned.
+Embedded images `![[img.png|width]]` or `![alt_text|width](img.png)`, given that the actual images exist somewhere in the vault, will be transformed to `![alt_text](path/to/image.png){: width="width" }`. If no width / alt text is given, only the image link is returned.
 
 Also, all images associated with any of the processed posts will be copied to the dedicated image folder, while other irrelevant images will not be copied. This keeps your destination folder clean and tidy. Stale images will be cleaned up by `--cleanup` and `--update`, if the associated post is unpublished and no other posts are using the image.
 
