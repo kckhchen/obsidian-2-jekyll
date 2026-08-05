@@ -36,7 +36,7 @@ def _link_replacer(match, valid_files):
     display = display.strip("#")
 
     # skip shielding placeholders
-    if re.match(r"^&&\w+_\d+&&$", target) and match.group("mdlink"):
+    if re.match(r"^\x00\w+_\d+\x00$", target) and match.group("mdlink"):
         return f"[{display}]({target})"
 
     filename = target
