@@ -1,6 +1,8 @@
 from pathlib import Path
-import pytest
 from unittest.mock import patch
+
+import pytest
+
 from src.process_links import process_wikilinks
 
 
@@ -26,7 +28,6 @@ def valid_files_map():
 
 
 class TestProcessWikilinks:
-
     @pytest.mark.parametrize(
         "input_text, expected",
         [

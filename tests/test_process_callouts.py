@@ -1,5 +1,7 @@
-import pytest
 from unittest.mock import patch
+
+import pytest
+
 from src.process_callouts import process_callouts
 
 
@@ -10,7 +12,6 @@ def mock_icons():
 
 
 class TestProcessCallouts:
-
     @pytest.mark.parametrize(
         "input_text, expected_fragment",
         [

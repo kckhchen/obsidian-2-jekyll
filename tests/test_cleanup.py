@@ -1,13 +1,15 @@
-import pytest
-import frontmatter
 from pathlib import Path
 from unittest.mock import patch
+
+import frontmatter
+import pytest
+
 from src.cleanup import (
-    remove_stale_files,
-    _scan_post_images,
-    _list_posts_to_be_removed,
     _list_imgs_to_be_removed,
+    _list_posts_to_be_removed,
     _remove_files,
+    _scan_post_images,
+    remove_stale_files,
 )
 
 
@@ -38,7 +40,6 @@ def mock_post_loader():
 
 
 class TestImageScanning:
-
     def test_extracts_wiki_and_md_links(self):
         content = """
         Here is a wikilink: ![[image1.png]]
@@ -68,7 +69,6 @@ class TestImageScanning:
 
 
 class TestStaleListGeneration:
-
     def test_list_posts_to_be_removed(self, fs_setup):
         post_dir, _ = fs_setup
 
@@ -103,7 +103,6 @@ class TestStaleListGeneration:
 
 
 class TestDeletionSafety:
-
     def test_remove_files_aborts_on_no(self, fs_setup):
         post_dir, _ = fs_setup
         stale_file = post_dir / "delete_me.md"
@@ -126,7 +125,6 @@ class TestDeletionSafety:
 
 
 class TestFullFlow:
-
     def test_remove_stale_files_integration(self, fs_setup, mock_post_loader):
         post_dir, img_dir = fs_setup
 

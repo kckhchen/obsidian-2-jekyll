@@ -44,7 +44,7 @@ def validate_configs(vault_dir, config):
     mode = config.MATH_RENDERING_MODE
     if mode not in VALID_MODES:
         raise ValueError(
-            f"Invalid MATH_RENDERING_MODE: '{mode}'. " f"Must be one of: {VALID_MODES}."
+            f"Invalid MATH_RENDERING_MODE: '{mode}'. Must be one of: {VALID_MODES}."
         )
 
 

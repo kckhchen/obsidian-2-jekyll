@@ -1,14 +1,16 @@
-import pytest
-from unittest.mock import patch, Mock
 from pathlib import Path
+from unittest.mock import Mock, patch
+
+import pytest
+
 from src.utils import (
-    get_creation_time,
-    slugify,
-    validate_configs,
-    shield_content,
-    unshield,
-    get_valid_files,
     _get_dest_fpath,
+    get_creation_time,
+    get_valid_files,
+    shield_content,
+    slugify,
+    unshield,
+    validate_configs,
 )
 
 
@@ -20,7 +22,6 @@ def mock_config():
 
 
 class TestPureHelpers:
-
     @pytest.mark.parametrize(
         "name, expected",
         [
@@ -37,7 +38,6 @@ class TestPureHelpers:
     def test_get_creation_time(self):
 
         with patch("pathlib.Path.stat") as mock_stat:
-
             mock_stat.return_value.st_mtime = 1672531200.0
 
             mock_stat.return_value.st_birthtime = 1672531200.0
@@ -47,7 +47,6 @@ class TestPureHelpers:
 
 
 class TestValidation:
-
     def test_validate_configs_success(self, tmp_path, mock_config):
 
         validate_configs(tmp_path, mock_config)
@@ -82,7 +81,6 @@ class TestValidation:
 
 
 class TestShielding:
-
     def test_shield_code_blocks(self, postify):
         content = "Text\n```python\nprint(1)\n```\nMore Text"
         post = postify(content)
@@ -167,7 +165,6 @@ class TestFileScanning:
 
 
 class TestDestPathLogic:
-
     def test_uses_date_from_frontmatter(self, postify):
         post = postify("cnt", metadata={"date": "2025-05-05"})
         source_path = Path("My Post.md")

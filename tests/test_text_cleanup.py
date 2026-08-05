@@ -1,15 +1,15 @@
 import pytest
+
 from src.text_cleanup import (
-    text_cleanup,
-    process_h1,
-    strip_comments,
-    process_highlights,
     ensure_table_spacing,
+    process_h1,
+    process_highlights,
+    strip_comments,
+    text_cleanup,
 )
 
 
 class TestTextCleanup:
-
     def test_h1_moves_to_title_metadata(self, postify):
 
         content = "# My Great Post\n\nBody text here."

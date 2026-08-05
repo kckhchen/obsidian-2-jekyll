@@ -1,7 +1,9 @@
-import pytest
-import frontmatter
 from pathlib import Path
 from unittest.mock import patch
+
+import frontmatter
+import pytest
+
 from src.process_images import process_embedded_images
 
 
@@ -36,7 +38,6 @@ def mock_shutil():
 
 
 class TestProcessEmbeddedImages:
-
     @pytest.mark.parametrize(
         "input_text, expected_output, expected_width_attr",
         [

@@ -1,5 +1,5 @@
-import pytest
 import frontmatter
+import pytest
 
 
 @pytest.fixture

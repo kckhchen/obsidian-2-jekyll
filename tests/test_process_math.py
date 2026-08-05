@@ -1,6 +1,8 @@
-import pytest
-import frontmatter
 from unittest.mock import patch
+
+import frontmatter
+import pytest
+
 from src.process_math import process_math
 
 
@@ -20,7 +22,6 @@ def mock_config():
 
 
 class TestProcessMath:
-
     @pytest.mark.parametrize(
         "input_text, expected_fragment",
         [

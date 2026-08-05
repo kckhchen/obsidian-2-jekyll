@@ -1,8 +1,8 @@
-import pytest
 from unittest.mock import patch
-from src.fs_ops import build_img_map, setup_dir, ensure_css_exists, announce_paths
 
+import pytest
 
+from src.fs_ops import announce_paths, build_img_map, ensure_css_exists, setup_dir
 from src.templates import CALLOUT_CSS
 
 
@@ -65,7 +65,6 @@ def test_setup_dir_respects_dry_run(tmp_path):
 @pytest.fixture
 def mock_settings_for_css(tmp_path):
     with patch("src.settings.config") as mock_config:
-
         mock_config.JEKYLL_DIR = str(tmp_path)
         mock_config.INCLUDES_FOLDER = "_includes"
         yield mock_config

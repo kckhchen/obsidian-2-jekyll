@@ -1,8 +1,10 @@
-import pytest
 import os
 from pathlib import Path
 from unittest.mock import patch
-from src.processor_core import pre_process, process_posts, _should_proceed, _iter_files
+
+import pytest
+
+from src.processor_core import _iter_files, _should_proceed, pre_process, process_posts
 
 
 def test_should_proceed_logic(tmp_path):
