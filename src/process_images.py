@@ -2,7 +2,8 @@ import re
 import shutil
 from pathlib import Path
 
-from . import settings
+from config import IMG_FOLDER
+
 from .patterns import IMG_EXT
 
 
@@ -33,7 +34,7 @@ def _split_opt(raw, is_md):
 
 
 def _embedded_image_replacer(match, img_map, img_dir):
-    img_folder = Path(settings.config.IMG_FOLDER)
+    img_folder = Path(IMG_FOLDER)
 
     is_md = match.group("mdlink") is not None
     img_name = (match.group("mdlink") if is_md else match.group("wikilink")).strip()

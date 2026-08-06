@@ -1,23 +1,14 @@
 import argparse
-import sys
 from pathlib import Path
 
-import config as user_config
-from src import settings
+import config
 from src.cleanup import remove_stale_files
 from src.processor_core import pre_process, process_posts
-from src.utils import get_valid_files, validate_configs
+from src.utils import get_valid_files
 
 
 def main(args):
-    settings.init(user_config)
     vault_dir, post_dir, img_dir = make_paths()
-    try:
-        validate_configs(vault_dir, user_config)
-
-    except (FileNotFoundError, ValueError) as e:
-        print(e)
-        sys.exit(1)
 
     valid_files = get_valid_files(vault_dir, post_dir)
 
@@ -72,10 +63,10 @@ def setup_parser():
 
 
 def make_paths():
-    vault_dir = Path(user_config.VAULT_DIR)
+    vault_dir = Path(config.VAULT_DIR)
     post_dir, img_dir = [
-        Path(user_config.JEKYLL_DIR) / folder
-        for folder in (user_config.POST_FOLDER, user_config.IMG_FOLDER)
+        Path(config.JEKYLL_DIR) / folder
+        for folder in (config.POST_FOLDER, config.IMG_FOLDER)
     ]
     return vault_dir, post_dir, img_dir
 

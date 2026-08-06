@@ -1,6 +1,7 @@
 import re
 
-from . import settings
+from config import MATH_RENDERING_MODE
+
 from .patterns import INLINE_MATH
 
 
@@ -12,9 +13,9 @@ def process_math(post):
             r"(\$\$.*?\$\$)", r"\n\1\n", post.content, flags=re.DOTALL
         )
 
-        if settings.config.MATH_RENDERING_MODE == "inject_cdn":
+        if MATH_RENDERING_MODE == "inject_cdn":
             post.content += f"\n\n{mathjax_script}"
-        elif settings.config.MATH_RENDERING_MODE == "metadata":
+        elif MATH_RENDERING_MODE == "metadata":
             post["math"] = post.get("math") or True
 
         post = _fix_math_id(post)
@@ -30,7 +31,6 @@ def _needs_math(content):
 
 
 def _fix_math_id(post):
-
     pattern = r"\$\$[\s\n]+({: #secid.+})"
     post.content = re.sub(pattern, r"$$\n\1", post.content)
 

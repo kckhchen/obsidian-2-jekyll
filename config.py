@@ -1,34 +1,20 @@
-# Path to your Obsidian Vault.
-VAULT_DIR = "/User/me/path/to/obsidian-vault"
+import os
+import sys
 
-# Path to your Jekyll website's directory.
-JEKYLL_DIR = "/Users/me/path/to/my/jekyll-project"
+from dotenv import load_dotenv
 
-# ---------------- More Settings -----------------------
+load_dotenv()
 
-# If the Jekyll theme supports math rendering and can recognize "math: true"
-# please uncomment "metadata".
-# If the Jekyll theme does not support math rendering
-# or you want to inject mathjax cdn, please uncomment "inject_cdn"
-
-# MATH_RENDERING_MODE = "metadata"
-MATH_RENDERING_MODE = "inject_cdn"
-
-# Only switch this to True if you are using Jekyll 4.X or newer versions
-# and you see duplicate baseurls in your internal links.
-# This is due to a change of how {% link %} works after Jekyll 4.0.
-PREVENT_DOUBLE_BASEURL = False
-
-# These are the default paths for Jekyll.
-# Do not change this unless necessary.
-POST_FOLDER = "_posts"
-INCLUDES_FOLDER = "_includes"
-IMG_FOLDER = "assets/images/obsidian"
-
-# You can also create a config_local.py to store your configs.
-# Those values will be prioritized by the tool.
-# --- Do not copy the lines below into config_local.py ---
 try:
-    from config_local import *
-except ImportError:
-    pass
+    VAULT_DIR = os.environ["VAULT_DIR"]
+    JEKYLL_DIR = os.environ["JEKYLL_DIR"]
+except KeyError as e:
+    print(f"STARTUP FAILED: Missing required environment variable: {e}")
+    sys.exit(1)
+
+
+MATH_RENDERING_MODE = os.environ.get("MATH_RENDERING_MODE", "inject_cdn")
+PREVENT_DOUBLE_BASEURL = os.environ.get("PREVENT_DOUBLE_BASEURL", str(False))
+INCLUDES_FOLDER = os.environ.get("INCLUDES_FOLDER", "_includes")
+POST_FOLDER = os.environ.get("POST_FOLER", "_posts")
+IMG_FOLDER = os.environ.get("IMG_FOLDER", "assets/images/obsidian")

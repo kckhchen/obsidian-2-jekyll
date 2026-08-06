@@ -1,7 +1,8 @@
 import re
 from pathlib import Path
 
-from . import settings
+from config import POST_FOLDER, PREVENT_DOUBLE_BASEURL
+
 from .utils import slugify
 
 
@@ -28,7 +29,7 @@ def _anchor_replacer(match):
 
 
 def _link_replacer(match, valid_files):
-    post_folder = Path(settings.config.POST_FOLDER)
+    post_folder = Path(POST_FOLDER)
 
     target = match.group("wikilink") or match.group("mdlink")
     target = target.strip()
@@ -66,7 +67,7 @@ def _link_replacer(match, valid_files):
 
     dest = valid_files[filename]["dest_path"].name
 
-    if settings.config.PREVENT_DOUBLE_BASEURL:
+    if PREVENT_DOUBLE_BASEURL:
         return f"[{display}]({{% link {post_folder / dest} %}}{anchor_suffix})"
     else:
         return f"[{display}]({{{{ site.baseurl }}}}{{% link {post_folder / dest} %}}{anchor_suffix})"

@@ -18,36 +18,6 @@ def slugify(name):
     return re.sub(r"[^\w.]+", "-", name).strip("-").lower()
 
 
-def validate_configs(vault_dir, config):
-    REQUIRED_KEYS = [
-        "MATH_RENDERING_MODE",
-        "IMG_FOLDER",
-        "JEKYLL_DIR",
-        "INCLUDES_FOLDER",
-    ]
-    VALID_MODES = {"metadata", "inject_cdn"}
-
-    if not vault_dir.exists():
-        raise FileNotFoundError(f"CRITICAL: Vault path '{vault_dir}' does not exist.")
-
-    if not vault_dir.is_dir():
-        raise NotADirectoryError(
-            f"CRITICAL: Vault path '{vault_dir}' is a file, expected a directory."
-        )
-
-    missing_keys = [key for key in REQUIRED_KEYS if not hasattr(config, key)]
-    if missing_keys:
-        raise AttributeError(
-            f"CRITICAL: Your settings.py is missing required configurations: {missing_keys}"
-        )
-
-    mode = config.MATH_RENDERING_MODE
-    if mode not in VALID_MODES:
-        raise ValueError(
-            f"Invalid MATH_RENDERING_MODE: '{mode}'. Must be one of: {VALID_MODES}."
-        )
-
-
 def shield_content(post, mode):
     def _replacer(match):
         text = match.group(0)

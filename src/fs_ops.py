@@ -1,6 +1,7 @@
 from pathlib import Path
 
-from . import settings
+from config import INCLUDES_FOLDER, JEKYLL_DIR
+
 from .patterns import IMG_EXT
 from .templates import CALLOUT_CSS
 
@@ -29,7 +30,7 @@ def setup_dir(post_dir, img_dir, dry):
 
 
 def ensure_css_exists(css_name, dry):
-    includes_dir = Path(settings.config.JEKYLL_DIR) / settings.config.INCLUDES_FOLDER
+    includes_dir = Path(JEKYLL_DIR) / INCLUDES_FOLDER
     css_path = includes_dir / css_name
     if not css_path.exists():
         print(f"---- Creating default callout CSS at: {css_path} ----")
