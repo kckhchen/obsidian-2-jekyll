@@ -1,18 +1,32 @@
 import argparse
+from pathlib import Path
 
 from src.cleanup import remove_stale_files
-from src.fs_ops import make_paths
-from src.processor_core import pre_process, process_posts
+from src.config import IMG_FOLDER, JEKYLL_DIR, POST_FOLDER, VAULT_DIR
+from src.fs_ops import build_img_map, ensure_css_exists, setup_dir
+from src.processor_core import process_posts
 from src.utils import get_valid_files
 
 
 def main(args):
-    vault_dir, post_dir, img_dir = make_paths()
+    vault_dir = Path(VAULT_DIR)
+    post_dir = Path(JEKYLL_DIR) / POST_FOLDER
+    img_dir = Path(JEKYLL_DIR) / IMG_FOLDER
 
     valid_files = get_valid_files(vault_dir, post_dir)
 
     if not args.cleanup:
-        img_map = pre_process(vault_dir, post_dir, img_dir, args.dry)
+        if args.dry:
+            print("------------ DRY RUN MODE -------------")
+            print("Operations will be printed but files won't be changed.\n")
+
+        print(f"Start processing posts in Vault [ {vault_dir} ]...")
+        print(f"Destination path: [ {post_dir} ]\n")
+
+        setup_dir(post_dir, img_dir, args.dry)
+        ensure_css_exists("obsidian-callouts.html", args.dry)
+        img_map = build_img_map(vault_dir)
+
         process_posts(
             valid_files,
             img_map,

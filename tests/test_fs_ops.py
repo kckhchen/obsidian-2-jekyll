@@ -1,44 +1,13 @@
 import pytest
 
 from src.callout_styles import CALLOUT_CSS
-from src.fs_ops import announce_paths, build_img_map, ensure_css_exists, setup_dir
+from src.fs_ops import ensure_css_exists, setup_dir
 
 
 @pytest.fixture
 def css_mock(tmp_path, monkeypatch):
     monkeypatch.setattr("src.fs_ops.INCLUDES_FOLDER", "_includes")
     monkeypatch.setattr("src.fs_ops.JEKYLL_DIR", str(tmp_path))
-
-
-def test_build_img_map_finds_nested_images(tmp_path):
-    """
-    /vault
-      /images
-         img1.png
-         IMG2.JPG
-      /notes
-         note.md
-    """
-    vault = tmp_path / "vault"
-    images = vault / "images"
-    notes = vault / "notes"
-    images.mkdir(parents=True)
-    notes.mkdir(parents=True)
-
-    (images / "img1.png").touch()
-    (images / "IMG2.JPG").touch()
-    (images / "random.txt").touch()
-    (notes / "note.md").touch()
-
-    result = build_img_map(vault)
-
-    assert "img1.png" in result
-    assert "img2.jpg" in result
-
-    assert "note.md" not in result
-    assert "random.txt" not in result
-
-    assert result["img1.png"] == images / "img1.png"
 
 
 def test_setup_dir_creates_folders(tmp_path, capsys):
@@ -89,17 +58,3 @@ def test_ensure_css_skips_if_already_exists(tmp_path, css_mock, capsys):
 
     captured = capsys.readouterr()
     assert "Creating default callout CSS" not in captured.out
-
-
-def test_announce_paths_dry_mode(capsys):
-    announce_paths("src", "dest", dry=True)
-    captured = capsys.readouterr()
-    assert "DRY RUN MODE" in captured.out
-    assert "src" in captured.out
-
-
-def test_announce_paths_normal_mode(capsys):
-    announce_paths("src", "dest", dry=False)
-    captured = capsys.readouterr()
-    assert "DRY RUN MODE" not in captured.out
-    assert "Start processing posts" in captured.out

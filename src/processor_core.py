@@ -3,7 +3,6 @@ from pathlib import Path
 
 import frontmatter
 
-from src.fs_ops import announce_paths, build_img_map, ensure_css_exists, setup_dir
 from src.process_callouts import process_callouts
 from src.process_images import process_embedded_images
 from src.process_links import process_wikilinks
@@ -12,27 +11,32 @@ from src.text_cleanup import text_cleanup
 from src.utils import shield_content, unshield
 
 
-def pre_process(vault_dir, post_dir, img_dir, dry):
-    announce_paths(vault_dir, post_dir, dry)
-    setup_dir(post_dir, img_dir, dry)
-    ensure_css_exists("obsidian-callouts.html", dry)
-    img_map = build_img_map(vault_dir)
-    return img_map
-
-
-def process_posts(valid_files, img_map, img_dir, dry, layout, force, only=None):
+def process_posts(files, img_map, img_dir, dry, layout, force, only=None):
     try:
         skipped = 0
-        for src, dest, post in sorted(_iter_files(valid_files, only)):
+        for src, dest, post in sorted(_iter_files(files, only)):
             reason = _should_proceed(src, dest, force)
 
             if reason:
                 print(f"{reason}: {Path(src.parent.name) / src.name} -> {dest.name}")
 
                 if not dry:
-                    post = _process_single_post(
-                        post, valid_files, img_map, img_dir, layout
+                    post, code_blocks = shield_content(post, mode="code")
+                    post, url_blocks = shield_content(post, mode="url")
+                    post, math_blocks = shield_content(post, mode="math")
+
+                    post = text_cleanup(post, layout)
+                    post = process_embedded_images(post, img_map, img_dir)
+                    post = process_wikilinks(post, files)
+                    post = process_callouts(post)
+
+                    post = unshield(
+                        post, math_blocks, lambda x: re.sub(r"\|", r" \\vert ", x)
                     )
+                    post = process_math(post)
+
+                    post = unshield(post, url_blocks)
+                    post = unshield(post, code_blocks)
                     frontmatter.dump(post, dest)
             else:
                 skipped += 1
@@ -55,24 +59,6 @@ def _should_proceed(src, dest, force):
         return "Updating"
 
     return False
-
-
-def _process_single_post(post, valid_files, img_map, img_dir, layout):
-    post, code_blocks = shield_content(post, mode="code")
-    post, url_blocks = shield_content(post, mode="url")
-    post, math_blocks = shield_content(post, mode="math")
-
-    post = text_cleanup(post, layout)
-    post = process_embedded_images(post, img_map, img_dir)
-    post = process_wikilinks(post, valid_files)
-    post = process_callouts(post)
-
-    post = unshield(post, math_blocks, lambda x: re.sub(r"\|", r" \\vert ", x))
-    post = process_math(post)
-
-    post = unshield(post, url_blocks)
-    post = unshield(post, code_blocks)
-    return post
 
 
 def _iter_files(files, only_file=None):

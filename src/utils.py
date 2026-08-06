@@ -52,13 +52,21 @@ def unshield(post, stash, convert_func=None):
 
 def get_valid_files(vault_dir, post_dir):
     valid_files = {}
+    paths = (
+        sorted(vault_dir.rglob("*.md"))
+        + sorted(vault_dir.rglob("*.markdown"))
+        + sorted(vault_dir.rglob("*.MD"))
+        + sorted(vault_dir.rglob("*.MARKDOWN"))
+    )
 
-    for path in sorted(vault_dir.rglob("*.md")) + sorted(vault_dir.rglob("*.markdown")):
+    for path in paths:
+        # skip dotfiles
         if any(part.startswith(".") for part in path.relative_to(vault_dir).parts):
             continue
 
         try:
             with open(path, "r", encoding="utf-8") as f:
+                # skip posts without a frontmatter
                 if f.readline().strip() != "---":
                     continue
                 f.seek(0)

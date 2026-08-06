@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from src.callout_styles import CALLOUT_CSS
-from src.config import IMG_FOLDER, INCLUDES_FOLDER, JEKYLL_DIR, POST_FOLDER, VAULT_DIR
+from src.config import INCLUDES_FOLDER, JEKYLL_DIR
 from src.patterns import IMG_EXT
 
 
@@ -36,20 +36,3 @@ def ensure_css_exists(css_name, dry):
         if not dry:
             css_path.parent.mkdir(parents=True, exist_ok=True)
             css_path.write_text(CALLOUT_CSS, encoding="utf-8")
-
-
-def announce_paths(vault_dir, post_dir, dry):
-    if dry:
-        print("------------ DRY RUN MODE -------------")
-        print("Operations will be printed but files won't be changed.\n")
-
-    print(f"Start processing posts in Vault [ {vault_dir} ]...")
-    print(f"Destination path: [ {post_dir} ]\n")
-
-
-def make_paths():
-    vault_dir = Path(VAULT_DIR)
-    post_dir, img_dir = [
-        Path(JEKYLL_DIR) / folder for folder in (POST_FOLDER, IMG_FOLDER)
-    ]
-    return vault_dir, post_dir, img_dir
