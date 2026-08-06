@@ -25,10 +25,8 @@ def img_map():
 
 
 @pytest.fixture
-def mock_settings():
-    with patch("src.settings.config") as mock:
-        mock.IMG_FOLDER = "assets/img"
-        yield mock
+def mock_settings(monkeypatch):
+    monkeypatch.setattr("src.process_images.IMG_FOLDER", "assets/img")
 
 
 @pytest.fixture

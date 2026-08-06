@@ -1,9 +1,13 @@
-from unittest.mock import patch
-
 import pytest
 
 from src.fs_ops import announce_paths, build_img_map, ensure_css_exists, setup_dir
 from src.templates import CALLOUT_CSS
+
+
+@pytest.fixture
+def css_mock(tmp_path, monkeypatch):
+    monkeypatch.setattr("src.fs_ops.INCLUDES_FOLDER", "_includes")
+    monkeypatch.setattr("src.fs_ops.JEKYLL_DIR", str(tmp_path))
 
 
 def test_build_img_map_finds_nested_images(tmp_path):
@@ -61,15 +65,7 @@ def test_setup_dir_respects_dry_run(tmp_path):
     assert not post_dir.exists()
 
 
-@pytest.fixture
-def mock_settings_for_css(tmp_path):
-    with patch("src.settings.config") as mock_config:
-        mock_config.JEKYLL_DIR = str(tmp_path)
-        mock_config.INCLUDES_FOLDER = "_includes"
-        yield mock_config
-
-
-def test_ensure_css_exists_writes_file(tmp_path, mock_settings_for_css):
+def test_ensure_css_exists_writes_file(css_mock, tmp_path):
     css_name = "test-callouts.css"
     expected_path = tmp_path / "_includes" / css_name
 
@@ -80,7 +76,7 @@ def test_ensure_css_exists_writes_file(tmp_path, mock_settings_for_css):
     assert expected_path.read_text(encoding="utf-8") == CALLOUT_CSS
 
 
-def test_ensure_css_skips_if_already_exists(tmp_path, mock_settings_for_css, capsys):
+def test_ensure_css_skips_if_already_exists(tmp_path, css_mock, capsys):
     css_name = "existing.css"
     includes = tmp_path / "_includes"
     includes.mkdir()

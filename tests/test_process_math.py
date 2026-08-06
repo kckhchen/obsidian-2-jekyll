@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 import frontmatter
 import pytest
 
@@ -12,13 +10,6 @@ def postify():
         return frontmatter.Post(content, **(metadata or {}))
 
     return _maker
-
-
-@pytest.fixture
-def mock_config():
-    with patch("src.settings.config", create=True) as mock:
-        mock.MATH_RENDERING_MODE = "inject_cdn"
-        yield mock
 
 
 class TestProcessMath:
@@ -41,23 +32,23 @@ class TestProcessMath:
         ],
     )
     def test_math_syntax_transformation(
-        self, input_text, expected_fragment, postify, mock_config
+        self, input_text, expected_fragment, postify, monkeypatch
     ):
+        monkeypatch.setattr("src.process_math.MATH_RENDERING_MODE", "inject_cdn")
         post = postify(input_text)
         result = process_math(post)
         assert expected_fragment in result.content
 
-    def test_mode_inject_cdn_appends_script(self, postify, mock_config):
-        mock_config.MATH_RENDERING_MODE = "inject_cdn"
-
+    def test_mode_inject_cdn_appends_script(self, postify, monkeypatch):
+        monkeypatch.setattr("src.process_math.MATH_RENDERING_MODE", "inject_cdn")
         post = postify("Here is some math $1+1$")
         result = process_math(post)
 
         assert '<script id="MathJax-script"' in result.content
         assert "mathjax@4" in result.content
 
-    def test_mode_metadata_sets_frontmatter(self, postify, mock_config):
-        mock_config.MATH_RENDERING_MODE = "metadata"
+    def test_mode_metadata_sets_frontmatter(self, postify, monkeypatch):
+        monkeypatch.setattr("src.process_math.MATH_RENDERING_MODE", "metadata")
 
         post = postify("Here is some math $1+1$")
         result = process_math(post)

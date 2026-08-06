@@ -1,16 +1,13 @@
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 
 from src.process_links import process_wikilinks
 
 
-@pytest.fixture(autouse=True)
-def mock_settings_config():
-    with patch("src.settings.config") as mock_config:
-        mock_config.POST_FOLDER = "_posts"
-        yield mock_config
+@pytest.fixture
+def mock_path(monkeypatch):
+    monkeypatch.setattr("src.process_links.PREVENT_DOUBLE_BASEURL", True)
 
 
 @pytest.fixture
@@ -91,7 +88,7 @@ class TestProcessWikilinks:
         ],
     )
     def test_process_wikilinks_scenarios(
-        self, input_text, expected, valid_files_map, postify
+        self, input_text, expected, valid_files_map, postify, mock_path
     ):
         post = postify(input_text)
         result_post = process_wikilinks(post, valid_files_map)

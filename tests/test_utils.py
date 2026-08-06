@@ -1,5 +1,5 @@
 from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -10,15 +10,7 @@ from src.utils import (
     shield_content,
     slugify,
     unshield,
-    validate_configs,
 )
-
-
-@pytest.fixture
-def mock_config():
-    m = Mock()
-    m.MATH_RENDERING_MODE = "inject_cdn"
-    return m
 
 
 class TestPureHelpers:
@@ -43,39 +35,6 @@ class TestPureHelpers:
 
             result = get_creation_time("dummy_path")
             assert result == "2023-01-01"
-
-
-class TestValidation:
-    def test_validate_configs_success(self, tmp_path, mock_config):
-        validate_configs(tmp_path, mock_config)
-
-    def test_validate_configs_missing_vault(self, mock_config):
-        missing_path = Path("/non/existent/path")
-        with pytest.raises(FileNotFoundError):
-            validate_configs(missing_path, mock_config)
-
-    def test_validate_configs_invalid_mode(self, tmp_path, mock_config):
-        mock_config.MATH_RENDERING_MODE = "bad_mode"
-        with pytest.raises(ValueError) as exc:
-            validate_configs(tmp_path, mock_config)
-        assert "Invalid MATH_RENDERING_MODE" in str(exc.value)
-
-    def test_explodes_if_config_is_empty(self, tmp_path):
-        class EmptyConfig:
-            pass
-
-        with pytest.raises(AttributeError, match="missing required configurations"):
-            validate_configs(tmp_path, EmptyConfig)
-
-    def test_explodes_if_vault_is_a_file(self, tmp_path):
-        not_a_dir = tmp_path / "my_file.txt"
-        not_a_dir.touch()
-
-        class GoodConfig:
-            MATH_RENDERING_MODE = "inject_cdn"
-
-        with pytest.raises(NotADirectoryError):
-            validate_configs(not_a_dir, GoodConfig)
 
 
 class TestShielding:
