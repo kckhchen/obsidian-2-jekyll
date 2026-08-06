@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from config import INCLUDES_FOLDER, JEKYLL_DIR
+from config import IMG_FOLDER, INCLUDES_FOLDER, JEKYLL_DIR, POST_FOLDER, VAULT_DIR
 
 from .patterns import IMG_EXT
 from .templates import CALLOUT_CSS
@@ -46,3 +46,11 @@ def announce_paths(vault_dir, post_dir, dry):
 
     print(f"Start processing posts in Vault [ {vault_dir} ]...")
     print(f"Destination path: [ {post_dir} ]\n")
+
+
+def make_paths():
+    vault_dir = Path(VAULT_DIR)
+    post_dir, img_dir = [
+        Path(JEKYLL_DIR) / folder for folder in (POST_FOLDER, IMG_FOLDER)
+    ]
+    return vault_dir, post_dir, img_dir

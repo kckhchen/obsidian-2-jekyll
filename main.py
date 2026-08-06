@@ -1,8 +1,7 @@
 import argparse
-from pathlib import Path
 
-import config
 from src.cleanup import remove_stale_files
+from src.fs_ops import make_paths
 from src.processor_core import pre_process, process_posts
 from src.utils import get_valid_files
 
@@ -60,15 +59,6 @@ def setup_parser():
     parser.add_argument("--only", default=None, help="Only process the selected post.")
 
     return parser
-
-
-def make_paths():
-    vault_dir = Path(config.VAULT_DIR)
-    post_dir, img_dir = [
-        Path(config.JEKYLL_DIR) / folder
-        for folder in (config.POST_FOLDER, config.IMG_FOLDER)
-    ]
-    return vault_dir, post_dir, img_dir
 
 
 if __name__ == "__main__":
