@@ -38,7 +38,6 @@ def test_build_img_map_finds_nested_images(tmp_path):
 
 
 def test_setup_dir_creates_folders(tmp_path, capsys):
-
     post_dir = tmp_path / "out/posts"
     img_dir = tmp_path / "out/assets/img"
 

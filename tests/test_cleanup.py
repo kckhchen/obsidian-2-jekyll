@@ -15,7 +15,6 @@ from src.cleanup import (
 
 @pytest.fixture
 def fs_setup(tmp_path):
-
     post_dir = tmp_path / "posts"
     img_dir = tmp_path / "img"
     post_dir.mkdir()
@@ -25,11 +24,9 @@ def fs_setup(tmp_path):
 
 @pytest.fixture
 def mock_post_loader():
-
     with patch("src.cleanup.frontmatter.load") as mock_load:
 
         def side_effect(path):
-
             content = ""
             if "has_img" in str(path):
                 content = "![[used_image.png]]"
@@ -60,7 +57,6 @@ class TestImageScanning:
         assert len(images) == 0
 
     def test_extracts_filename_from_path(self):
-
         content = "![](assets/img/photo.jpg)"
         post = frontmatter.Post(content)
         images = _scan_post_images(post)

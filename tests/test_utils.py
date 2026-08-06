@@ -36,7 +36,6 @@ class TestPureHelpers:
         assert slugify(name) == expected
 
     def test_get_creation_time(self):
-
         with patch("pathlib.Path.stat") as mock_stat:
             mock_stat.return_value.st_mtime = 1672531200.0
 
@@ -48,7 +47,6 @@ class TestPureHelpers:
 
 class TestValidation:
     def test_validate_configs_success(self, tmp_path, mock_config):
-
         validate_configs(tmp_path, mock_config)
 
     def test_validate_configs_missing_vault(self, mock_config):
@@ -110,7 +108,6 @@ class TestShielding:
         assert post.content == "Check https://google.com."
 
     def test_unshield_with_convert_func(self, postify):
-
         post = postify("Code: \x00CODE_0\x00")
         stash = {"\x00CODE_0\x00": "my_code"}
 
@@ -130,7 +127,6 @@ class TestFileScanning:
 
     @pytest.fixture
     def mini_vault(self, tmp_path):
-
         vault = tmp_path / "Vault"
         vault.mkdir()
 
@@ -185,7 +181,6 @@ class TestDestPathLogic:
         assert result.name == "2020-01-01-my-post.md"
 
     def test_cleans_existing_date_prefix_from_filename(self, postify):
-
         post = postify("cnt", metadata={"date": "2025-05-05"})
 
         source_path = Path("2022-01-01 My Post.md")

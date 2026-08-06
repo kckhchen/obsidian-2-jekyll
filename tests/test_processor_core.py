@@ -35,7 +35,6 @@ def mock_files_map():
 
 
 def test_iter_files_yields_all_by_default(mock_files_map):
-
     with patch("src.processor_core.frontmatter.load", return_value="dummy_post"):
         results = list(_iter_files(mock_files_map, only_file=None))
 
@@ -63,7 +62,6 @@ def test_iter_files_raises_on_missing_file(mock_files_map):
 @patch("src.processor_core._process_single_post")
 @patch("src.processor_core.frontmatter.dump")
 def test_process_posts_flow(mock_dump, mock_process, mock_proceed, mock_iter, capsys):
-
     src1, dest1 = Path("s1"), Path("d1")
     src2, dest2 = Path("s2"), Path("d2")
     src3, dest3 = Path("s3"), Path("d3")

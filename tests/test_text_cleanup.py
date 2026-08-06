@@ -11,7 +11,6 @@ from src.text_cleanup import (
 
 class TestTextCleanup:
     def test_h1_moves_to_title_metadata(self, postify):
-
         content = "# My Great Post\n\nBody text here."
         post = postify(content)
 
@@ -21,7 +20,6 @@ class TestTextCleanup:
         assert result.content == "Body text here."
 
     def test_h1_preserves_existing_metadata_title(self, postify):
-
         content = "# H1 Title\n\nBody."
 
         post = postify(content, metadata={"title": "Original Metadata Title"})
@@ -32,7 +30,6 @@ class TestTextCleanup:
         assert result.content == "Body."
 
     def test_h1_sets_default_layout(self, postify):
-
         post = postify("# Title")
         process_h1(post)
         assert post["layout"] == "post"
@@ -61,7 +58,6 @@ class TestTextCleanup:
         assert result.content == "This is <mark>highlighted</mark> text."
 
     def test_ensure_table_spacing_fixes_cramped_tables(self, postify):
-
         bad_markdown = "Preceding text\n| Header | Col |\n|---|---|\n| Val | Val |"
 
         post = postify(bad_markdown)
@@ -70,7 +66,6 @@ class TestTextCleanup:
         assert "Preceding text\n\n| Header |" in result.content
 
     def test_ensure_table_spacing_ignores_correct_tables(self, postify):
-
         good_markdown = "Preceding text\n\n| Header | Col |\n|---|---|"
 
         post = postify(good_markdown)
@@ -79,7 +74,6 @@ class TestTextCleanup:
         assert result.content == good_markdown
 
     def test_text_cleanup_orchestrator(self, postify):
-
         raw_text = """# Main Title
 
 %% secret %%

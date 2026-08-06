@@ -109,7 +109,6 @@ class TestProcessEmbeddedImages:
         assert "missing_file.png" in captured.out
 
     def test_ignores_non_image_extensions(self, postify, img_map, mock_settings):
-
         input_text = "![[document.pdf]]"
         post = postify(input_text)
         dest_dir = Path("/out")
@@ -122,7 +121,6 @@ class TestProcessEmbeddedImages:
     def test_handles_spaces_in_filenames(
         self, postify, img_map, mock_settings, mock_shutil
     ):
-
         img_map["my cool image.png"] = Path("/source/my cool image.png")
 
         post = postify("![[My Cool Image.png]]")

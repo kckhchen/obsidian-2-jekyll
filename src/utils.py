@@ -49,7 +49,6 @@ def validate_configs(vault_dir, config):
 
 
 def shield_content(post, mode):
-
     def _replacer(match):
         text = match.group(0)
         kind = "FENCE" if text[:3] in ("```", "~~~") else mode.upper()
