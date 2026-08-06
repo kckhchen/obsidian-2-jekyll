@@ -2,8 +2,8 @@ from pathlib import Path
 
 from config import IMG_FOLDER, INCLUDES_FOLDER, JEKYLL_DIR, POST_FOLDER, VAULT_DIR
 
+from .callout_styles import CALLOUT_CSS
 from .patterns import IMG_EXT
-from .templates import CALLOUT_CSS
 
 
 def build_img_map(dir):

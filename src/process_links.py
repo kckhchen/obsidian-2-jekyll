@@ -3,18 +3,16 @@ from pathlib import Path
 
 from config import POST_FOLDER, PREVENT_DOUBLE_BASEURL
 
+from .patterns import ANCHOR_PATTERN, LINK_PATTERN, PLACEHOLDER_PATTERN
 from .utils import slugify
 
 
 def process_wikilinks(post, valid_files):
-    pattern = r"(?<!\!)\[\[(?P<wikilink>[^|\]]+?)(?:\\?\|(?P<wiki_display>[^\]]*))?\]\]|(?<!\!)\[(?P<md_display>[^\]]*)\]\((?P<mdlink>[^\)]+)\)"
-    anchor_pattern = r"(^|\s)\^(?P<anchor>[a-zA-Z0-9-]+)(?=\s|$)"
-
     post.content = re.sub(
-        anchor_pattern, _anchor_replacer, post.content, flags=re.MULTILINE
+        ANCHOR_PATTERN, _anchor_replacer, post.content, flags=re.MULTILINE
     )
     post.content = re.sub(
-        pattern, lambda m: _link_replacer(m, valid_files), post.content
+        LINK_PATTERN, lambda m: _link_replacer(m, valid_files), post.content
     )
     return post
 
@@ -37,7 +35,7 @@ def _link_replacer(match, valid_files):
     display = display.strip("#")
 
     # skip shielding placeholders
-    if re.match(r"^\x00\w+_\d+\x00$", target) and match.group("mdlink"):
+    if re.match(PLACEHOLDER_PATTERN, target) and match.group("mdlink"):
         return f"[{display}]({target})"
 
     filename = target

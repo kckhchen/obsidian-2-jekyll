@@ -4,17 +4,14 @@ from pathlib import Path
 
 from config import IMG_FOLDER
 
-from .patterns import IMG_EXT
+from .patterns import IMG_EXT, IMG_PATTERN
 
 
 def process_embedded_images(post, img_map, img_dir):
-    pattern = (
-        r"!\[\[(?P<wikilink>[^|\]]+?)(?:\\?\|(?P<wiki_opt>[^\]]*))?\]\]"
-        r"|!\[(?P<md_opt>[^\]]*)\]\((?P<mdlink>[^)]+)\)"
-    )
-
     post.content = re.sub(
-        pattern, lambda m: _embedded_image_replacer(m, img_map, img_dir), post.content
+        IMG_PATTERN,
+        lambda m: _embedded_image_replacer(m, img_map, img_dir),
+        post.content,
     )
     return post
 

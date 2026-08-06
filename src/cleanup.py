@@ -3,7 +3,7 @@ from pathlib import Path
 
 import frontmatter
 
-from .patterns import IMG_EXT
+from .patterns import IMG_EXT, IMG_PATTERN, POST_NAME_PATTERN
 
 
 def remove_stale_files(valid_files, post_dir, img_dir):
@@ -39,7 +39,7 @@ def _list_posts_to_be_removed(post_dir, valid_files):
     current_posts = [data["dest_path"].name for data in valid_files.values()]
 
     for f in Path(post_dir).iterdir():
-        if f.is_file() and re.match(r"\d{4}-\d{2}-\d{2}-.+\.(md|markdown)", f.name):
+        if f.is_file() and re.match(POST_NAME_PATTERN, f.name):
             filename = f.name
 
             if filename not in current_posts:
@@ -80,11 +80,9 @@ def _remove_files(file_path_list):
 
 
 def _scan_post_images(post):
-    img_pattern = r"!\[\[(?P<wiki>[^|\]]+).*?\]\]|!\[[^\]]*\]\((?P<md>[^)]+)\)"
-
     img_list = [
         name
-        for match in re.finditer(img_pattern, post.content)
+        for match in re.finditer(IMG_PATTERN, post.content)
         if (name := _extract_filename(match))
     ]
 
@@ -92,8 +90,8 @@ def _scan_post_images(post):
 
 
 def _extract_filename(match):
-    path_str = match.group("wiki") or match.group("md")
-    if match.group("md") and path_str.startswith(("http:", "https:")):
+    path_str = match.group("wikilink") or match.group("mdlink")
+    if match.group("mdlink") and path_str.startswith(("http:", "https:")):
         return None
 
     return Path(path_str).name

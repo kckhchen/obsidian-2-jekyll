@@ -5,6 +5,8 @@ from pathlib import Path
 import frontmatter
 import yaml
 
+from .patterns import BLOCK_MATH_PATTERN, CODE_PATTERN, INLINE_MATH_PATTERN, URL_PATTERN
+
 local_tz = datetime.now().astimezone().tzinfo
 
 
@@ -27,13 +29,11 @@ def shield_content(post, mode):
         return key
 
     if mode == "code":
-        pattern = r"(```[\s\S]*?```|~~~[\s\S]*?~~~|`[^`\n]+`)"
+        pattern = CODE_PATTERN
     elif mode == "math":
-        pattern = (
-            r"(\$\$[\s\S]*?\$\$|(?<!\\|\$)\$(?!\s|\$)([^$]+?)(?<!\\|\$|\s)\$(?!\$))"
-        )
+        pattern = f"(?:{BLOCK_MATH_PATTERN}|{INLINE_MATH_PATTERN})"
     elif mode == "url":
-        pattern = r"https?://[^)\s]+"
+        pattern = URL_PATTERN
     else:
         raise ValueError(f"Unknown shield type: {mode}")
 

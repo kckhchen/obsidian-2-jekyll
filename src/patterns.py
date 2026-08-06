@@ -1,2 +1,20 @@
 IMG_EXT = (".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp", ".svg")
-INLINE_MATH = r"(?<!\\|\$)\$(?!\s|\$)([^$]+?)(?<!\\|\$|\s)\$(?!\$)"
+CODE_PATTERN = r"(```[\s\S]*?```|~~~[\s\S]*?~~~|`[^`\n]+`)"
+INLINE_MATH_PATTERN = r"(?<!\\|\$)\$(?!\s|\$)([^$]+?)(?<!\\|\$|\s)\$(?!\$)"
+BLOCK_MATH_PATTERN = r"(\$\$.*?\$\$)"
+MATH_ID_PATTERN = r"\$\$[\s\n]+({: #secid.+})"
+CALLOUT_PATTERN = r"^> \[!\s*(?P<ctype>\w+)\](?P<collapse>[+\-]?)(?P<title>.*?)\n(?P<body>(?:^>.*\n?)*)"
+FENCE_IN_BODY = r"\x00FENCE_\d+\x00"
+IMG_PATTERN = (
+    r"!\[\[(?P<wikilink>[^|\]]+?)(?:\\?\|(?P<wiki_opt>[^\]]*))?\]\]"
+    r"|!\[(?P<md_opt>[^\]]*)\]\((?P<mdlink>[^)]+)\)"
+)
+LINK_PATTERN = r"(?<!\!)\[\[(?P<wikilink>[^|\]]+?)(?:\\?\|(?P<wiki_display>[^\]]*))?\]\]|(?<!\!)\[(?P<md_display>[^\]]*)\]\((?P<mdlink>[^\)]+)\)"
+ANCHOR_PATTERN = r"(^|\s)\^(?P<anchor>[a-zA-Z0-9-]+)(?=\s|$)"
+URL_PATTERN = r"https?://[^)\s]+"
+H1_PATTERN = r"^\s*#\s+(?P<h1>.+?)$"
+COMMENT_PATTERN = r"%%.*?%%"
+HIGHLIGHT_PATTERN = r"==(?![\s=])(.+?)(?<![\s=])=="
+TABLE_PATTERN = r"(?<!\n)\n(\|.*\|\n\|[\s:-]+\|)"
+POST_NAME_PATTERN = r"\d{4}-\d{2}-\d{2}-.+\.(md|markdown)"
+PLACEHOLDER_PATTERN = r"^\x00\w+_\d+\x00$"

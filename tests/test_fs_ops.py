@@ -1,7 +1,7 @@
 import pytest
 
+from src.callout_styles import CALLOUT_CSS
 from src.fs_ops import announce_paths, build_img_map, ensure_css_exists, setup_dir
-from src.templates import CALLOUT_CSS
 
 
 @pytest.fixture
