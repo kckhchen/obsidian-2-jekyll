@@ -18,7 +18,5 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - run: |
-          uv venv
-          uv pip install -r requirements.txt ruff pytest
+      - run: pip install -r requirements.txt ruff pytest
       - run: make check
