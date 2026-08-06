@@ -5,8 +5,8 @@ fmt:
 	ruff check --fix .
 
 check:
-	ruff format --check .
-	ruff check .
+	ruff format .
+	ruff check --fix .
 	pytest -q
 
 test:
