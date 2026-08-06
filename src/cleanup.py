@@ -3,7 +3,7 @@ from pathlib import Path
 
 import frontmatter
 
-from .patterns import IMG_EXT, IMG_PATTERN, POST_NAME_PATTERN
+from src.patterns import IMG_EXT, IMG_PATTERN, POST_NAME_PATTERN
 
 
 def remove_stale_files(valid_files, post_dir, img_dir):

@@ -1,10 +1,9 @@
 import re
 from pathlib import Path
 
-from config import POST_FOLDER, PREVENT_DOUBLE_BASEURL
-
-from .patterns import ANCHOR_PATTERN, LINK_PATTERN, PLACEHOLDER_PATTERN
-from .utils import slugify
+from src.config import POST_FOLDER, PREVENT_DOUBLE_BASEURL
+from src.patterns import ANCHOR_PATTERN, LINK_PATTERN, PLACEHOLDER_PATTERN
+from src.utils import slugify
 
 
 def process_wikilinks(post, valid_files):

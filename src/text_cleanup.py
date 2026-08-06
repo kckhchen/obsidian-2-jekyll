@@ -1,6 +1,6 @@
 import re
 
-from .patterns import COMMENT_PATTERN, H1_PATTERN, HIGHLIGHT_PATTERN, TABLE_PATTERN
+from src.patterns import COMMENT_PATTERN, H1_PATTERN, HIGHLIGHT_PATTERN, TABLE_PATTERN
 
 
 def text_cleanup(post, layout="post"):

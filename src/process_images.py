@@ -2,9 +2,8 @@ import re
 import shutil
 from pathlib import Path
 
-from config import IMG_FOLDER
-
-from .patterns import IMG_EXT, IMG_PATTERN
+from src.config import IMG_FOLDER
+from src.patterns import IMG_EXT, IMG_PATTERN
 
 
 def process_embedded_images(post, img_map, img_dir):

@@ -3,13 +3,13 @@ from pathlib import Path
 
 import frontmatter
 
-from .fs_ops import announce_paths, build_img_map, ensure_css_exists, setup_dir
-from .process_callouts import process_callouts
-from .process_images import process_embedded_images
-from .process_links import process_wikilinks
-from .process_math import process_math
-from .text_cleanup import text_cleanup
-from .utils import shield_content, unshield
+from src.fs_ops import announce_paths, build_img_map, ensure_css_exists, setup_dir
+from src.process_callouts import process_callouts
+from src.process_images import process_embedded_images
+from src.process_links import process_wikilinks
+from src.process_math import process_math
+from src.text_cleanup import text_cleanup
+from src.utils import shield_content, unshield
 
 
 def pre_process(vault_dir, post_dir, img_dir, dry):
@@ -76,7 +76,6 @@ def _process_single_post(post, valid_files, img_map, img_dir, layout):
 
 
 def _iter_files(files, only_file=None):
-
     if only_file:
         filename = Path(only_file).stem
 

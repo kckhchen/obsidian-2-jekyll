@@ -1,8 +1,7 @@
 import re
 
-from config import MATH_RENDERING_MODE
-
-from .patterns import BLOCK_MATH_PATTERN, INLINE_MATH_PATTERN, MATH_ID_PATTERN
+from src.config import MATH_RENDERING_MODE
+from src.patterns import BLOCK_MATH_PATTERN, INLINE_MATH_PATTERN, MATH_ID_PATTERN
 
 
 def process_math(post):
