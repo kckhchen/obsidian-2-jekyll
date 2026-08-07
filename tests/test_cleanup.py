@@ -1,4 +1,3 @@
-from pathlib import Path
 from unittest.mock import patch
 
 import frontmatter
@@ -20,20 +19,6 @@ def fs_setup(tmp_path):
     post_dir.mkdir()
     img_dir.mkdir()
     return post_dir, img_dir
-
-
-@pytest.fixture
-def mock_post_loader():
-    with patch("src.cleanup.frontmatter.load") as mock_load:
-
-        def side_effect(path):
-            content = ""
-            if "has_img" in str(path):
-                content = "![[used_image.png]]"
-            return frontmatter.Post(content)
-
-        mock_load.side_effect = side_effect
-        yield mock_load
 
 
 class TestImageScanning:
@@ -68,18 +53,26 @@ class TestStaleListGeneration:
     def test_list_posts_to_be_removed(self, fs_setup):
         post_dir, _ = fs_setup
 
-        (post_dir / "2023-01-01-kept.md").touch()
-        (post_dir / "2023-01-01-stale.md").touch()
-        (post_dir / "random_file.txt").touch()
+        (post_dir / "2023-01-01-kept.md").write_text(
+            "---\ngenerator: obsidian-2-jekyll\n---"
+        )
+        (post_dir / "2023-01-01-stale.md").write_text(
+            "---\ngenerator: obsidian-2-jekyll\n---"
+        )
+        (post_dir / "2023-01-01-notmd.txt").write_text(
+            "---\ngenerator: obsidian-2-jekyll\n---"
+        )
+        (post_dir / "2023-01-01-notmanaged.md").write_text("---\n---")
 
-        valid_files = {"kept": {"dest_path": post_dir / "2023-01-01-kept.md"}}
+        current_posts = {"2023-01-01-kept.md"}
 
-        to_remove = _list_posts_to_be_removed(post_dir, valid_files)
+        to_remove = _list_posts_to_be_removed(post_dir, current_posts)
 
         filenames = [p.name for p in to_remove]
         assert "2023-01-01-stale.md" in filenames
         assert "2023-01-01-kept.md" not in filenames
-        assert "random_file.txt" not in filenames
+        assert "2023-01-01-notmd.txt" not in filenames
+        assert "2023-01-01-notmanaged.md" not in filenames
 
     def test_list_imgs_to_be_removed(self, fs_setup):
         _, img_dir = fs_setup
@@ -121,7 +114,7 @@ class TestDeletionSafety:
 
 
 class TestFullFlow:
-    def test_remove_stale_files_integration(self, fs_setup, mock_post_loader):
+    def test_remove_stale_files_integration(self, fs_setup, mocker):
         post_dir, img_dir = fs_setup
 
         valid_dest = post_dir / "2023-01-01-valid.md"
@@ -129,16 +122,18 @@ class TestFullFlow:
         used_img = img_dir / "used_image.png"
         stale_img = img_dir / "stale_image.jpg"
 
-        valid_dest.touch()
-        stale_dest.touch()
+        valid_dest.write_text(
+            "---\ngenerator: obsidian-2-jekyll\n---\n![[used_image.png]]"
+        )
+        stale_dest.write_text("---\ngenerator: obsidian-2-jekyll\n---")
         used_img.touch()
         stale_img.touch()
 
-        valid_files = {
-            "valid": {"source_path": Path("source/has_img.md"), "dest_path": valid_dest}
-        }
+        valid_files = {"valid": {"dest_path": valid_dest}}
 
         with patch("builtins.input", return_value="y"):
+            mock_get_post_images = mocker.patch("src.cleanup._get_post_images")
+            mock_get_post_images.return_value = {"used_image.png"}
             remove_stale_files(valid_files, post_dir, img_dir)
 
         assert valid_dest.exists()

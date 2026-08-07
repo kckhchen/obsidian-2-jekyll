@@ -11,15 +11,24 @@ def remove_stale_files(files, post_dir, img_dir):
     print(f"Post folder: [ {post_dir} ]")
     print(f"Image folder: [ {img_dir} ]\n")
 
+    current_posts = {data["dest_path"].name for data in files.values()}
+
     all_post_images = _get_post_images(files)
     to_be_removed = _list_posts_to_be_removed(
-        post_dir, files
+        post_dir, current_posts
     ) + _list_imgs_to_be_removed(img_dir, all_post_images)
 
     if to_be_removed:
         _remove_files(to_be_removed)
     else:
         print("No stale files found. Nothing will be removed.")
+
+
+def _is_managed(path):
+    try:
+        return frontmatter.load(path).get("generator") == "obsidian-2-jekyll"
+    except Exception:  # noqa: BLE001
+        return False
 
 
 def _get_post_images(files):
@@ -34,30 +43,29 @@ def _get_post_images(files):
     return all_images
 
 
-def _list_posts_to_be_removed(post_dir, files):
-    to_be_removed = []
-    current_posts = [data["dest_path"].name for data in files.values()]
-
-    for f in Path(post_dir).iterdir():
-        if f.is_file() and re.match(POST_NAME_PATTERN, f.name):
-            filename = f.name
-
-            if filename not in current_posts:
-                to_be_removed.append(Path(post_dir) / filename)
-
-    return to_be_removed
+def _list_posts_to_be_removed(post_dir, current_posts):
+    return [
+        f
+        for f in Path(post_dir).iterdir()
+        if f.is_file()
+        and re.match(POST_NAME_PATTERN, f.name)
+        and f.name not in current_posts
+        and _is_managed(f)
+    ]
 
 
 def _list_imgs_to_be_removed(img_dir, all_post_images):
-    to_be_removed = []
-
-    for img in Path(img_dir).iterdir():
-        if img.is_file() and img.suffix in IMG_EXT:
-            filename = img.name
-
-            if filename not in all_post_images:
-                to_be_removed.append(Path(img_dir) / filename)
-    return to_be_removed
+    if img_dir.name in ("images", "img", "assets"):
+        print(
+            f"Warning: IMG_FOLDER points at a shared-looking folder ({img_dir}). "
+            "Cleanup removes unreferenced images there. Consider a dedicated "
+            "subfolder such as assets/images/obsidian."
+        )
+    return [
+        img_dir / img.name
+        for img in img_dir.iterdir()
+        if img.is_file() and img.suffix in IMG_EXT and img.name not in all_post_images
+    ]
 
 
 def _remove_files(file_path_list):
