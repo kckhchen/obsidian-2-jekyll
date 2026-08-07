@@ -5,7 +5,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 env_path = Path(__file__).resolve().parent.parent / ".env"
-load_dotenv(dotenv_path=env_path, override=True)
+load_dotenv(dotenv_path=env_path)
 
 _vault_str = os.environ.get("VAULT_DIR", None)
 _jekyll_str = os.environ.get("JEKYLL_DIR", None)
@@ -13,7 +13,7 @@ _jekyll_str = os.environ.get("JEKYLL_DIR", None)
 VAULT_DIR = Path(_vault_str) if _vault_str else None
 JEKYLL_DIR = Path(_jekyll_str) if _jekyll_str else None
 
-POST_FOLDER = Path(os.environ.get("POST_FOLER", "_posts"))
+POST_FOLDER = Path(os.environ.get("POST_FOLDER", "_posts"))
 IMG_FOLDER = Path(os.environ.get("IMG_FOLDER", "assets/images/obsidian"))
 POST_DIR = JEKYLL_DIR / POST_FOLDER if JEKYLL_DIR else None
 IMG_DIR = JEKYLL_DIR / IMG_FOLDER if JEKYLL_DIR else None
