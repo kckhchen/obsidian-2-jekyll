@@ -49,11 +49,11 @@ cd obsidian-2-jekyll
 
 #### 2. Configure your paths
 
-Create a `config_local.py` in the project root. It is git-ignored, so your
+Create a `.env` in the project root. It is git-ignored, so your
 personal paths stay out of version control and `git pull` will never conflict.
 
 ```bash
-cp config.py config_local.py
+cp .env.example .env
 ```
 
 Then edit `config_local.py`:
@@ -64,19 +64,10 @@ Then edit `config_local.py`:
 | `JEKYLL_DIR` | Your Jekyll project folder  | `/Users/me/Jekyll-Website` |
 
 ```python
-# config_local.py
-VAULT_DIR = "/Users/me/Obsidian-Vault"  # Path to Your Vault Folder
-JEKYLL_DIR = "/Users/me/Jekyll-Website"  # Path to Your Jekyll Folder
+# .env
+VAULT_DIR="/Users/me/Obsidian-Vault"  # Path to Your Vault Folder
+JEKYLL_DIR="/Users/me/Jekyll-Website"  # Path to Your Jekyll Folder
 ```
-
-Any value set in `config_local.py` overrides the matching one in `config.py`.
-You only need to include the settings you actually want to change.
-
-> [!TIP]
-> **Don't edit `config.py` directly.** It is tracked by git and receives new
-> settings as the tool evolves, so local edits there will collide the next time
-> you `git pull`. Keeping your paths in `config_local.py` lets you update with a
-> plain `git pull` forever.
 
 #### 3. Setup Your Posts
 
