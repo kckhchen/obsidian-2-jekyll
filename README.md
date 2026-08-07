@@ -117,7 +117,7 @@ This project uses `pytest` for testing. The tests are in the `tests` folder. To 
 
 1. Install Dependencies
 ```bash
-pip install pytest pytest-spec pytest-mock
+pip install -r requirements-dev.txt
 ```
 
 2. Run the Test Suite
