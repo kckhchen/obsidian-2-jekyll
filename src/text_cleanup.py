@@ -4,15 +4,15 @@ from src.patterns import COMMENT_PATTERN, H1_PATTERN, HIGHLIGHT_PATTERN, TABLE_P
 
 
 def text_cleanup(post, layout="post"):
-    post = process_h1(post, layout)
-    post = strip_comments(post)
-    post = process_highlights(post)
-    post = ensure_table_spacing(post)
+    post = _process_h1(post, layout)
+    post = _strip_comments(post)
+    post = _process_highlights(post)
+    post = _ensure_table_spacing(post)
 
     return post
 
 
-def process_h1(post, layout="post"):
+def _process_h1(post, layout="post"):
     post["layout"] = post.get("layout") or layout
     h1_match = re.search(H1_PATTERN, post.content, flags=re.MULTILINE)
     if h1_match:
@@ -24,18 +24,18 @@ def process_h1(post, layout="post"):
     return post
 
 
-def strip_comments(post):
+def _strip_comments(post):
     post.content = re.sub(COMMENT_PATTERN, "", post.content, flags=re.DOTALL)
     return post
 
 
-def process_highlights(post):
+def _process_highlights(post):
     post.content = re.sub(
         HIGHLIGHT_PATTERN, "<mark>" + r"\g<1>" + "</mark>", post.content
     )
     return post
 
 
-def ensure_table_spacing(post):
+def _ensure_table_spacing(post):
     post.content = re.sub(TABLE_PATTERN, r"\n\n\1", post.content)
     return post
