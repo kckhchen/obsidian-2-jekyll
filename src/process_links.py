@@ -1,18 +1,18 @@
 import re
 from pathlib import Path
 
-from src.config import POST_FOLDER, PREVENT_DOUBLE_BASEURL
 from src.patterns import ANCHOR_PATTERN, LINK_PATTERN, PLACEHOLDER_PATTERN
 from src.utils import slugify
 
 
-def process_wikilinks(post, files):
+def process_wikilinks(post, files, destination, prevent_double_baseurl):
+    baseurl = not prevent_double_baseurl
     post.content = re.sub(
         ANCHOR_PATTERN, _anchor_replacer, post.content, flags=re.MULTILINE
     )
     post.content = re.sub(
         LINK_PATTERN,
-        lambda m: _link_replacer(m, files, POST_FOLDER, PREVENT_DOUBLE_BASEURL),
+        lambda m: _link_replacer(m, files, destination, baseurl),
         post.content,
     )
     return post
@@ -27,8 +27,7 @@ def _anchor_replacer(match):
         return f"{{: #secid{anchor}}}"
 
 
-def _link_replacer(match, valid_files, post_folder, prevent_double_baseurl):
-    base_url = not prevent_double_baseurl
+def _link_replacer(match, valid_files, post_folder, baseurl):
     target = match.group("wikilink") or match.group("mdlink")
     target = target.strip()
     display = match.group("wiki_display") or match.group("md_display") or target
@@ -65,7 +64,7 @@ def _link_replacer(match, valid_files, post_folder, prevent_double_baseurl):
 
     dest = valid_files[filename]["dest_path"].name
 
-    if base_url:
+    if baseurl:
         return f"[{display}]({{{{ site.baseurl }}}}{{% link {post_folder / dest} %}}{anchor_suffix})"
     else:
         return f"[{display}]({{% link {post_folder / dest} %}}{anchor_suffix})"

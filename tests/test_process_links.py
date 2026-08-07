@@ -6,11 +6,6 @@ from src.process_links import process_wikilinks
 
 
 @pytest.fixture
-def mock_path(monkeypatch):
-    monkeypatch.setattr("src.process_links.PREVENT_DOUBLE_BASEURL", True)
-
-
-@pytest.fixture
 def valid_files_map():
     return {
         "A Test Post": {
@@ -88,8 +83,8 @@ class TestProcessWikilinks:
         ],
     )
     def test_process_wikilinks_scenarios(
-        self, input_text, expected, valid_files_map, postify, mock_path
+        self, input_text, expected, valid_files_map, postify
     ):
         post = postify(input_text)
-        result_post = process_wikilinks(post, valid_files_map)
+        result_post = process_wikilinks(post, valid_files_map, Path("_posts"), "False")
         assert result_post.content == expected

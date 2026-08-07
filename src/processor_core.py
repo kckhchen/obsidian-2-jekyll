@@ -10,7 +10,13 @@ from src.process_math import process_math
 from src.text_cleanup import text_cleanup
 from src.utils import shield_content, unshield
 from src.fs_ops import copy_images, build_img_map
-from src.config import IMG_FOLDER, VAULT_DIR, IMG_DIR
+from src.config import (
+    IMG_FOLDER,
+    VAULT_DIR,
+    IMG_DIR,
+    POST_FOLDER,
+    PREVENT_DOUBLE_BASEURL,
+)
 
 
 def process_posts(files, dry, layout, force, only=None):
@@ -31,7 +37,9 @@ def process_posts(files, dry, layout, force, only=None):
                     img_map = build_img_map(VAULT_DIR)
                     copy_images(post, img_map, IMG_DIR)
                     post = process_embedded_images(post, img_map, IMG_FOLDER)
-                    post = process_wikilinks(post, files)
+                    post = process_wikilinks(
+                        post, files, POST_FOLDER, PREVENT_DOUBLE_BASEURL
+                    )
                     post = process_callouts(post)
 
                     post = unshield(
