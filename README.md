@@ -7,6 +7,9 @@ A theme-agnostic tool that makes your Obsidian articles Jekyll-ready.
 
 This is a tool build with python that scans your obsidian vault, formats your articles to make them compatible with Jekyll's requirements, and saves them to your Jekyll project folder, waiting to be published, so you can keep your articles clean, while Jekyll gets its preferred flavor.
 
+> [!IMPORTANT]
+> This tool is under active maintenance. Backward compatibility is not guaranteed on minor digit changes. Also, please run the tool with `--force` flag to ensure newest changes take effect.
+
 ## Features
 
 - Auto-generates all the essentials for the frontmatter.
@@ -114,7 +117,7 @@ This project uses `pytest` for testing. The tests are in the `tests` folder. To 
 
 1. Install Dependencies
 ```bash
-pip install pytest pytest-spec
+pip install pytest pytest-spec pytest-mock
 ```
 
 2. Run the Test Suite
