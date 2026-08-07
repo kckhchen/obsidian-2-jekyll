@@ -5,6 +5,8 @@ import frontmatter
 
 from src.patterns import IMG_EXT, IMG_PATTERN, POST_NAME_PATTERN
 
+SHARED_LOOKING = {"images", "img", "assets", "media", "static", "uploads", "files"}
+
 
 def remove_stale_files(files, post_dir, img_dir):
     print("\nStarting cleaning up process...")
@@ -55,7 +57,7 @@ def _list_posts_to_be_removed(post_dir, current_posts):
 
 
 def _list_imgs_to_be_removed(img_dir, all_post_images):
-    if img_dir.name in ("images", "img", "assets"):
+    if img_dir.name in SHARED_LOOKING:
         print(
             f"Warning: IMG_FOLDER points at a shared-looking folder ({img_dir}). "
             "Cleanup removes unreferenced images there. Consider a dedicated "
@@ -64,7 +66,9 @@ def _list_imgs_to_be_removed(img_dir, all_post_images):
     return [
         img_dir / img.name
         for img in img_dir.iterdir()
-        if img.is_file() and img.suffix in IMG_EXT and img.name not in all_post_images
+        if img.is_file()
+        and img.suffix.lower() in IMG_EXT
+        and img.name not in all_post_images
     ]
 
 
