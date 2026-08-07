@@ -1,13 +1,14 @@
 import argparse
 
 from src.cleanup import remove_stale_files
-from src.config import IMG_DIR, POST_DIR, VAULT_DIR
+from src.config import IMG_DIR, POST_DIR, VAULT_DIR, validate_config
 from src.fs_ops import ensure_css_exists, setup_dir
 from src.processor_core import process_posts
 from src.utils import get_valid_files
 
 
 def main(args):
+    validate_config()
     valid_files = get_valid_files(VAULT_DIR, POST_DIR)
 
     if not args.cleanup:
