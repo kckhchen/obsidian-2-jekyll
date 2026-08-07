@@ -18,7 +18,7 @@ def main(args):
         print(f"Start processing posts in Vault [ {VAULT_DIR} ]...")
         print(f"Destination path: [ {POST_DIR} ]\n")
 
-        setup_dir(POST_DIR, IMG_DIR, args.dry)
+        setup_dir([POST_DIR, IMG_DIR], args.dry)
         ensure_css_exists("obsidian-callouts.html", args.dry)
         process_posts(
             valid_files,

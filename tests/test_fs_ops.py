@@ -16,7 +16,7 @@ def test_setup_dir_creates_folders(tmp_path, capsys):
 
     assert not post_dir.exists()
 
-    setup_dir(post_dir, img_dir, dry=False)
+    setup_dir([post_dir, img_dir], dry=False)
 
     assert post_dir.exists()
     assert img_dir.exists()
@@ -29,7 +29,7 @@ def test_setup_dir_respects_dry_run(tmp_path):
     post_dir = tmp_path / "posts"
     img_dir = tmp_path / "img"
 
-    setup_dir(post_dir, img_dir, dry=True)
+    setup_dir([post_dir, img_dir], dry=True)
 
     assert not post_dir.exists()
 

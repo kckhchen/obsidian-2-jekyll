@@ -9,7 +9,7 @@ from src.process_links import process_wikilinks
 from src.process_math import process_math
 from src.text_cleanup import text_cleanup
 from src.utils import shield_content, unshield
-from src.fs_ops import copy_images, build_img_map
+from src.fs_ops import copy_images
 from src.config import (
     IMG_FOLDER,
     VAULT_DIR,
@@ -18,6 +18,7 @@ from src.config import (
     PREVENT_DOUBLE_BASEURL,
     MATH_RENDERING_MODE,
 )
+from src.patterns import IMG_EXT
 
 
 def process_posts(files, dry, layout, force, only=None):
@@ -35,7 +36,7 @@ def process_posts(files, dry, layout, force, only=None):
                     post, math_blocks = shield_content(post, mode="math")
 
                     post = text_cleanup(post, layout)
-                    img_map = build_img_map(VAULT_DIR)
+                    img_map = _build_img_map(VAULT_DIR)
                     copy_images(post, img_map, IMG_DIR)
                     post = process_embedded_images(post, img_map, IMG_FOLDER)
                     post = process_wikilinks(
@@ -92,3 +93,18 @@ def _iter_files(files, only_file=None):
             dest = data["dest_path"]
             post = frontmatter.load(src)
             yield src, dest, post
+
+
+def _build_img_map(dir):
+    img_map = {}
+    for p in sorted(dir.rglob("*")):
+        if p.is_file() and p.suffix.lower() in IMG_EXT:
+            key = p.name.lower()
+            if key in img_map:
+                print(
+                    f"Warning: Duplicate image name '{p.name}'. "
+                    f"Using {img_map[key]}, ignoring {p}"
+                )
+                continue
+            img_map[key] = p
+    return img_map
