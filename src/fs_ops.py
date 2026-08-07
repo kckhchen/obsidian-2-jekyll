@@ -1,8 +1,10 @@
 from pathlib import Path
+import shutil
+import re
 
 from src.callout_styles import CALLOUT_CSS
 from src.config import INCLUDES_FOLDER, JEKYLL_DIR
-from src.patterns import IMG_EXT
+from src.patterns import IMG_EXT, IMG_PATTERN
 
 
 def build_img_map(dir):
@@ -36,3 +38,10 @@ def ensure_css_exists(css_name, dry):
         if not dry:
             css_path.parent.mkdir(parents=True, exist_ok=True)
             css_path.write_text(CALLOUT_CSS, encoding="utf-8")
+
+
+def copy_images(post, img_map, img_dir):
+    for match in re.finditer(IMG_PATTERN, post.content):
+        is_md = match.group("mdlink") is not None
+        img_name = (match.group("mdlink") if is_md else match.group("wikilink")).strip()
+        shutil.copy2(img_map[img_name.lower()], img_dir / img_name)

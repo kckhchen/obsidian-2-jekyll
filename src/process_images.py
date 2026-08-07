@@ -1,15 +1,13 @@
 import re
-import shutil
 from pathlib import Path
 
-from src.config import IMG_FOLDER
 from src.patterns import IMG_EXT, IMG_PATTERN
 
 
-def process_embedded_images(post, img_map, img_dir):
+def process_embedded_images(post, img_map, destination):
     post.content = re.sub(
         IMG_PATTERN,
-        lambda m: _embedded_image_replacer(m, img_map, img_dir),
+        lambda m: _embedded_image_replacer(m, img_map, destination),
         post.content,
     )
     return post
@@ -29,9 +27,7 @@ def _split_opt(raw, is_md):
     return alt.strip(), (w if w.isdigit() else ""), (h if h.isdigit() else "")
 
 
-def _embedded_image_replacer(match, img_map, img_dir):
-    img_folder = Path(IMG_FOLDER)
-
+def _embedded_image_replacer(match, img_map, img_folder):
     is_md = match.group("mdlink") is not None
     img_name = (match.group("mdlink") if is_md else match.group("wikilink")).strip()
     alt, width, height = _split_opt(
@@ -42,7 +38,6 @@ def _embedded_image_replacer(match, img_map, img_dir):
         return f"![{alt}]({img_name})"
 
     if img_name.lower() in img_map:
-        shutil.copy2(img_map[img_name.lower()], img_dir / img_name)
         updated_link = (
             f"![{alt}]({{{{ site.baseurl }}}}{{% link {img_folder / img_name} %}})"
         )

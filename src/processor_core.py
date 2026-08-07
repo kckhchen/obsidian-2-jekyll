@@ -9,9 +9,11 @@ from src.process_links import process_wikilinks
 from src.process_math import process_math
 from src.text_cleanup import text_cleanup
 from src.utils import shield_content, unshield
+from src.fs_ops import copy_images, build_img_map
+from src.config import IMG_FOLDER, VAULT_DIR, IMG_DIR
 
 
-def process_posts(files, img_map, img_dir, dry, layout, force, only=None):
+def process_posts(files, dry, layout, force, only=None):
     try:
         skipped = 0
         for src, dest, post in sorted(_iter_files(files, only)):
@@ -26,7 +28,9 @@ def process_posts(files, img_map, img_dir, dry, layout, force, only=None):
                     post, math_blocks = shield_content(post, mode="math")
 
                     post = text_cleanup(post, layout)
-                    post = process_embedded_images(post, img_map, img_dir)
+                    img_map = build_img_map(VAULT_DIR)
+                    copy_images(post, img_map, IMG_DIR)
+                    post = process_embedded_images(post, img_map, IMG_FOLDER)
                     post = process_wikilinks(post, files)
                     post = process_callouts(post)
 
