@@ -3,17 +3,18 @@ import re
 from src.config import MATH_RENDERING_MODE
 from src.patterns import BLOCK_MATH_PATTERN, INLINE_MATH_PATTERN, MATH_ID_PATTERN
 
+MATHJAX = '<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>'
+
 
 def process_math(post):
     if _needs_math(post.content):
-        mathjax_script = '<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>'
         post.content = re.sub(INLINE_MATH_PATTERN, r"\\\\(\1\\\\)", post.content)
         post.content = re.sub(
             BLOCK_MATH_PATTERN, r"\n\1\n", post.content, flags=re.DOTALL
         )
 
         if MATH_RENDERING_MODE == "inject_cdn":
-            post.content += f"\n\n{mathjax_script}"
+            post.content += f"\n\n{MATHJAX}"
         elif MATH_RENDERING_MODE == "metadata":
             post["math"] = post.get("math") or True
 
@@ -30,6 +31,7 @@ def _needs_math(content):
 
 
 def _fix_math_id(post):
+    # this is needed since anochors of math blocks should be exactly one line below the $$.
     post.content = re.sub(MATH_ID_PATTERN, r"$$\n\1", post.content)
 
     return post
