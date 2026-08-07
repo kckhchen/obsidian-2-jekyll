@@ -16,6 +16,7 @@ from src.config import (
     IMG_DIR,
     POST_FOLDER,
     PREVENT_DOUBLE_BASEURL,
+    MATH_RENDERING_MODE,
 )
 
 
@@ -45,7 +46,7 @@ def process_posts(files, dry, layout, force, only=None):
                     post = unshield(
                         post, math_blocks, lambda x: re.sub(r"\|", r" \\vert ", x)
                     )
-                    post = process_math(post)
+                    post = process_math(post, MATH_RENDERING_MODE)
 
                     post = unshield(post, url_blocks)
                     post = unshield(post, code_blocks)

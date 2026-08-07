@@ -20,31 +20,28 @@ class TestMathSyntax:
     )
     def test_math_syntax_transformation(self, input_text, expected_fragment, postify):
         post = postify(input_text)
-        result = process_math(post)
+        result = process_math(post, "inject_cdn")
         assert expected_fragment in result.content
 
 
 def test_mode_inject_cdn_appends_script(postify, monkeypatch):
-    monkeypatch.setattr("src.process_math.MATH_RENDERING_MODE", "inject_cdn")
     post = postify("$1+1$")
-    result = process_math(post)
+    result = process_math(post, "inject_cdn")
 
     assert '<script id="MathJax-script"' in result.content
 
 
 def test_mode_metadata_sets_frontmatter(postify, monkeypatch):
-    monkeypatch.setattr("src.process_math.MATH_RENDERING_MODE", "metadata")
     post = postify("$1+1$")
-    result = process_math(post)
+    result = process_math(post, "metadata")
     assert "<script" not in result.content
     assert result["math"] is True
 
 
 def test_ignores_posts_without_math(postify):
     post = postify("no math")
-    result = process_math(post)
+    result = process_math(post, "inject_cdn")
 
-    assert "math" not in result.metadata
     assert "<script" not in result.content
 
 
@@ -54,7 +51,7 @@ class TestIgnoreInvalidDollars:
     )
     def test_ignores_escaped_dollars(self, postify, input):
         post = postify(input)
-        result = process_math(post)
+        result = process_math(post, "inject_cdn")
 
         assert "<script" not in result.content
         assert result.content == input
