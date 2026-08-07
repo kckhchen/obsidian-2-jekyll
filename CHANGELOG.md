@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.8.1](https://github.com/kckhchen/obsidian-2-jekyll/compare/v0.8.0...v0.8.1) (2026-08-07)
+
+
+### Features
+
+* add environmental variable check in config.py ([608b8ce](https://github.com/kckhchen/obsidian-2-jekyll/commit/608b8ce61a27c28be0d6520d89ac7a95d91e406b))
+* update shared folder check in image cleanup process ([a8d00b9](https://github.com/kckhchen/obsidian-2-jekyll/commit/a8d00b9a9ebf8e8bffc9fa86f8c22df2d6dd42bb))
+
 ## [0.8.0](https://github.com/kckhchen/obsidian-2-jekyll/compare/v0.7.2...v0.8.0) (2026-08-07)
 
 
