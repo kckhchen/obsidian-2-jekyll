@@ -1,0 +1,28 @@
+# Changelog
+
+## [0.8.0](https://github.com/kckhchen/obsidian-2-jekyll/compare/v0.7.2...v0.8.0) (2026-08-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* restructure code so env vars are read from .env via config
+
+### Features
+
+* add generator signature in frontmatter for mark managed files ([30c1812](https://github.com/kckhchen/obsidian-2-jekyll/commit/30c18120f827fdd85670bce95c6478a74bde6acd))
+* add Makefile for formatting and testing commands ([ecf9742](https://github.com/kckhchen/obsidian-2-jekyll/commit/ecf97428df7456b55685670cae1fafc9ea9c07d1))
+
+
+### Bug Fixes
+
+* fix ci.yml to create venv first ([c6115c6](https://github.com/kckhchen/obsidian-2-jekyll/commit/c6115c6834a00c81d2099a16968ff8158ce91736))
+* move make_path to fs_ops ([88934df](https://github.com/kckhchen/obsidian-2-jekyll/commit/88934dfd0ef89fce7c8a0cfee916abf97c244ec3))
+* remove path making process from main.py ([effbc06](https://github.com/kckhchen/obsidian-2-jekyll/commit/effbc06785c7be586d63710244ef23c6c21cf092))
+* remove uv and use pip manager for ci.yml ([c06266c](https://github.com/kckhchen/obsidian-2-jekyll/commit/c06266ca3ba6cbca93a5f047a932b612edea517a))
+* **utils:** remove misleading ctime ([e78a67c](https://github.com/kckhchen/obsidian-2-jekyll/commit/e78a67cecc383f556d0a7f77efc031167d484ff3))
+* validate config in main to avoid import trap ([a5208a5](https://github.com/kckhchen/obsidian-2-jekyll/commit/a5208a57c960602502e323904278e5befe452305))
+
+
+### Code Refactoring
+
+* restructure code so env vars are read from .env via config ([dac083d](https://github.com/kckhchen/obsidian-2-jekyll/commit/dac083d8964c301bd584926848344271e2f19364))
