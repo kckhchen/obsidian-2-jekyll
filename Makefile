@@ -3,10 +3,11 @@
 fmt:
 	ruff format .
 	ruff check --fix .
+	pytest -q
 
 check:
-	ruff format .
-	ruff check --fix .
+	ruff format --check .
+	ruff check .
 	pytest -q
 
 test:
