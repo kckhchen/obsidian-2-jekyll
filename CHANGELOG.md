@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.1](https://github.com/kckhchen/obsidian-2-jekyll/compare/v0.8.0...v0.8.1) (2026-08-07)
+
+
+### Bug Fixes
+
+* correct typo in config.py and set override=False for load_env ([13c05a0](https://github.com/kckhchen/obsidian-2-jekyll/commit/13c05a0466c43ce2b9e9f2d70d60e7ff4144372d))
+
 ## [0.8.0](https://github.com/kckhchen/obsidian-2-jekyll/compare/v0.7.2...v0.8.0) (2026-08-07)
 
 
