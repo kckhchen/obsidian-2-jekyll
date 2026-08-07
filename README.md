@@ -59,7 +59,7 @@ personal paths stay out of version control and `git pull` will never conflict.
 cp .env.example .env
 ```
 
-Then edit `config_local.py`:
+Then edit `.env`:
 
 | Variable     | Description                 | Example                    |
 | ------------ | --------------------------- | -------------------------- |
