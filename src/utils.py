@@ -10,7 +10,7 @@ from .patterns import BLOCK_MATH_PATTERN, CODE_PATTERN, INLINE_MATH_PATTERN, URL
 local_tz = datetime.now().astimezone().tzinfo
 
 
-def get_creation_time(filepath):
+def _get_creation_time(filepath):
     stat = Path(filepath).stat()
     timestamp = getattr(stat, "st_birthtime", None) or stat.st_mtime
     return datetime.fromtimestamp(timestamp, tz=local_tz).strftime("%Y-%m-%d")
@@ -102,7 +102,7 @@ def _get_dest_fpath(post, source_fpath, post_dir):
     if date_val:
         date_str = str(date_val)[:10]
     else:
-        date_str = get_creation_time(source_fpath)
+        date_str = _get_creation_time(source_fpath)
 
     clean_stem = re.sub(r"^\d{4}-\d{2}-\d{2}[-_]?", "", source_fpath.stem)
     new_name = f"{date_str}-{slugify(clean_stem)}{source_fpath.suffix}"

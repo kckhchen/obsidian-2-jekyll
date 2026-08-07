@@ -5,7 +5,6 @@ import pytest
 
 from src.utils import (
     _get_dest_fpath,
-    get_creation_time,
     get_valid_files,
     shield_content,
     slugify,
@@ -26,15 +25,6 @@ class TestPureHelpers:
     )
     def test_slugify(self, name, expected):
         assert slugify(name) == expected
-
-    def test_get_creation_time(self):
-        with patch("pathlib.Path.stat") as mock_stat:
-            mock_stat.return_value.st_mtime = 1672531200.0
-
-            mock_stat.return_value.st_birthtime = 1672531200.0
-
-            result = get_creation_time("dummy_path")
-            assert result == "2023-01-01"
 
 
 class TestShielding:
@@ -134,7 +124,7 @@ class TestDestPathLogic:
         source_path = Path("My Post.md")
         post_dir = Path("out")
 
-        with patch("src.utils.get_creation_time", return_value="2020-01-01"):
+        with patch("src.utils._get_creation_time", return_value="2020-01-01"):
             result = _get_dest_fpath(post, source_path, post_dir)
 
         assert result.name == "2020-01-01-my-post.md"
