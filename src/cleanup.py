@@ -6,14 +6,14 @@ import frontmatter
 from src.patterns import IMG_EXT, IMG_PATTERN, POST_NAME_PATTERN
 
 
-def remove_stale_files(valid_files, post_dir, img_dir):
+def remove_stale_files(files, post_dir, img_dir):
     print("\nStarting cleaning up process...")
     print(f"Post folder: [ {post_dir} ]")
     print(f"Image folder: [ {img_dir} ]\n")
 
-    all_post_images = _get_post_images(valid_files)
+    all_post_images = _get_post_images(files)
     to_be_removed = _list_posts_to_be_removed(
-        post_dir, valid_files
+        post_dir, files
     ) + _list_imgs_to_be_removed(img_dir, all_post_images)
 
     if to_be_removed:
@@ -22,10 +22,10 @@ def remove_stale_files(valid_files, post_dir, img_dir):
         print("No stale files found. Nothing will be removed.")
 
 
-def _get_post_images(valid_files):
+def _get_post_images(files):
     all_images = set()
 
-    for data in valid_files.values():
+    for data in files.values():
         src = data["source_path"]
         post = frontmatter.load(src)
         img_list = _scan_post_images(post)
@@ -34,9 +34,9 @@ def _get_post_images(valid_files):
     return all_images
 
 
-def _list_posts_to_be_removed(post_dir, valid_files):
+def _list_posts_to_be_removed(post_dir, files):
     to_be_removed = []
-    current_posts = [data["dest_path"].name for data in valid_files.values()]
+    current_posts = [data["dest_path"].name for data in files.values()]
 
     for f in Path(post_dir).iterdir():
         if f.is_file() and re.match(POST_NAME_PATTERN, f.name):
