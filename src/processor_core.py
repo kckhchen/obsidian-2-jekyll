@@ -3,22 +3,22 @@ from pathlib import Path
 
 import frontmatter
 
+from src.config import (
+    IMG_DIR,
+    IMG_FOLDER,
+    MATH_RENDERING_MODE,
+    POST_FOLDER,
+    PREVENT_DOUBLE_BASEURL,
+    VAULT_DIR,
+)
+from src.fs_ops import copy_images
+from src.patterns import IMG_EXT
 from src.process_callouts import process_callouts
 from src.process_images import process_embedded_images
 from src.process_links import process_wikilinks
 from src.process_math import process_math
 from src.text_cleanup import text_cleanup
 from src.utils import shield_content, unshield
-from src.fs_ops import copy_images
-from src.config import (
-    IMG_FOLDER,
-    VAULT_DIR,
-    IMG_DIR,
-    POST_FOLDER,
-    PREVENT_DOUBLE_BASEURL,
-    MATH_RENDERING_MODE,
-)
-from src.patterns import IMG_EXT
 
 
 def process_posts(files, dry, layout, force, only=None):

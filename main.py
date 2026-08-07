@@ -1,7 +1,7 @@
 import argparse
 
 from src.cleanup import remove_stale_files
-from src.config import VAULT_DIR, POST_DIR, IMG_DIR
+from src.config import IMG_DIR, POST_DIR, VAULT_DIR
 from src.fs_ops import ensure_css_exists, setup_dir
 from src.processor_core import process_posts
 from src.utils import get_valid_files

@@ -1,6 +1,6 @@
-from pathlib import Path
-import shutil
 import re
+import shutil
+from pathlib import Path
 
 from src.callout_styles import CALLOUT_CSS
 from src.config import INCLUDES_FOLDER, JEKYLL_DIR

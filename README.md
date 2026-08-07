@@ -65,8 +65,8 @@ Then edit `config_local.py`:
 
 ```python
 # .env
-VAULT_DIR="/Users/me/Obsidian-Vault"  # Path to Your Vault Folder
-JEKYLL_DIR="/Users/me/Jekyll-Website"  # Path to Your Jekyll Folder
+VAULT_DIR = "/Users/me/Obsidian-Vault"  # Path to Your Vault Folder
+JEKYLL_DIR = "/Users/me/Jekyll-Website"  # Path to Your Jekyll Folder
 ```
 
 #### 3. Setup Your Posts
