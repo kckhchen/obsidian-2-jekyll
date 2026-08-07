@@ -2,7 +2,7 @@ import os
 import sys
 from pathlib import Path
 
-from dotenv import load_dotenv
+from dotenv import load_dotenv, dotenv_values
 
 env_path = Path(__file__).resolve().parent.parent / ".env"
 load_dotenv(dotenv_path=env_path)
@@ -33,3 +33,18 @@ def validate_config():
     if JEKYLL_DIR is None or not Path(JEKYLL_DIR).exists():
         print(f"STARTUP FAILED: JEKYLL_DIR doesn't exist: {JEKYLL_DIR}")
         sys.exit(1)
+
+
+KNOWN = {
+    "VAULT_DIR",
+    "JEKYLL_DIR",
+    "POST_FOLDER",
+    "IMG_FOLDER",
+    "INCLUDES_FOLDER",
+    "MATH_RENDERING_MODE",
+    "PREVENT_DOUBLE_BASEURL",
+}
+
+for key in dotenv_values(env_path) if env_path.exists() else {}:
+    if key not in KNOWN:
+        print(f"Warning: Unknown setting in .env: {key}")
