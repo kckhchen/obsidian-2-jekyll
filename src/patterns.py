@@ -14,7 +14,7 @@ LINK_PATTERN = r"(?<!\!)\[\[(?P<wikilink>[^|\]]+?)(?:\\?\|(?P<wiki_display>[^\]]
 ANCHOR_PATTERN = r"(^|\s)\^(?P<anchor>[a-zA-Z0-9-]+)(?=\s|$)"
 URL_PATTERN = r"https?://[^)\s]+"
 H1_PATTERN = r"^\s*#\s+(?P<h1>.+?)$"
-COMMENT_PATTERN = r"%%.*?%%"
+COMMENT_PATTERN = r"%%[\s\S]*?%%"
 HIGHLIGHT_PATTERN = r"==(?![\s=])(.+?)(?<![\s=])=="
 TABLE_PATTERN = r"(?<!\n)\n(\|.*\|\n\|[\s:-]+\|)"
 POST_NAME_PATTERN = r"\d{4}-\d{2}-\d{2}-.+\.(md|markdown|MD|MARKDOWN)"
