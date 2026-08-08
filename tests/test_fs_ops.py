@@ -1,14 +1,26 @@
+from pathlib import Path
+
 import frontmatter
 import pytest
 
 from src.callout_styles import CALLOUT_CSS
 from src.fs_ops import copy_images, ensure_css_exists, setup_dir
+from src.process_images import process_embedded_images
 
 
 @pytest.fixture
 def css_mock(tmp_path, monkeypatch):
     monkeypatch.setattr("src.fs_ops.INCLUDES_FOLDER", "_includes")
     monkeypatch.setattr("src.fs_ops.JEKYLL_DIR", str(tmp_path))
+
+
+@pytest.fixture
+def vault_images(tmp_path):
+    vault = tmp_path / "vault"
+    vault.mkdir()
+    (vault / "chart.png").write_bytes(b"IMG")
+    (vault / "Photo.JPG").write_bytes(b"IMG2")
+    return {"chart.png": vault / "chart.png", "photo.jpg": vault / "Photo.JPG"}
 
 
 def test_setup_dir_creates_folders(tmp_path, capsys):
@@ -64,3 +76,68 @@ def test_ensure_css_skips_if_already_exists(tmp_path, css_mock, capsys):
 def test_external_image_url_does_not_crash(tmp_path):
     post = frontmatter.Post("![](https://cdn.example.com/x.png)")
     copy_images(post, {}, tmp_path)
+
+
+HOSTILE = [
+    pytest.param("![](https://cdn.example.com/x.png)", id="external-url"),
+    pytest.param("![](\x00URL_0\x00)", id="shielded-url"),
+    pytest.param("![](//cdn.example.com/x.png)", id="protocol-relative"),
+    pytest.param("![[missing.png]]", id="not-in-vault"),
+    pytest.param("![[note.pdf]]", id="non-image"),
+    pytest.param("![[]]", id="empty-embed"),
+    pytest.param("", id="empty-content"),
+]
+
+
+class TestCopyImages:
+    @pytest.mark.parametrize("content", HOSTILE)
+    def test_copy_images_skips_unresolvable(self, tmp_path, postify, content):
+        out = tmp_path / "out"
+        out.mkdir()
+        copy_images(postify(content), {}, out)
+        assert list(out.iterdir()) == []
+
+    @pytest.mark.parametrize(
+        "content, expected",
+        [
+            ("![[chart.png]]", ["chart.png"]),
+            ("![[chart.png|300x200]]", ["chart.png"]),
+            ("![架構圖|400](chart.png)", ["chart.png"]),
+            ("![[photo.JPG]]", ["photo.JPG"]),
+            ("![[chart.png]] ![[missing.png]]", ["chart.png"]),
+        ],
+    )
+    def test_copy_images_writes_expected(
+        self, tmp_path, postify, vault_images, content, expected
+    ):
+        out = tmp_path / "out"
+        out.mkdir()
+        copy_images(postify(content), vault_images, out)
+        assert sorted(p.name for p in out.iterdir()) == expected
+
+    @pytest.mark.parametrize(
+        "content",
+        [
+            "![[chart.png]]",
+            "![[missing.png]]",
+            "![](https://a/b.png)",
+            "![[note.pdf]]",
+            "![](\x00URL_0\x00)",
+            "![架構圖|400](chart.png)",
+        ],
+    )
+    def test_copy_and_rewrite_agree(self, tmp_path, postify, vault_images, content):
+        out = tmp_path / "out"
+        out.mkdir()
+
+        copy_images(postify(content), vault_images, out)
+        copied = bool(list(out.iterdir()))
+
+        rewritten = (
+            "{% link"
+            in process_embedded_images(
+                postify(content), vault_images, Path("assets/images/obsidian")
+            ).content
+        )
+
+        assert copied == rewritten
