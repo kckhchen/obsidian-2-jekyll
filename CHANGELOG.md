@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.8.2](https://github.com/kckhchen/obsidian-2-jekyll/compare/v0.8.1...v0.8.2) (2026-08-08)
+
+
+### Bug Fixes
+
+* make _get_post_images scan images from the output end instead of input end ([8bc2f42](https://github.com/kckhchen/obsidian-2-jekyll/commit/8bc2f4295171e29cc66d8eaa573acfd16469d2cc))
+* make block math pattern track linebreaks ([28a7590](https://github.com/kckhchen/obsidian-2-jekyll/commit/28a759095f2501ffc098f28435eb913759a86c8a))
+
 ## [0.8.1](https://github.com/kckhchen/obsidian-2-jekyll/compare/v0.8.0...v0.8.1) (2026-08-07)
 
 
