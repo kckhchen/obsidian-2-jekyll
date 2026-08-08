@@ -9,6 +9,7 @@ IMG_PATTERN = (
     r"!\[\[(?P<wikilink>[^|\]]+?)(?:\\?\|(?P<wiki_opt>[^\]]*))?\]\]"
     r"|!\[(?P<md_opt>[^\]]*)\]\((?P<mdlink>[^)]+)\)"
 )
+IMG_LINK_PATTERN = r"!\[[^\]]*\]\([^)]*?\{%\s*link\s+(?P<path>[^\s%]+)\s*%\}[^)]*\)"
 LINK_PATTERN = r"(?<!\!)\[\[(?P<wikilink>[^|\]]+?)(?:\\?\|(?P<wiki_display>[^\]]*))?\]\]|(?<!\!)\[(?P<md_display>[^\]]*)\]\((?P<mdlink>[^\)]+)\)"
 ANCHOR_PATTERN = r"(^|\s)\^(?P<anchor>[a-zA-Z0-9-]+)(?=\s|$)"
 URL_PATTERN = r"https?://[^)\s]+"

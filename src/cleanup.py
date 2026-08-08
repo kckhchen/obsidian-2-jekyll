@@ -3,7 +3,7 @@ from pathlib import Path
 
 import frontmatter
 
-from src.patterns import IMG_EXT, IMG_PATTERN, POST_NAME_PATTERN
+from src.patterns import IMG_EXT, IMG_LINK_PATTERN, POST_NAME_PATTERN
 
 SHARED_LOOKING = {"images", "img", "assets", "media", "static", "uploads", "files"}
 
@@ -15,7 +15,7 @@ def remove_stale_files(files, post_dir, img_dir):
 
     current_posts = {data["dest_path"].name for data in files.values()}
 
-    all_post_images = _get_post_images(files)
+    all_post_images = _get_post_images(post_dir)
     to_be_removed = _list_posts_to_be_removed(
         post_dir, current_posts
     ) + _list_imgs_to_be_removed(img_dir, all_post_images)
@@ -33,14 +33,16 @@ def _is_managed(path):
         return False
 
 
-def _get_post_images(files):
+def _get_post_images(post_dir):
     all_images = set()
 
-    for data in files.values():
-        src = data["source_path"]
-        post = frontmatter.load(src)
-        img_list = _scan_post_images(post)
-        all_images.update(img_list)
+    for f in Path(post_dir).glob("*.md"):
+        content = f.read_text(encoding="utf-8")
+        all_images.update(
+            Path(m.group("path")).name
+            for m in re.finditer(IMG_LINK_PATTERN, content)
+            if Path(m.group("path")).suffix.lower() in IMG_EXT
+        )
 
     return all_images
 
@@ -89,21 +91,3 @@ def _remove_files(file_path_list):
         print("Files removed.")
     else:
         print("Process aborted.")
-
-
-def _scan_post_images(post):
-    img_list = [
-        name
-        for match in re.finditer(IMG_PATTERN, post.content)
-        if (name := _extract_filename(match))
-    ]
-
-    return img_list
-
-
-def _extract_filename(match):
-    path_str = match.group("wikilink") or match.group("mdlink")
-    if match.group("mdlink") and path_str.startswith(("http:", "https:")):
-        return None
-
-    return Path(path_str).name

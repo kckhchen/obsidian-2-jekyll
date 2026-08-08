@@ -1,13 +1,13 @@
 from unittest.mock import patch
 
-import frontmatter
 import pytest
 
 from src.cleanup import (
+    # _scan_post_images,
+    _get_post_images,
     _list_imgs_to_be_removed,
     _list_posts_to_be_removed,
     _remove_files,
-    _scan_post_images,
     remove_stale_files,
 )
 
@@ -22,29 +22,35 @@ def fs_setup(tmp_path):
 
 
 class TestImageScanning:
-    def test_extracts_wiki_and_md_links(self):
+    def test_extracts_wiki_and_md_links(self, fs_setup):
+        post_dir, _ = fs_setup
+        post_path = post_dir / "post.md"
         content = """
-        Here is a wikilink: ![[image1.png]]
-        Here is a wikilink with size: ![[image2.jpg|100]]
-        Here is a markdown link: ![](image3.gif)
-        Here is a complex md link: ![Alt](image4.bmp)
+        Here is a wikilink: ![]({% link _posts/image1.png %})
+        Here is a wikilink with size: ![]({% link _posts/image2.jpg %}){: width="500"}
+        Here is a complex md link: ![alt text]({% link _posts/image4.bmp %})
         """
-        post = frontmatter.Post(content)
-        images = _scan_post_images(post)
+        post_path.write_text(content)
+        # post = frontmatter.Post(content)
+        images = _get_post_images(post_dir)
 
-        assert set(images) == {"image1.png", "image2.jpg", "image3.gif", "image4.bmp"}
+        assert set(images) == {"image1.png", "image2.jpg", "image4.bmp"}
 
-    def test_ignores_external_urls(self):
+    def test_ignores_external_urls(self, fs_setup):
+        post_dir, _ = fs_setup
+        post_path = post_dir / "post.md"
         content = "![External](https://google.com/logo.png)"
-        post = frontmatter.Post(content)
-        images = _scan_post_images(post)
+        post_path.write_text(content)
+        images = _get_post_images(post_dir)
 
         assert len(images) == 0
 
-    def test_extracts_filename_from_path(self):
-        content = "![](assets/img/photo.jpg)"
-        post = frontmatter.Post(content)
-        images = _scan_post_images(post)
+    def test_extracts_filename_from_path(self, fs_setup):
+        post_dir, _ = fs_setup
+        post_path = post_dir / "post.md"
+        content = "![]({% link _posts/photo.jpg %})"
+        post_path.write_text(content)
+        images = _get_post_images(post_dir)
 
         assert "photo.jpg" in images
 
