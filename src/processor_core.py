@@ -1,4 +1,5 @@
 import re
+import sys
 from pathlib import Path
 
 import frontmatter
@@ -22,9 +23,14 @@ from src.utils import shield_content, unshield
 
 
 def process_posts(files, dry, layout, force, only=None):
-    try:
-        skipped = 0
-        for src, dest, post in sorted(_iter_files(files, only)):
+    if only:
+        stem = Path(only).stem
+        if stem not in files:
+            print(f"Error: Cannot find '{only}' (share: true needed).")
+            sys.exit(1)
+    skipped = 0
+    for src, dest, post in sorted(_iter_files(files, only)):
+        try:
             reason = _should_proceed(src, dest, force)
 
             if reason:
@@ -55,9 +61,9 @@ def process_posts(files, dry, layout, force, only=None):
             else:
                 skipped += 1
 
-    except (ValueError, FileNotFoundError) as e:
-        print(e)
-        return
+        except FileNotFoundError as e:
+            print(f"Skipped {src.name}: {e}")
+            continue
 
     print(f"\nProcessing finished. Skipped {skipped} unchanged files.")
 
@@ -78,10 +84,6 @@ def _should_proceed(src, dest, force):
 def _iter_files(files, only_file=None):
     if only_file:
         filename = Path(only_file).stem
-
-        if filename not in files:
-            raise ValueError(f"Error: Cannot find '{only_file}' (share: true needed).")
-
         src = files[filename]["source_path"]
         dest = files[filename]["dest_path"]
         post = frontmatter.load(src)
