@@ -84,7 +84,7 @@ share: true
 Only posts with `share: true` will be processed.
 
 > [!TIP]
-> That being said, it's strongly recommended that you set `date` in the frontmatter manually to prevent unexpected updates, since the creation date of a file can potentialy change 
+> That being said, it's strongly recommended that you set `date` in the frontmatter manually to prevent unexpected updates, since the creation date of a file can potentially change due to file system operations.
 
 
 #### 4. Run the command
