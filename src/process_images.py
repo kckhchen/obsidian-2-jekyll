@@ -29,26 +29,31 @@ def _split_opt(raw, is_md):
 
 def _embedded_image_replacer(match, img_map, img_folder):
     is_md = match.group("mdlink") is not None
-    img_name = (match.group("mdlink") if is_md else match.group("wikilink")).strip()
     alt, width, height = _split_opt(
         match.group("md_opt") if is_md else match.group("wiki_opt"), is_md
     )
 
-    if Path(img_name).suffix.lower() not in IMG_EXT:
-        return f"![{alt}]({img_name})"
+    name = image_name(match)
+    if not name:
+        raw = (match.group("mdlink") if is_md else match.group("wikilink")).strip()
+        return f"![{alt}]({raw})"
 
-    if img_name.lower() in img_map:
-        updated_link = (
-            f"![{alt}]({{{{ site.baseurl }}}}{{% link {img_folder / img_name} %}})"
-        )
-
-        attrs = [f'{k}="{v}"' for k, v in (("width", width), ("height", height)) if v]
-        if attrs:
-            updated_link += "{: " + " ".join(attrs) + " }"
-
-        return updated_link
-    else:
+    if name.lower() not in img_map:
         print(
-            f"  |  Warning: Image target not found in Vault: {img_name}. Link kept as-is."
+            f"  |  Warning: Image target not found in Vault: {name}. Link kept as-is."
         )
         return match.group(0)
+
+    updated_link = f"![{alt}]({{{{ site.baseurl }}}}{{% link {img_folder / name} %}})"
+
+    attrs = [f'{k}="{v}"' for k, v in (("width", width), ("height", height)) if v]
+    if attrs:
+        updated_link += "{: " + " ".join(attrs) + " }"
+
+    return updated_link
+
+
+def image_name(match):
+    is_md = match.group("mdlink") is not None
+    name = (match.group("mdlink") if is_md else match.group("wikilink")).strip()
+    return name if Path(name).suffix.lower() in IMG_EXT else None

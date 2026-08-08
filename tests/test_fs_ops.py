@@ -1,7 +1,8 @@
+import frontmatter
 import pytest
 
 from src.callout_styles import CALLOUT_CSS
-from src.fs_ops import ensure_css_exists, setup_dir
+from src.fs_ops import copy_images, ensure_css_exists, setup_dir
 
 
 @pytest.fixture
@@ -58,3 +59,8 @@ def test_ensure_css_skips_if_already_exists(tmp_path, css_mock, capsys):
 
     captured = capsys.readouterr()
     assert "Creating default callout CSS" not in captured.out
+
+
+def test_external_image_url_does_not_crash(tmp_path):
+    post = frontmatter.Post("![](https://cdn.example.com/x.png)")
+    copy_images(post, {}, tmp_path)

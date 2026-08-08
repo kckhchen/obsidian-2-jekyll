@@ -5,6 +5,7 @@ from pathlib import Path
 from src.callout_styles import CALLOUT_CSS
 from src.config import INCLUDES_FOLDER, JEKYLL_DIR
 from src.patterns import IMG_PATTERN
+from src.process_images import image_name
 
 
 def setup_dir(paths, dry):
@@ -27,6 +28,9 @@ def ensure_css_exists(css_name, dry):
 
 def copy_images(post, img_map, img_dir):
     for match in re.finditer(IMG_PATTERN, post.content):
-        is_md = match.group("mdlink") is not None
-        img_name = (match.group("mdlink") if is_md else match.group("wikilink")).strip()
-        shutil.copy2(img_map[img_name.lower()], img_dir / img_name)
+        name = image_name(match)
+        if not name:
+            continue
+        src = img_map.get(name.lower())
+        if src:
+            shutil.copy2(src, img_dir / name)
