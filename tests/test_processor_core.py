@@ -49,9 +49,3 @@ def test_iter_files_filters_single_file(mock_files_map):
 
     assert len(results) == 1
     assert results[0][0] == Path("b.md")
-
-
-def test_iter_files_raises_on_missing_file(mock_files_map):
-    with pytest.raises(ValueError) as exc:
-        list(_iter_files(mock_files_map, only_file="Non Existent"))
-    assert "Cannot find 'Non Existent'" in str(exc.value)

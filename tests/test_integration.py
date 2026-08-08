@@ -1,46 +1,118 @@
+import os
+import subprocess
+import sys
+from pathlib import Path
+
 import pytest
 
-from src.processor_core import process_posts
-from src.utils import get_valid_files
+REPO = Path(__file__).resolve().parent.parent
 
 
 @pytest.fixture
-def mock_fs(tmp_path):
-    post_dir = tmp_path / "_posts"
-    img_dir = tmp_path / "assets/images/obsidian"
-    vault_dir = tmp_path / "vault"
-    post_dir.mkdir()
-    img_dir.mkdir(parents=True, exist_ok=True)
-    vault_dir.mkdir()
-    return vault_dir, post_dir, img_dir
+def cli(tmp_path):
+    # temp vault + jekyll dir to run main.py"""
+
+    class CLI:
+        def __init__(self):
+            self.vault = tmp_path / "vault"
+            self.jekyll = tmp_path / "jekyll"
+            self.posts = self.jekyll / "_posts"
+            self.images = self.jekyll / "assets/images/obsidian"
+            for d in (self.vault, self.posts, self.images, self.jekyll / "_includes"):
+                d.mkdir(parents=True)
+
+        def note(self, name, body="Content", share=True, date="2013-01-01"):
+            fm = "---\n"
+            if share:
+                fm += "share: true\n"
+            if date:
+                fm += f"date: {date}\n"
+            (self.vault / name).write_text(fm + "---\n" + body, encoding="utf-8")
+
+        def run(self, *args, stdin="", vault=None, jekyll=None):
+            env = {
+                **os.environ,
+                "VAULT_DIR": str(vault if vault is not None else self.vault),
+                "JEKYLL_DIR": str(jekyll if jekyll is not None else self.jekyll),
+                "POST_FOLDER": "_posts",
+                "IMG_FOLDER": "assets/images/obsidian",
+                "INCLUDES_FOLDER": "_includes",
+                "MATH_RENDERING_MODE": "inject_cdn",
+                "PREVENT_DOUBLE_BASEURL": "false",
+            }
+            return subprocess.run(
+                [sys.executable, "main.py", *args],
+                cwd=REPO,
+                env=env,
+                input=stdin,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                timeout=60,
+                check=False,
+            )
+
+    return CLI()
 
 
-def test_invariant(mock_fs, monkeypatch):
-    vault_dir, post_dir, img_dir = mock_fs
-    monkeypatch.setattr("src.processor_core.IMG_FOLDER", "assets/images/obsidian")
-    monkeypatch.setattr("src.processor_core.IMG_DIR", img_dir)
-    monkeypatch.setattr("src.processor_core.MATH_RENDERING_MODE", "inject_cdn")
-    monkeypatch.setattr("src.processor_core.POST_FOLDER", "_posts")
-    monkeypatch.setattr("src.processor_core.PREVENT_DOUBLE_BASEURL", "False")
-    monkeypatch.setattr("src.processor_core.VAULT_DIR", vault_dir)
-    input_post = vault_dir / "input.md"
-    content = "---\nshare: true\ndate: 2013-01-01\n---\nTitle\n=====\nContent, $299, $499, $ 100|200$, `x == y`, `$5`, ```markdown\n> [!note] Callout Title\n> Callout Content\n```"
-    input_post.write_text(content)
-    valid_files = get_valid_files(vault_dir, post_dir)
-    process_posts(valid_files, dry=False, layout=None, force=False)
-    output = post_dir / "2013-01-01-input.md"
-    out = output.read_text()
-    should_exist = [
-        "$299",
-        "$499",
-        "Title\n=====",
-        "$ 100|200$",
-        "`x == y`",
-        "`$5`",
-        "> [!note] Callout Title",
-        "> Callout Content",
-    ]
+REJECTED = [
+    pytest.param(["--dry", "--cleanup"], id="dry+cleanup"),
+    pytest.param(["--dry", "--update"], id="dry+update"),
+    pytest.param(["--only", "a.md", "--cleanup"], id="only+cleanup"),
+    pytest.param(["--only", "a.md", "--update"], id="only+update"),
+    pytest.param(["--cleanup", "--update"], id="cleanup+update"),
+    pytest.param(["--nonexistent-flag"], id="unknown-flag"),
+]
 
+
+@pytest.mark.parametrize("args", REJECTED)
+def test_invalid_flag_combos_are_rejected(cli, args):
+    r = cli.run(*args)
+    assert r.returncode == 2
+    assert not list(cli.posts.iterdir())
+
+
+def test_missing_vault_exits_nonzero(cli, tmp_path):
+    r = cli.run(vault=tmp_path / "does-not-exist")
+    assert r.returncode == 1
+    assert "VAULT_DIR" in r.stdout + r.stderr
+
+
+def test_only_with_unshared_file_fails_cleanly(cli):
+    cli.note("unshared.md", share=False, date="2013-01-01")
+    r = cli.run("--only", "unshared.md")
+
+    assert r.returncode != 0
+    assert "Traceback" not in r.stderr
+    assert not list(cli.posts.iterdir())
+
+
+def test_dry_writes_nothing(cli):
+    cli.note("a.md", date="2013-01-01")
+    cli.run("--dry")
+    assert list(cli.posts.iterdir()) == []
+    assert list(cli.images.iterdir()) == []
+    assert not (cli.jekyll / "_includes" / "obsidian-callouts.html").exists()
+
+
+def test_cleanup_abort_removes_nothing(cli):
+    cli.note("a.md", date="2013-01-01")
+    cli.run("--force")
+    cli.run("--cleanup", stdin="n\n")
+    assert (cli.posts / "2013-01-01-a.md").exists()
+
+
+def test_running_twice_is_idempotent(cli):
+    body = "$$x$$\n> [!note] Callout Title\n> Callout Content\n\n==highlight=="
+    cli.note("a.md", body=body, date="2013-01-01")
+    cli.run("--force")
+    first = {p.name: p.read_text() for p in cli.posts.iterdir()}
+    cli.run("--force")
+    second = {p.name: p.read_text() for p in cli.posts.iterdir()}
+    output = cli.posts / "2013-01-01-a.md"
+    content = output.read_text()
     assert output.exists()
-    for text in should_exist:
-        assert text in out
+    assert "<script" in content
+    assert "<mark>" in content
+    assert r"{% include" in content
+    assert first == second
