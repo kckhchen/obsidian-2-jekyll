@@ -13,7 +13,7 @@ def mock_icons():
 
 class TestProcessCallouts:
     @pytest.mark.parametrize(
-        "input_text, expected_fragment",
+        "input, expected",
         [
             pytest.param(
                 "> [!note] My Title\n> My content",
@@ -47,10 +47,10 @@ class TestProcessCallouts:
             ),
         ],
     )
-    def test_callout_rendering(self, input_text, expected_fragment, postify):
-        post = postify(input_text)
+    def test_callout_rendering(self, input, expected, postify):
+        post = postify(input)
         result = process_callouts(post)
-        assert expected_fragment in result.content
+        assert expected in result.content
 
     def test_injects_liquid_include_only_when_callout_exists(self, postify):
         post_with = postify("> [!note] Test\n> body")
@@ -85,3 +85,10 @@ class TestProcessCallouts:
         post = postify(text)
         result = process_callouts(post).content
         assert "Line 1\nLine 2" in result
+
+    def test_reject_fence_in_body(self, postify, capsys):
+        post = postify("> [!note] Title\n> \x00FENCE_0\x00")
+        result = process_callouts(post).content
+        captured = capsys.readouterr()
+        assert "Warning" in captured.out
+        assert result == post.content
