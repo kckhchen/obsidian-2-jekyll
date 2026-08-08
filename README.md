@@ -8,7 +8,7 @@ A theme-agnostic tool that makes your Obsidian articles Jekyll-ready.
 This is a tool build with python that scans your obsidian vault, formats your articles to make them compatible with Jekyll's requirements, and saves them to your Jekyll project folder, waiting to be published, so you can keep your articles clean, while Jekyll gets its preferred flavor.
 
 > [!IMPORTANT]
-> This tool is under active maintenance. Backward compatibility is not guaranteed on minor digit changes. Also, please run the tool with `--force` flag to ensure newest changes take effect.
+> This tool is under active maintenance. Backward compatibility is not guaranteed on minor digit changes. Also, please run the tool with `--force` flag to ensure newest changes take effect when you install a latest release.
 
 ## Features
 
@@ -34,8 +34,8 @@ This is a tool build with python that scans your obsidian vault, formats your ar
 
 ### Prerequisites
 
-- Python 3.8+
-- The `python-frontmatter` package. Install with:
+- Python 3.10+
+- Install dependencies with this command:
 
 ```
 pip install -r requirements.txt
@@ -59,12 +59,7 @@ personal paths stay out of version control and `git pull` will never conflict.
 cp .env.example .env
 ```
 
-Then edit `.env`:
-
-| Variable     | Description                 | Example                    |
-| ------------ | --------------------------- | -------------------------- |
-| `VAULT_DIR`  | Path to your Obsidian Vault | `/Users/me/Obsidian-Vault` |
-| `JEKYLL_DIR` | Your Jekyll project folder  | `/Users/me/Jekyll-Website` |
+Then edit `.env` to set up paths to your vault and Jekyll site:
 
 ```python
 # .env
@@ -85,7 +80,12 @@ share: true
 
 # My Post Title
 ```
+
 Only posts with `share: true` will be processed.
+
+> [!TIP]
+> That being said, it's strongly recommended that you set `date` in the frontmatter manually to prevent unexpected updates, since the creation date of a file can potentialy change 
+
 
 #### 4. Run the command
 
