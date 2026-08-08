@@ -12,7 +12,7 @@ from src.utils import (
 )
 
 
-class TestPureHelpers:
+class TestSlugify:
     @pytest.mark.parametrize(
         "name, expected",
         [
@@ -29,29 +29,50 @@ class TestPureHelpers:
 
 class TestShielding:
     def test_shield_code_blocks(self, postify):
-        content = "Text\n```python\nprint(1)\n```\nMore Text"
-        post = postify(content)
-
+        post = postify(
+            "```python\nprint(1)\n```\n\n~~~python\nprint(2)\n~~~\n`inline_code`"
+        )
         post, stash = shield_content(post, mode="code")
 
         assert "\x00FENCE_0\x00" in post.content
+        assert "\x00FENCE_1\x00" in post.content
+        assert "\x00CODE_2\x00" in post.content
+
         assert "print(1)" not in post.content
+        assert "print(2)" not in post.content
+        assert "inline_code" not in post.content
 
         assert stash["\x00FENCE_0\x00"] == "```python\nprint(1)\n```"
+        assert stash["\x00FENCE_1\x00"] == "~~~python\nprint(2)\n~~~"
+        assert stash["\x00CODE_2\x00"] == "`inline_code`"
 
     def test_shield_urls(self, postify):
-        content = "Check https://google.com now."
+        content = "https://google.com"
         post = postify(content)
-
         post, stash = shield_content(post, mode="url")
 
-        assert "Check \x00URL_0\x00 now." == post.content
+        assert "\x00URL_0\x00" == post.content
         assert stash["\x00URL_0\x00"] == "https://google.com"
+
+    def test_shield_math(self, postify):
+        post = postify("$x$\n$$y$$\n$$\nz\n$$")
+        post, stash = shield_content(post, mode="math")
+
+        assert "\x00MATH_0\x00" in post.content
+        assert "\x00MATH_1\x00" in post.content
+        assert "\x00MATH_2\x00" in post.content
+        assert stash["\x00MATH_0\x00"] == "$x$"
+        assert stash["\x00MATH_1\x00"] == "$$y$$"
+        assert stash["\x00MATH_2\x00"] == "$$\nz\n$$"
+
+    def test_shield_raise_error_on_unknown(self, postify):
+        post = postify("")
+        with pytest.raises(ValueError):
+            post, _ = shield_content(post, mode="?")
 
     def test_unshield_restores_content(self, postify):
         post = postify("Check \x00URL_0\x00.")
         stash = {"\x00URL_0\x00": "https://google.com"}
-
         unshield(post, stash)
 
         assert post.content == "Check https://google.com."
@@ -69,11 +90,6 @@ class TestShielding:
 
 
 class TestFileScanning:
-    """
-    Uses 'tmp_path' to create a real mini-vault to test 'get_valid_files'.
-    This is much more reliable than mocking os.walk/rglob.
-    """
-
     @pytest.fixture
     def mini_vault(self, tmp_path):
         vault = tmp_path / "Vault"
