@@ -1,7 +1,7 @@
 IMG_EXT = (".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp", ".svg")
 CODE_PATTERN = r"(```[\s\S]*?```|~~~[\s\S]*?~~~|`[^`\n]+`)"
 INLINE_MATH_PATTERN = r"(?<!\\|\$)\$(?!\s|\$)([^$]+?)(?<!\\|\$|\s)\$(?!\$)"
-BLOCK_MATH_PATTERN = r"(\$\$.*?\$\$)"
+BLOCK_MATH_PATTERN = r"(\$\$[\s\S]*?\$\$)"
 MATH_ID_PATTERN = r"\$\$[\s\n]+({: #secid.+})"
 CALLOUT_PATTERN = r"^> \[!\s*(?P<ctype>\w+)\](?P<collapse>[+\-]?)(?P<title>.*?)\n(?P<body>(?:^>.*\n?)*)"
 FENCE_IN_BODY = r"\x00FENCE_\d+\x00"
