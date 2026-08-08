@@ -15,8 +15,14 @@ def mock_fs(tmp_path):
     return vault_dir, post_dir, img_dir
 
 
-def test_invariant(mock_fs):
-    vault_dir, post_dir, _ = mock_fs
+def test_invariant(mock_fs, monkeypatch):
+    vault_dir, post_dir, img_dir = mock_fs
+    monkeypatch.setattr("src.processor_core.IMG_FOLDER", "assets/images/obsidian")
+    monkeypatch.setattr("src.processor_core.IMG_DIR", img_dir)
+    monkeypatch.setattr("src.processor_core.MATH_RENDERING_MODE", "inject_cdn")
+    monkeypatch.setattr("src.processor_core.POST_FOLDER", "_posts")
+    monkeypatch.setattr("src.processor_core.PREVENT_DOUBLE_BASEURL", "False")
+    monkeypatch.setattr("src.processor_core.VAULT_DIR", vault_dir)
     input_post = vault_dir / "input.md"
     content = "---\nshare: true\ndate: 2013-01-01\n---\nTitle\n=====\nContent, $299, $499, $ 100|200$, `x == y`, `$5`, ```markdown\n> [!note] Callout Title\n> Callout Content\n```"
     input_post.write_text(content)
