@@ -4,7 +4,7 @@ from src.patterns import COMMENT_PATTERN, H1_PATTERN, HIGHLIGHT_PATTERN, TABLE_P
 
 
 def text_cleanup(post, layout="post"):
-    post = _process_h1(post, layout)
+    post = _process_frontmatter(post, layout)
     post = _strip_comments(post)
     post = _process_highlights(post)
     post = _ensure_table_spacing(post)
@@ -12,21 +12,26 @@ def text_cleanup(post, layout="post"):
     return post
 
 
-def _process_h1(post, layout="post"):
+def _process_frontmatter(post, layout="post"):
     post["layout"] = post.get("layout") or layout
     post["generator"] = "obsidian-2-jekyll"
     h1_match = re.search(H1_PATTERN, post.content, flags=re.MULTILINE)
     if h1_match:
-        title = h1_match.group("h1").strip()
-        post["title"] = post.get("title") or title
-        post.content = re.sub(
-            H1_PATTERN, "", post.content, count=1, flags=re.MULTILINE
-        ).strip()
+        post = _process_h1(post, h1_match)
+    return post
+
+
+def _process_h1(post, match):
+    title = match.group("h1").strip()
+    post["title"] = post.get("title") or title
+    post.content = re.sub(
+        H1_PATTERN, "", post.content, count=1, flags=re.MULTILINE
+    ).strip()
     return post
 
 
 def _strip_comments(post):
-    post.content = re.sub(COMMENT_PATTERN, "", post.content, flags=re.DOTALL)
+    post.content = re.sub(COMMENT_PATTERN, "", post.content)
     return post
 
 
