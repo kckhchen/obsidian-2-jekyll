@@ -19,9 +19,9 @@ def valid_files_map():
     }
 
 
-class TestProcessWikilinks:
+class TestProcessLinks:
     @pytest.mark.parametrize(
-        "input_text, expected",
+        "input, expected",
         [
             pytest.param(
                 "[[A Test Post]]",
@@ -83,8 +83,8 @@ class TestProcessWikilinks:
         ],
     )
     def test_process_wikilinks_scenarios(
-        self, input_text, expected, valid_files_map, postify
+        self, input, expected, valid_files_map, postify
     ):
-        post = postify(input_text)
+        post = postify(input)
         result_post = process_wikilinks(post, valid_files_map, Path("_posts"), "False")
         assert result_post.content == expected
