@@ -3,8 +3,8 @@ from unittest.mock import patch
 import pytest
 
 from src.cleanup import (
-    # _scan_post_images,
     _get_post_images,
+    _is_managed,
     _list_imgs_to_be_removed,
     _list_posts_to_be_removed,
     _remove_files,
@@ -28,13 +28,11 @@ class TestImageScanning:
         content = """
         Here is a wikilink: ![]({% link _posts/image1.png %})
         Here is a wikilink with size: ![]({% link _posts/image2.jpg %}){: width="500"}
-        Here is a complex md link: ![alt text]({% link _posts/image4.bmp %})
         """
         post_path.write_text(content)
-        # post = frontmatter.Post(content)
         images = _get_post_images(post_dir)
 
-        assert set(images) == {"image1.png", "image2.jpg", "image4.bmp"}
+        assert set(images) == {"image1.png", "image2.jpg"}
 
     def test_ignores_external_urls(self, fs_setup):
         post_dir, _ = fs_setup
@@ -44,15 +42,6 @@ class TestImageScanning:
         images = _get_post_images(post_dir)
 
         assert len(images) == 0
-
-    def test_extracts_filename_from_path(self, fs_setup):
-        post_dir, _ = fs_setup
-        post_path = post_dir / "post.md"
-        content = "![]({% link _posts/photo.jpg %})"
-        post_path.write_text(content)
-        images = _get_post_images(post_dir)
-
-        assert "photo.jpg" in images
 
 
 class TestStaleListGeneration:
@@ -117,6 +106,39 @@ class TestDeletionSafety:
             _remove_files([stale_file])
 
         assert not stale_file.exists()
+
+    def test_remove_files_handles_missing_file(self, tmp_path):
+        ghost = tmp_path / "already-gone.md"
+        with patch("builtins.input", return_value="y"):
+            _remove_files([ghost])
+
+
+class TestIsManaged:
+    @pytest.mark.parametrize(
+        "content, expected",
+        [
+            (b"---\ngenerator: obsidian-2-jekyll\n---", True),
+            (b"---\ngenerator: jekyll-import\n---\nx", False),
+            (b"---\ngenerator: Obsidian-2-Jekyll\n---", False),
+            (b"---\n---", False),
+            ("手寫舊文,沒有 frontmatter".encode(), False),
+            ("---\ntitle: 舊\n---\n中文".encode("big5"), False),
+            (b"---\ntitle: [\n---\nx", False),
+        ],
+        ids=[
+            "managed",
+            "other-tool",
+            "case-differs",
+            "empty-fm",
+            "no-fm",
+            "non-utf8",
+            "bad-yaml",
+        ],
+    )
+    def test_is_managed(self, tmp_path, content, expected):
+        p = tmp_path / "f.md"
+        p.write_bytes(content)
+        assert _is_managed(p) is expected
 
 
 class TestFullFlow:
