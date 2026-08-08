@@ -57,7 +57,7 @@ python3 main.py --force
 
 | Variable              | Description                             | Default                      |
 | --------------------- | ------------------------------------------- | ---------------------------- |
-| `MATH_RENDERING_MODE` | `metadata` adds `math: true` to frontmatter; `inject_cdn` injects MathJax CDN at the end of post | `inject_cdn`           |
+| `MATH_RENDERING_MODE` | `metadata` adds `math: true` to frontmatter; `inject_cdn` injects MathJax CDN at the end of post. For details [see below](#5-process-math) | `inject_cdn`           |
 | `PREVENT_DOUBLE_BASEURL` | `True` to prevent double baseurl problem in Jekyll >= 4.0. [See Why](#4-updates-internal-links) | `False`           |
 | `IMG_FOLDER` | Path to the image folder on your Jekyll site. It is recommended that you set a dedicated folder for images processed by this tool and prevent using generic path e.g. `assets/images` | `assets/images/obsidian`           |
 | `POST_FOLDER` | Path to the post folder on your Jekyll site. Some themes might have a different path like `_articles`, but generally they'll be at `_posts` | `_posts`           |
