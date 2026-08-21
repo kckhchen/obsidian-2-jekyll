@@ -104,6 +104,8 @@ python3 main.py --only "My Post.md"
 
 ### Actions (Optional)
 
+> [!INFO] This only works for version `v0.9.0` and above.
+
 This tool also comes with an `action.yml` for automating the converting process, as long as your vault (posts) and your Jekyll site are pushed and synced to GitHub repos. Once this is setup, your workflow becomes as simple as **"write, commit, push,"** and Actions will take care of the rest and send a PR to your Jekyll site with all the formatted posts. Follow the steps below:
 
 #### 1. Set Up Repo Token
@@ -125,7 +127,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: kckhchen/obsidian-2-jekyll@v0.9
+      - uses: kckhchen/obsidian-2-jekyll@v0.9.0
         with:
           jekyll-repo: username/jekyll-repo
           token: ${{ secrets.BLOG_PUSH_TOKEN }}
@@ -144,7 +146,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: kckhchen/obsidian-2-jekyll@v0.9
+      - uses: kckhchen/obsidian-2-jekyll@v0.9.0
         id: sync
         with:
           jekyll-repo: username/jekyll-repo
