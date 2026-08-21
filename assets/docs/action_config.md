@@ -6,7 +6,7 @@ The following are all the available configuration you can use with `with:` when 
 
 | Name              | Description                                                                                   | Default value                    |
 | ----------------- | --------------------------------------------------------------------------------------------- | -------------------------------- |
-| `jekyll-repo`     | Jekyll site repo (owner/name). Empty implies current repo.                                    | `""`                             |
+| `jekyll-repo`     | Jekyll site repo (owner/name). Must differ from your vault repo.                              | `""`                             |
 | `jekyll-dir`      | Path to the Jekyll site                                                                       | `site`                           |
 | `vault-dir`       | path to the Obsidian vault                                                                    | `vault`                          |
 | `token`           | Token with read-and-write permission for content and PR on `jekyll-repo`                      | `""`                             |
