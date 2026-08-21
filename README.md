@@ -22,9 +22,9 @@ This is a tool build with python that scans your obsidian vault, formats your ar
 
 ## Live Demo
 
-| Original Obsidian Article | Processed Jekyll Site |
-| :---: | :---: |
-| <img src="./assets/images/obsidian-demo.gif" width="380"> | <img src="./assets/images/jekyll-demo.gif" width="380"> |
+|                                      Original Obsidian Article                                       |                                     Processed Jekyll Site                                      |
+| :--------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------: |
+| <img src="./assets/images/obsidian-demo.gif" width="380" alt="Origianl Obsidian Article Screenshot"> | <img src="./assets/images/jekyll-demo.gif" width="380" alt="Processed Jekyll Post Screenshot"> |
 
   <div align="center">
     <p><a href="https://kckhchen.com/obsidian-2-jekyll-demo/my-main-post/"><b>Read the Demo Blog Post</b></a></p>
@@ -37,13 +37,13 @@ This is a tool build with python that scans your obsidian vault, formats your ar
 - Python 3.10+
 - Install dependencies with this command:
 
-```
+```bash
 pip install -r requirements.txt
 ```
 
 ### Run the Tool
 
-#### 1. Clone this repo:
+#### 1. Clone this repo
 
 ```bash
 git clone https://github.com/kckhchen/obsidian-2-jekyll.git
@@ -73,7 +73,7 @@ Add `share: true` to your post's frontmatter ([Obsidian Properties](https://help
 
 Note that the tool adds `title`, `layout`, and `math` (based on settings) to the frontmatter for you, and grabs the creation date of your post as the `date` if you do not set one, so you don't have to configure these unless you wish to override the settings.
 
-```
+```markdown
 ---
 share: true
 ---
@@ -85,7 +85,6 @@ Only posts with `share: true` will be processed.
 
 > [!TIP]
 > It is still strongly recommended that you set `date` in the frontmatter manually to prevent unexpected updates, since the creation date of a file can potentially change due to file system operations.
-
 
 #### 4. Run the command
 
@@ -100,28 +99,85 @@ python3 main.py --update
 python3 main.py --only "My Post.md"
 ```
 
-> [!note] 
+> [!note]
 > **A Note on Styling**: The first time you run the tool, it will create `_includes/obsidian-callouts.html`. This file handles the icons and colors for your callouts. Feel free to customize it.
+
+### Actions (Optional)
+
+This tool also comes with an `action.yml` for automating the converting process, as long as your vault (posts) and your Jekyll site are pushed and synced to GitHub repos. Once this is setup, your workflow becomes as simple as **"write, commit, push,"** and Actions will take care of the rest. Follow the steps below:
+
+#### 1. Set Up Repo Token
+
+Generate a fine-grained token for your Jekyll site and set repository permissions to **Contents: Read and write**. Copy the token and paste to your repository secrets in your vault repo, naming it `BLOG_PUSH_TOKEN`.
+
+#### 2. Create `.yml`
+
+Create a `publish.yml` file under `.github/workflows` and paste the following snippet:
+
+```yaml
+name: Publish
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: kckhchen/obsidian-2-jekyll@v0.9
+        with:
+          jekyll-repo: username/jekyll-repo
+          token: ${{ secrets.BLOG_PUSH_TOKEN }}
+```
+
+Or, if you want to sync the vault and remove stale posts and images:
+
+```yaml
+name: Publish
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: kckhchen/obsidian-2-jekyll@v0.9
+        id: sync
+        with:
+          jekyll-repo: barnett/my-blog
+          token: ${{ secrets.BLOG_PUSH_TOKEN }}
+          args: --update --force --yes
+```
+
+A few thing to note before proceeding with this workflow:
+
+1. It **does not** implement incremental builds. Incremental builds rely on file modification time, which refreshes on push. In other words, it effectively uses the `--force` flag every time it runs. This, however, should not make a huge impact on efficiency.
+2. **Dates are mandatory**. As modification time becomes unreliable, it enforces explicit dates in the frontmatter. Failure to comply with this will trigger a delivery stopper.
+3. **Cleanup automatically proceeds**. Without a CLI to prompt for confirmation, `--cleanup` and `--update` rely on the `--yes` flag to automatically proceeds. To address this challenge, you can set a `--max-deletions` (default to 10) limit that when reached, the process will abort, preventing unintended mass deletion.
 
 ## User Guide
 
-You can find the full User Guide and Advanced Settings [here](./assets/docs/GUIDE.md).
+You can find the full User Guide and Advanced Settings in [GUIDE.md](./assets/docs/GUIDE.md).
 
 ## Contributing
 
-This project is actively maintained and frequently updated. If you'd like to contribute, you can submit issues or fork this repository. 
+This project is actively maintained and frequently updated. If you'd like to contribute, you can submit issues or fork this repository.
 
 ## Testing
 
 This project uses `pytest` for testing. The tests are in the `tests` folder. To run the tests locally, follow these steps:
 
 1. Install Dependencies
+
 ```bash
 pip install -r requirements-dev.txt
 ```
 
-2. Run the Test Suite
-To run all tests:
+1. Run the Test Suite
+   To run all tests:
 
 ```bash
 pytest
