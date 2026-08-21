@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.9.1](https://github.com/kckhchen/obsidian-2-jekyll/compare/v0.9.0...v0.9.1) (2026-08-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* release v0.9.1
+
+### Miscellaneous Chores
+
+* release v0.9.1 ([39b5f89](https://github.com/kckhchen/obsidian-2-jekyll/commit/39b5f8942192a6a72a498114c864d8fc70557fae))
+
 ## [0.9.0](https://github.com/kckhchen/obsidian-2-jekyll/compare/v0.8.2...v0.9.0) (2026-08-21)
 
 
