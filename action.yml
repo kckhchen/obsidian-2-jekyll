@@ -79,8 +79,6 @@ runs:
     - uses: actions/setup-python@v5
       with:
         python-version: ${{ inputs.python-version }}
-        cache: pip
-        cache-dependency-path: ${{ github.action_path }}/requirements.txt
 
     - shell: bash
       run: pip install --quiet -r "${{ github.action_path }}/requirements.txt"
@@ -176,8 +174,8 @@ runs:
         BRANCH: ${{ inputs.branch }}
         DELETIONS: ${{ steps.diff.outputs.deletions }}
       run: |
-        base=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null | sed 's|^origin/||')
-        base=${base:-main}
+        base=$(gh repo view --json defaultBranchRef --jq '.defaultBranchRef.name')
+        git fetch --quiet origin "$base"
         git push --force origin "$BRANCH"
 
         {
