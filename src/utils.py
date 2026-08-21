@@ -51,15 +51,18 @@ def unshield(post, stash, convert_func=None):
 
 
 def get_valid_files(vault_dir, post_dir):
+    MD_SUFFIXES = frozenset({".md", ".markdown"})
     valid_files = {}
-    paths = (
-        sorted(vault_dir.rglob("*.md"))
-        + sorted(vault_dir.rglob("*.markdown"))
-        + sorted(vault_dir.rglob("*.MD"))
-        + sorted(vault_dir.rglob("*.MARKDOWN"))
-    )
+    post_dir = post_dir.resolve()
 
-    for path in paths:
+    for path in sorted(vault_dir.rglob("*")):
+        if path.suffix.lower() not in MD_SUFFIXES:
+            continue
+
+        # skip POST_DIR to allow for same repo sync
+        if post_dir in path.resolve().parents:
+            continue
+
         # skip dotfiles
         if any(part.startswith(".") for part in path.relative_to(vault_dir).parts):
             continue

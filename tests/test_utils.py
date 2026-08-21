@@ -124,6 +124,19 @@ class TestFileScanning:
 
         assert results["post1"]["source_path"] == mini_vault / "post1.md"
 
+    def test_output_dir_is_not_scanned(self, tmp_path):
+        vault = tmp_path / "vault"
+        posts = vault / "_posts"
+        posts.mkdir(parents=True)
+        (vault / "note.md").write_text("---\nshare: true\n---\nx\n")
+        (posts / "2026-01-01-note.md").write_text(
+            "---\nshare: true\ngenerator: obsidian-2-jekyll\n---\nx\n"
+        )
+
+        result = get_valid_files(vault, posts)
+
+        assert list(result) == ["note"]
+
 
 class TestDestPathLogic:
     def test_uses_date_from_frontmatter(self, postify):
