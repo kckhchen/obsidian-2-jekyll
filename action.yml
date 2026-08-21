@@ -69,8 +69,14 @@ runs:
     - uses: actions/checkout@v4
       with: { path: "${{ inputs.vault-dir }}" }
 
-    - if: inputs.jekyll-repo != ''
-      uses: actions/checkout@v4
+    - name: Check configuration
+      if: inputs.jekyll-repo == ''
+      shell: bash
+      run: |
+        echo "::error::jekyll-repo is required — your vault and Jekyll site must be separate repositories."
+        exit 1
+
+    - uses: actions/checkout@v4
       with:
         repository: ${{ inputs.jekyll-repo }}
         token: ${{ inputs.token }}
