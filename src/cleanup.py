@@ -8,7 +8,7 @@ from src.patterns import IMG_EXT, IMG_LINK_PATTERN, POST_NAME_PATTERN
 SHARED_LOOKING = {"images", "img", "assets", "media", "static", "uploads", "files"}
 
 
-def remove_stale_files(files, post_dir, img_dir):
+def remove_stale_files(files, post_dir, img_dir, assume_yes):
     print("\nStarting cleaning up process...")
     print(f"Post folder: [ {post_dir} ]")
     print(f"Image folder: [ {img_dir} ]\n")
@@ -21,7 +21,7 @@ def remove_stale_files(files, post_dir, img_dir):
     ) + _list_imgs_to_be_removed(img_dir, all_post_images)
 
     if to_be_removed:
-        _remove_files(to_be_removed)
+        _remove_files(to_be_removed, assume_yes)
     else:
         print("No stale files found. Nothing will be removed.")
 
@@ -74,7 +74,7 @@ def _list_imgs_to_be_removed(img_dir, all_post_images):
     ]
 
 
-def _remove_files(file_path_list):
+def _remove_files(file_path_list, assume_yes=False):
     if not file_path_list:
         return
 
@@ -82,7 +82,7 @@ def _remove_files(file_path_list):
     for p in file_path_list:
         print(f"[{p.parent.name}] {p.name}")
 
-    if input("\nConfirm removal? [y/n]: ").lower() == "y":
+    if assume_yes or input("\nConfirm removal? [y/n]: ").lower() == "y":
         for p in file_path_list:
             try:
                 p.unlink()

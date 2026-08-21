@@ -30,7 +30,7 @@ def main(args):
         )
 
     if args.update or args.cleanup:
-        remove_stale_files(valid_files, POST_DIR, IMG_DIR)
+        remove_stale_files(valid_files, POST_DIR, IMG_DIR, args.yes)
 
 
 def setup_parser():
@@ -63,6 +63,12 @@ def setup_parser():
         help="Jekyll layout to use (default: post).",
     )
     parser.add_argument("--only", default=None, help="Only process the selected post.")
+    parser.add_argument(
+        "--yes",
+        "-y",
+        action="store_true",
+        help="Skip confirmation prompts (for automation).",
+    )
 
     return parser
 

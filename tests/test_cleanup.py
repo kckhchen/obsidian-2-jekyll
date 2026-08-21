@@ -112,6 +112,14 @@ class TestDeletionSafety:
         with patch("builtins.input", return_value="y"):
             _remove_files([ghost])
 
+    def test_remove_files_proceeds_on_assum_yes(self, fs_setup):
+        post_dir, _ = fs_setup
+        stale_file = post_dir / "delete_me.md"
+        stale_file.touch()
+
+        _remove_files([stale_file], assume_yes=True)
+        assert not stale_file.exists()
+
 
 class TestIsManaged:
     @pytest.mark.parametrize(
@@ -162,7 +170,7 @@ class TestFullFlow:
         with patch("builtins.input", return_value="y"):
             mock_get_post_images = mocker.patch("src.cleanup._get_post_images")
             mock_get_post_images.return_value = {"used_image.png"}
-            remove_stale_files(valid_files, post_dir, img_dir)
+            remove_stale_files(valid_files, post_dir, img_dir, assume_yes=False)
 
         assert valid_dest.exists()
         assert used_img.exists()
