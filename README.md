@@ -145,7 +145,7 @@ jobs:
           token: ${{ secrets.BLOG_PUSH_TOKEN }}
 ```
 
-Or, if you want to sync the vault and remove stale posts and images:
+This publishes new and updated posts. Posts you delete from your vault will stay on your site — to remove those too, see the sync example below:
 
 ```yaml
 name: Publish
