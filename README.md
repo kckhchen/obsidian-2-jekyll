@@ -9,8 +9,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/kckhchen/obsidian-2-jekyll/actions/workflows/ci.yml"><img src="https://github.com/kckhchen/obsidian-2-jekyll/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://github.com/kckhchen/obsidian-2-jekyll/releases"><img src="https://img.shields.io/github/v/release/kckhchen/obsidian-2-jekyll" alt="Release"></a>
+  <a href="https://github.com/kckhchen/intaglio/actions/workflows/ci.yml"><img src="https://github.com/kckhchen/intaglio/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/kckhchen/intaglio/releases"><img src="https://img.shields.io/github/v/release/kckhchen/intaglio" alt="Release"></a>
   <img src="https://img.shields.io/badge/python-3.10%2B-blue.svg" alt="Python 3.10+">
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT"></a>
 </p>
@@ -60,8 +60,8 @@ pip install -r requirements.txt
 #### 1. Clone this repo
 
 ```bash
-git clone https://github.com/kckhchen/obsidian-2-jekyll.git
-cd obsidian-2-jekyll
+git clone https://github.com/kckhchen/intaglio.git
+cd intaglio
 ```
 
 #### 2. Configure your paths
@@ -139,7 +139,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: kckhchen/obsidian-2-jekyll@v1
+      - uses: kckhchen/intaglio@v1
         with:
           jekyll-repo: username/jekyll-repo
           token: ${{ secrets.BLOG_PUSH_TOKEN }}
@@ -158,7 +158,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: kckhchen/obsidian-2-jekyll@v1
+      - uses: kckhchen/intaglio@v1
         with:
           jekyll-repo: username/jekyll-repo
           token: ${{ secrets.BLOG_PUSH_TOKEN }}

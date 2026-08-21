@@ -1,5 +1,5 @@
-name: Obsidian to Jekyll
-description: Sync shared notes from an Obsidian vault to a Jekyll site.
+name: Intaglio
+description: Turn your Obsidian vault into a Jekyll site.
 author: kckhchen
 
 branding:

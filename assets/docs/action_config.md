@@ -29,7 +29,7 @@ The following are all the available configuration you can use with `with:` when 
 | `pull-request-url` | URL of the pull request opened or updated. |
 
 ```yaml
-- uses: kckhchen/obsidian-2-jekyll@v0
+- uses: kckhchen/intaglio@v0
   id: sync
   with:
     jekyll-repo: username/jekyll-repo
