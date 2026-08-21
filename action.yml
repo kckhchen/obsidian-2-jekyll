@@ -9,7 +9,8 @@ branding:
 inputs:
   jekyll-repo:
     {
-      description: "Jekyll site repo (owner/name). Empty = same repo.",
+      description: "Jekyll site repo (owner/name). Must differ from your vault repo.",
+      required: true,
       default: "",
     }
   jekyll-dir: { description: "Path to the Jekyll site.", default: "site" }
