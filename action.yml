@@ -1,0 +1,139 @@
+name: Obsidian to Jekyll
+description: Sync shared notes from an Obsidian vault to a Jekyll site.
+author: kckhchen
+
+branding:
+  icon: file-text
+  color: purple
+
+inputs:
+  jekyll-repo:
+    {
+      description: "Jekyll site repo (owner/name). Empty = same repo.",
+      default: "",
+    }
+  jekyll-dir: { description: "Path to the Jekyll site.", default: "site" }
+  vault-dir: { description: "Path to the Obsidian vault.", default: "vault" }
+  token:
+    { description: "Token with contents:write on jekyll-repo.", default: "" }
+  args: { description: "Arguments passed to main.py.", default: "--force" }
+  commit: { description: "Commit and push the result.", default: "true" }
+  commit-message:
+    {
+      description: "{sha} is replaced with the short SHA.",
+      default: "chore: sync from vault @ {sha}",
+    }
+  max-deletions:
+    {
+      description: "Abort above this many deletions. -1 disables.",
+      default: "10",
+    }
+  require-date:
+    {
+      description: "Fail if a shared note has no explicit date.",
+      default: "true",
+    }
+  optimise-images:
+    { description: "Compress PNG/JPEG before committing.", default: "false" }
+  python-version: { default: "3.13" }
+
+outputs:
+  changed:
+    description: "true when the sync produced a change."
+    value: ${{ steps.diff.outputs.changed }}
+  posts-written:
+    description: "Number of post files after the sync."
+    value: ${{ steps.sync.outputs.posts }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v4
+      with: { path: "${{ inputs.vault-dir }}" }
+
+    - if: inputs.jekyll-repo != ''
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ inputs.jekyll-repo }}
+        token: ${{ inputs.token }}
+        path: ${{ inputs.jekyll-dir }}
+
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: pip
+        cache-dependency-path: ${{ github.action_path }}/requirements.txt
+
+    - shell: bash
+      run: pip install --quiet -r "${{ github.action_path }}/requirements.txt"
+
+    - name: Require explicit dates
+      if: inputs.require-date == 'true'
+      shell: bash
+      working-directory: ${{ github.workspace }}/${{ inputs.vault-dir }}
+      run: |
+        missing=$(grep -rlE '^share:[[:space:]]*true' --include='*.md' . 2>/dev/null \
+                  | xargs -r grep -LE '^date:' || true)
+        if [ -n "$missing" ]; then
+          echo "::error::Shared notes without an explicit 'date:' would get an unstable"
+          echo "::error::permalink, because git does not preserve file timestamps."
+          echo "$missing" | while read -r f; do echo "::error file=$f::missing date:"; done
+          exit 1
+        fi
+
+    - name: Sync
+      id: sync
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      env:
+        VAULT_DIR: ${{ github.workspace }}/${{ inputs.vault-dir }}
+        JEKYLL_DIR: ${{ github.workspace }}/${{ inputs.jekyll-dir }}
+      run: |
+        python main.py ${{ inputs.args }}
+        echo "posts=$(find "$JEKYLL_DIR/_posts" -name '*.md' | wc -l)" >> "$GITHUB_OUTPUT"
+
+    - name: Optimise images
+      if: inputs.optimise-images == 'true'
+      shell: bash
+      working-directory: ${{ github.workspace }}/${{ inputs.jekyll-dir }}
+      run: |
+        sudo apt-get install -y -qq optipng jpegoptim
+        find assets -name '*.png' -print0 | xargs -0 -r optipng -o2 -quiet
+        find assets \( -name '*.jpg' -o -name '*.jpeg' \) -print0 \
+          | xargs -0 -r jpegoptim --strip-all --max=85 --quiet
+
+    - name: Inspect changes
+      id: diff
+      shell: bash
+      working-directory: ${{ github.workspace }}/${{ inputs.jekyll-dir }}
+      run: |
+        git add -A
+        if git diff --cached --quiet; then
+          echo "changed=false" >> "$GITHUB_OUTPUT"
+          echo "Nothing to publish."
+          exit 0
+        fi
+        echo "changed=true" >> "$GITHUB_OUTPUT"
+        git diff --cached --stat
+
+        limit='${{ inputs.max-deletions }}'
+        if [ "$limit" != "-1" ]; then
+          deleted=$(git diff --cached --name-only --diff-filter=D | wc -l)
+          if [ "$deleted" -gt "$limit" ]; then
+            echo "::error::$deleted files would be deleted (limit $limit)."
+            git diff --cached --name-only --diff-filter=D \
+              | while read -r f; do echo "::error::would delete $f"; done
+            exit 1
+          fi
+        fi
+
+    - name: Commit and push
+      if: inputs.commit == 'true' && steps.diff.outputs.changed == 'true'
+      shell: bash
+      working-directory: ${{ github.workspace }}/${{ inputs.jekyll-dir }}
+      run: |
+        message='${{ inputs.commit-message }}'
+        git config user.name  'obsidian-2-jekyll[bot]'
+        git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+        git commit -m "${message//\{sha\}/${GITHUB_SHA::7}}"
+        git push
