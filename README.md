@@ -104,11 +104,11 @@ python3 main.py --only "My Post.md"
 
 ### Actions (Optional)
 
-This tool also comes with an `action.yml` for automating the converting process, as long as your vault (posts) and your Jekyll site are pushed and synced to GitHub repos. Once this is setup, your workflow becomes as simple as **"write, commit, push,"** and Actions will take care of the rest. Follow the steps below:
+This tool also comes with an `action.yml` for automating the converting process, as long as your vault (posts) and your Jekyll site are pushed and synced to GitHub repos. Once this is setup, your workflow becomes as simple as **"write, commit, push,"** and Actions will take care of the rest and send a PR to your Jekyll site with all the formatted posts. Follow the steps below:
 
 #### 1. Set Up Repo Token
 
-Generate a fine-grained token for your Jekyll site and set repository permissions to **Contents: Read and write**. Copy the token and paste to your repository secrets in your vault repo, naming it `BLOG_PUSH_TOKEN`.
+Generate a fine-grained token for your Jekyll site and set repository permissions to **Contents: Read and write** and **Pull Requests: Read and write**. Copy the token and paste to your repository secrets in your vault repo, naming it `BLOG_PUSH_TOKEN`.
 
 #### 2. Create `.yml`
 
@@ -156,7 +156,7 @@ A few thing to note before proceeding with this workflow:
 
 1. It **does not** implement incremental builds. Incremental builds rely on file modification time, which refreshes on push. In other words, it effectively uses the `--force` flag every time it runs. This, however, should not make a huge impact on efficiency.
 2. **Dates are mandatory**. As modification time becomes unreliable, it enforces explicit dates in the frontmatter. Failure to comply with this will trigger a delivery stopper.
-3. **Cleanup automatically proceeds**. Without a CLI to prompt for confirmation, `--cleanup` and `--update` rely on the `--yes` flag to automatically proceeds. To address this challenge, you can set a `--max-deletions` (default to 10) limit that when reached, the process will abort, preventing unintended mass deletion.
+3. **Cleanup automatically proceeds**. Without a CLI to prompt for confirmation, `--cleanup` and `--update` rely on the `--yes` flag to automatically proceeds. To address this challenge, you can set a `--max-deletions` (default to 10) limit that when reached, the process will send a warning. You can decide whether to merge the PR.
 
 ## User Guide
 
