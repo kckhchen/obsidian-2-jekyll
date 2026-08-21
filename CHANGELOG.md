@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.0.0](https://github.com/kckhchen/obsidian-2-jekyll/compare/v0.9.1...v1.0.0) (2026-08-21)
+
+
+### Features
+
+* add action stopper for same repo ([645ccc3](https://github.com/kckhchen/obsidian-2-jekyll/commit/645ccc3edb7030316cf64c0f7130c7957034b4ed))
+* enhance md globbing and block post_dir scanning ([b37daa5](https://github.com/kckhchen/obsidian-2-jekyll/commit/b37daa5c38d3da34506b737bbf307b5f7a871e35))
+
+
+### Documentation
+
+* update README and action_config ([2f50562](https://github.com/kckhchen/obsidian-2-jekyll/commit/2f50562b6cf9d06b664b4901d52b9ac46a0547ec))
+
 ## [0.9.1](https://github.com/kckhchen/obsidian-2-jekyll/compare/v0.9.0...v0.9.1) (2026-08-21)
 
 
