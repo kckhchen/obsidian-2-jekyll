@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/kckhchen/intaglio/compare/v1.2.0...v1.2.1) (2026-08-21)
+
+
+### Bug Fixes
+
+* change other reference to old names to intaglio ([963a71a](https://github.com/kckhchen/intaglio/commit/963a71ad70a3a331c449a588014289989edf844f))
+
 ## [1.2.0](https://github.com/kckhchen/intaglio/compare/v1.1.1...v1.2.0) (2026-08-21)
 
 
