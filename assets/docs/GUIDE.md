@@ -82,7 +82,7 @@ The tool automatically adds `layout: post` (or any layout format of your choice)
 
 If no `h1` is present, `title` won't be added and Jekyll will generate a title based on the file name. You can also manually add `title` to the frontmatter.
 
-It also adds a signature `generator: obsidian-2-jekyll` to the frontmatter. The tool only manages posts with this line in the frontmatter, so your other posts stay invisible to the tool and will not be touched when you run `--cleanup` or `--update`.
+It also adds a signature `generator: intaglio` to the frontmatter. The tool only manages posts with this line in the frontmatter, so your other posts stay invisible to the tool and will not be touched when you run `--cleanup` or `--update`.
 
 ### 2. Prepends Dates Before File Names
 

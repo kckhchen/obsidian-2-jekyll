@@ -158,7 +158,7 @@ runs:
       working-directory: ${{ github.workspace }}/${{ inputs.jekyll-dir }}
       run: |
         message='${{ inputs.commit-message }}'
-        git config user.name  'obsidian-2-jekyll[bot]'
+        git config user.name  'intaglio[bot]'
         git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
         if [ '${{ inputs.mode }}' = 'pr' ]; then
           git checkout -B '${{ inputs.branch }}'

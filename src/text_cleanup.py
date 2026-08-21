@@ -14,7 +14,7 @@ def text_cleanup(post, layout="post"):
 
 def _process_frontmatter(post, layout="post"):
     post["layout"] = post.get("layout") or layout
-    post["generator"] = "obsidian-2-jekyll"
+    post["generator"] = "intaglio"
     h1_match = re.search(H1_PATTERN, post.content, flags=re.MULTILINE)
     if h1_match:
         post = _process_h1(post, h1_match)

@@ -28,7 +28,7 @@ def remove_stale_files(files, post_dir, img_dir, assume_yes):
 
 def _is_managed(path):
     try:
-        return frontmatter.load(path).get("generator") == "obsidian-2-jekyll"
+        return frontmatter.load(path).get("generator") == "intaglio"
     except Exception:  # noqa: BLE001
         return False
 

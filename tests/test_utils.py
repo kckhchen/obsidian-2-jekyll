@@ -130,7 +130,7 @@ class TestFileScanning:
         posts.mkdir(parents=True)
         (vault / "note.md").write_text("---\nshare: true\n---\nx\n")
         (posts / "2026-01-01-note.md").write_text(
-            "---\nshare: true\ngenerator: obsidian-2-jekyll\n---\nx\n"
+            "---\nshare: true\ngenerator: intaglio\n---\nx\n"
         )
 
         result = get_valid_files(vault, posts)
