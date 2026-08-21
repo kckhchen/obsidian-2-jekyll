@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/kckhchen/intaglio/compare/v1.1.1...v1.2.0) (2026-08-21)
+
+
+### Features
+
+* enhance callout bg and accent colors to render well on both dark and light themes ([84f7858](https://github.com/kckhchen/intaglio/commit/84f78580f232dee1406d391393e9e971d17b9d66))
+
 ## [1.1.1](https://github.com/kckhchen/intaglio/compare/v1.1.0...v1.1.1) (2026-08-21)
 
 
