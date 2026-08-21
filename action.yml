@@ -15,9 +15,21 @@ inputs:
   jekyll-dir: { description: "Path to the Jekyll site.", default: "site" }
   vault-dir: { description: "Path to the Obsidian vault.", default: "vault" }
   token:
-    { description: "Token with contents:write on jekyll-repo.", default: "" }
+    {
+      description: "Token with contents:write and pull-requests:write on jekyll-repo.",
+      default: "",
+    }
   args: { description: "Arguments passed to main.py.", default: "--force" }
-  commit: { description: "Commit and push the result.", default: "true" }
+  mode:
+    {
+      description: "'pr' opens or updates a pull request, 'push' commits straight to the default branch, 'none' syncs only.",
+      default: "pr",
+    }
+  branch:
+    {
+      description: "Branch used in pr mode. Fixed name, so repeated runs update the same PR.",
+      default: "obsidian-sync",
+    }
   commit-message:
     {
       description: "{sha} is replaced with the short SHA.",
@@ -25,7 +37,7 @@ inputs:
     }
   max-deletions:
     {
-      description: "Abort above this many deletions. -1 disables.",
+      description: "Warn above this many deletions. Never fails the run. -1 disables the warning.",
       default: "10",
     }
   require-date:
@@ -41,9 +53,15 @@ outputs:
   changed:
     description: "true when the sync produced a change."
     value: ${{ steps.diff.outputs.changed }}
+  deletions:
+    description: "Number of files the sync would delete."
+    value: ${{ steps.diff.outputs.deletions }}
   posts-written:
     description: "Number of post files after the sync."
     value: ${{ steps.sync.outputs.posts }}
+  pull-request-url:
+    description: "URL of the pull request opened or updated, empty otherwise."
+    value: ${{ steps.pr.outputs.url }}
 
 runs:
   using: composite
@@ -108,32 +126,89 @@ runs:
       working-directory: ${{ github.workspace }}/${{ inputs.jekyll-dir }}
       run: |
         git add -A
+
         if git diff --cached --quiet; then
           echo "changed=false" >> "$GITHUB_OUTPUT"
+          echo "deletions=0" >> "$GITHUB_OUTPUT"
           echo "Nothing to publish."
           exit 0
         fi
+
         echo "changed=true" >> "$GITHUB_OUTPUT"
         git diff --cached --stat
 
+        deleted=$(git diff --cached --name-only --diff-filter=D | wc -l)
+        echo "deletions=$deleted" >> "$GITHUB_OUTPUT"
+
         limit='${{ inputs.max-deletions }}'
-        if [ "$limit" != "-1" ]; then
-          deleted=$(git diff --cached --name-only --diff-filter=D | wc -l)
-          if [ "$deleted" -gt "$limit" ]; then
-            echo "::error::$deleted files would be deleted (limit $limit)."
-            git diff --cached --name-only --diff-filter=D \
-              | while read -r f; do echo "::error::would delete $f"; done
-            exit 1
-          fi
+        if [ "$limit" != "-1" ] && [ "$deleted" -gt "$limit" ]; then
+          echo "::warning::$deleted files would be deleted (above the $limit warning threshold)."
+          git diff --cached --name-only --diff-filter=D \
+            | while read -r f; do echo "::warning::would delete $f"; done
         fi
 
-    - name: Commit and push
-      if: inputs.commit == 'true' && steps.diff.outputs.changed == 'true'
+    - name: Commit
+      if: inputs.mode != 'none' && steps.diff.outputs.changed == 'true'
       shell: bash
       working-directory: ${{ github.workspace }}/${{ inputs.jekyll-dir }}
       run: |
         message='${{ inputs.commit-message }}'
         git config user.name  'obsidian-2-jekyll[bot]'
         git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-        git commit -m "${message//\{sha\}/${GITHUB_SHA::7}}"
-        git push
+        if [ '${{ inputs.mode }}' = 'pr' ]; then
+          git checkout -B '${{ inputs.branch }}'
+        fi
+        git commit --quiet -m "${message//\{sha\}/${GITHUB_SHA::7}}"
+
+    - name: Push
+      if: inputs.mode == 'push' && steps.diff.outputs.changed == 'true'
+      shell: bash
+      working-directory: ${{ github.workspace }}/${{ inputs.jekyll-dir }}
+      run: git push
+
+    - name: Open or update pull request
+      id: pr
+      if: inputs.mode == 'pr' && steps.diff.outputs.changed == 'true'
+      shell: bash
+      working-directory: ${{ github.workspace }}/${{ inputs.jekyll-dir }}
+      env:
+        GH_TOKEN: ${{ inputs.token || github.token }}
+        BRANCH: ${{ inputs.branch }}
+        DELETIONS: ${{ steps.diff.outputs.deletions }}
+      run: |
+        base=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null | sed 's|^origin/||')
+        base=${base:-main}
+        git push --force origin "$BRANCH"
+
+        {
+          echo "Synced from \`${{ github.repository }}@${GITHUB_SHA::7}\`."
+          echo
+          echo '```'
+          git diff --stat "origin/$base..$BRANCH"
+          echo '```'
+          if [ "$DELETIONS" -gt 0 ]; then
+            echo
+            echo "> [!WARNING]"
+            echo "> This pull request deletes **$DELETIONS** file(s):"
+            echo "> "
+            git diff --name-only --diff-filter=D "origin/$base..$BRANCH" \
+              | while read -r f; do echo "> - \`$f\`"; done
+          fi
+        } > "$RUNNER_TEMP/pr-body.md"
+
+        existing=$(gh pr list --head "$BRANCH" --base "$base" --state open \
+                     --json url --jq '.[0].url // empty')
+
+        if [ -n "$existing" ]; then
+          gh pr edit "$existing" --body-file "$RUNNER_TEMP/pr-body.md"
+          echo "url=$existing" >> "$GITHUB_OUTPUT"
+          echo "Updated $existing"
+        else
+          url=$(gh pr create \
+            --base "$base" \
+            --head "$BRANCH" \
+            --title "chore: sync from vault @ ${GITHUB_SHA::7}" \
+            --body-file "$RUNNER_TEMP/pr-body.md")
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "Opened $url"
+        fi
