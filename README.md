@@ -151,6 +151,8 @@ jobs:
           args: --update --force --yes
 ```
 
+Alternatively, use `GITHUB_TOKEN` and individually set permissions for workflows inside the `.yml` file. This way, you don't need to generate or refresh the token manually.
+
 A few thing to note before proceeding with this workflow:
 
 1. It **does not** implement incremental builds. Incremental builds rely on file modification time, which refreshes on push. In other words, it effectively uses the `--force` flag every time it runs. This, however, should not make a huge impact on efficiency.
