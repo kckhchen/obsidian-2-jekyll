@@ -147,7 +147,7 @@ jobs:
       - uses: kckhchen/obsidian-2-jekyll@v0.9
         id: sync
         with:
-          jekyll-repo: barnett/my-blog
+          jekyll-repo: username/jekyll-repo
           token: ${{ secrets.BLOG_PUSH_TOKEN }}
           args: --update --force --yes
 ```
