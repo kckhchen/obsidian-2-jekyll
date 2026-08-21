@@ -104,8 +104,6 @@ python3 main.py --only "My Post.md"
 
 ### Actions (Optional)
 
-> [!INFO] This only works for version `v0.9.0` and above.
-
 This tool also comes with an `action.yml` for automating the converting process, as long as your vault (posts) and your Jekyll site are pushed and synced to GitHub repos. Once this is setup, your workflow becomes as simple as **"write, commit, push,"** and Actions will take care of the rest and send a PR to your Jekyll site with all the formatted posts. Follow the steps below:
 
 #### 1. Set Up Repo Token
@@ -127,7 +125,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: kckhchen/obsidian-2-jekyll@v0.9.0
+      - uses: kckhchen/obsidian-2-jekyll@v0
         with:
           jekyll-repo: username/jekyll-repo
           token: ${{ secrets.BLOG_PUSH_TOKEN }}
@@ -146,8 +144,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: kckhchen/obsidian-2-jekyll@v0.9.0
-        id: sync
+      - uses: kckhchen/obsidian-2-jekyll@v0
         with:
           jekyll-repo: username/jekyll-repo
           token: ${{ secrets.BLOG_PUSH_TOKEN }}
@@ -158,7 +155,8 @@ A few thing to note before proceeding with this workflow:
 
 1. It **does not** implement incremental builds. Incremental builds rely on file modification time, which refreshes on push. In other words, it effectively uses the `--force` flag every time it runs. This, however, should not make a huge impact on efficiency.
 2. **Dates are mandatory**. As modification time becomes unreliable, it enforces explicit dates in the frontmatter. Failure to comply with this will trigger a delivery stopper.
-3. **Cleanup automatically proceeds**. Without a CLI to prompt for confirmation, `--cleanup` and `--update` rely on the `--yes` flag to automatically proceeds. To address this challenge, you can set a `--max-deletions` (default to 10) limit that when reached, the process will send a warning. You can decide whether to merge the PR.
+3. **Cleanup automatically proceeds**. Without a CLI to prompt for confirmation, `--cleanup` and `--update` rely on the `--yes` flag to automatically proceeds. To address this challenge, you can set a `max-deletions` (default to 10) limit that when reached, the process will send a warning. You can decide whether to merge the PR.
+4. For full configuration settings available, check out [action_config.md](./assets/docs/action_config.md)
 
 ## User Guide
 
