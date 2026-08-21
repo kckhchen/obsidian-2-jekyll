@@ -1,14 +1,28 @@
-# Obsidian2Jekyll
+<p align="center">
+  <img src="assets/images/icons/icon-dark.svg" width="112" alt="">
+</p>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-![Python Version](https://img.shields.io/badge/python-3.10%2B-blue.svg)
+<h1 align="center">Intaglio</h1>
 
-A theme-agnostic tool that makes your Obsidian articles Jekyll-ready.
+<p align="center">
+  A theme-agnostic tool that makes your Obsidian articles Jekyll-ready.
+</p>
 
-This is a tool build with python that scans your obsidian vault, formats your articles to make them compatible with Jekyll's requirements, and saves them to your Jekyll project folder, waiting to be published, so you can keep your articles clean, while Jekyll gets its preferred flavor.
+<p align="center">
+  <a href="https://github.com/kckhchen/obsidian-2-jekyll/actions/workflows/ci.yml"><img src="https://github.com/kckhchen/obsidian-2-jekyll/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/kckhchen/obsidian-2-jekyll/releases"><img src="https://img.shields.io/github/v/release/kckhchen/obsidian-2-jekyll" alt="Release"></a>
+  <img src="https://img.shields.io/badge/python-3.10%2B-blue.svg" alt="Python 3.10+">
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT"></a>
+</p>
 
-> [!IMPORTANT]
-> This tool is under active maintenance. Backward compatibility is not guaranteed on minor digit changes. Also, please run the tool with `--force` flag to ensure newest changes take effect when you install a latest release.
+---
+
+Intaglio scans your Obsidian vault, converts the notes you've marked as shared
+into Jekyll-compatible posts, and writes them to your site — so your vault stays
+clean Markdown while Jekyll gets the flavour it expects.
+
+It runs as a CLI, or as a GitHub Action that opens a pull request against your
+site repository on every push.
 
 ## Features
 
@@ -125,7 +139,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: kckhchen/obsidian-2-jekyll@v0
+      - uses: kckhchen/obsidian-2-jekyll@v1
         with:
           jekyll-repo: username/jekyll-repo
           token: ${{ secrets.BLOG_PUSH_TOKEN }}
@@ -144,7 +158,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: kckhchen/obsidian-2-jekyll@v0
+      - uses: kckhchen/obsidian-2-jekyll@v1
         with:
           jekyll-repo: username/jekyll-repo
           token: ${{ secrets.BLOG_PUSH_TOKEN }}
