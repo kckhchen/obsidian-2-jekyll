@@ -146,7 +146,7 @@ It supports every callout type, including their alias, specified on the [Obsidia
 
 ```mermaid
 graph TB
-    A[Obsidian .md] --> B(Obsidian2Jekyll)
+    A[Obsidian .md] --> B(Intaglio)
     B -->|Frontmatter| D[Add Title/Date/Layout]
     B -->|Body| E[Process Math/Callouts/Links]
     B -->|Assets| F[Move Images]
