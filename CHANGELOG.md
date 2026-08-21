@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.9.0](https://github.com/kckhchen/obsidian-2-jekyll/compare/v0.8.2...v0.9.0) (2026-08-21)
+
+
+### Features
+
+* add --yes flag for automation ([5972ed1](https://github.com/kckhchen/obsidian-2-jekyll/commit/5972ed1a44b2f1e1d3b847d3be2b8e4b33cefb7c))
+* add github action bot ([0a31944](https://github.com/kckhchen/obsidian-2-jekyll/commit/0a319441479a153363996e3334eee5ddb32623f7))
+* change automation workflow to creating PR instead of pushing directly ([d12cd5b](https://github.com/kckhchen/obsidian-2-jekyll/commit/d12cd5b6e05603b488b0671bf6dc1fc6cba4986d))
+
+
+### Bug Fixes
+
+* remove pip cache and PR HEAD problem ([5cb12c0](https://github.com/kckhchen/obsidian-2-jekyll/commit/5cb12c04f616b012c08723e3691aa8936933a1b7))
+
+
+### Documentation
+
+* fix typo and add compatible version in README ([c7ae8e0](https://github.com/kckhchen/obsidian-2-jekyll/commit/c7ae8e018bb2282ecd7648449d86eadbc83de167))
+
 ## [0.8.2](https://github.com/kckhchen/obsidian-2-jekyll/compare/v0.8.1...v0.8.2) (2026-08-08)
 
 
