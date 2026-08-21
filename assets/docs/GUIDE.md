@@ -1,15 +1,16 @@
 # User Guide
 
 ## Table of Contents
+
 1. [Writing Guidelines](#writing-guidelines)
 2. [Advanced Configurations](#advanced-configurations)
 3. [How it Works](#what-this-tool-does)
-    - [Frontmatter](#1-adds-title-and-layout-to-frontmatter)
-    - [Dates & Renaming](#2-prepends-dates-before-file-names)
-    - [Images](#3-copies-associated-images-to-a-dedicated-folder-and-updates-embedded-image-links)
-    - [Internal Links](#4-updates-internal-links)
-    - [Math](#5-process-math)
-    - [Callouts](#6-supports-callouts)
+   - [Frontmatter](#1-adds-title-and-layout-to-frontmatter)
+   - [Dates & Renaming](#2-prepends-dates-before-file-names)
+   - [Images](#3-copies-associated-images-to-a-dedicated-folder-and-updates-embedded-image-links)
+   - [Internal Links](#4-updates-internal-links)
+   - [Math](#5-process-math)
+   - [Callouts](#6-supports-callouts)
 
 ## Writing Guidelines
 
@@ -23,7 +24,7 @@ If you wish, you can add additional settings or override the default in the fron
 
 You can clean up removed or outdated posts and images that are no longer referenced by any posts with the `-c`/`--cleanup` flag:
 
-```
+```bash
 python3 main.py --cleanup
 ```
 
@@ -33,7 +34,7 @@ The `--cleanup` flag will not process new posts for you. If you wish to process 
 
 You can also start a dry run first:
 
-```
+```bash
 python3 main.py --dry
 ```
 
@@ -41,7 +42,7 @@ This will print all the actions taken in the terminal but will not execute any.
 
 The default layout is `post`. You can change it with the `--layout` flag:
 
-```
+```bash
 python3 main.py --layout YOUR_LAYOUT
 ```
 
@@ -49,19 +50,19 @@ Alternatively, add the layout in the frontmatter and the tool will respect the c
 
 The tool uses the modification date to decide whether to process a post. If you would like to force processing a post, you can use the `-f`/`--force` flag. This is useful when you modify the scripts or download a new release and wish all posts to be updated.
 
-```
+```bash
 python3 main.py --force
 ```
 
 ### Environmental Variables
 
-| Variable              | Description                             | Default                      |
-| --------------------- | ------------------------------------------- | ---------------------------- |
-| `MATH_RENDERING_MODE` | `metadata` adds `math: true` to frontmatter; `inject_cdn` injects MathJax CDN at the end of post. For details [see below](#5-process-math) | `inject_cdn`           |
-| `PREVENT_DOUBLE_BASEURL` | `True` to prevent double baseurl problem in Jekyll >= 4.0. [See Why](#4-updates-internal-links) | `False`           |
-| `IMG_FOLDER` | Path to the image folder on your Jekyll site. It is recommended that you set a dedicated folder for images processed by this tool and prevent using generic path e.g. `assets/images` | `assets/images/obsidian`           |
-| `POST_FOLDER` | Path to the post folder on your Jekyll site. Some themes might have a different path like `_articles`, but generally they'll be at `_posts` | `_posts`           |
-| `INCLUDES_FOLDER` | Path to the includes folder on your Jekyll site. This is where `obsidian-callouts.html` will be stored. | `_includes`           |
+| Variable                 | Description                                                                                                                                                                           | Default                  |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| `MATH_RENDERING_MODE`    | `metadata` adds `math: true` to frontmatter; `inject_cdn` injects MathJax CDN at the end of post. For details [see below](#5-process-math)                                            | `inject_cdn`             |
+| `PREVENT_DOUBLE_BASEURL` | `True` to prevent double baseurl problem in Jekyll >= 4.0. [See Why](#4-updates-internal-links)                                                                                       | `False`                  |
+| `IMG_FOLDER`             | Path to the image folder on your Jekyll site. It is recommended that you set a dedicated folder for images processed by this tool and prevent using generic path e.g. `assets/images` | `assets/images/obsidian` |
+| `POST_FOLDER`            | Path to the post folder on your Jekyll site. Some themes might have a different path like `_articles`, but generally they'll be at `_posts`                                           | `_posts`                 |
+| `INCLUDES_FOLDER`        | Path to the includes folder on your Jekyll site. This is where `obsidian-callouts.html` will be stored.                                                                               | `_includes`              |
 
 ### Frontmatters
 
@@ -100,7 +101,7 @@ Embedded images `![[img.png|width]]` or `![alt_text|width](img.png)`, given that
 
 Also, all images associated with any of the processed posts will be copied to the dedicated image folder, while other irrelevant images will not be copied. This keeps your destination folder clean and tidy. Stale images will be cleaned up by `--cleanup` and `--update`, if the associated post is unpublished and no other posts are using the image.
 
-If the image cannot be found in the vault, the embed link will be kept as-as and a warning will be raised. This is to induce an error raising on Jekyll's side to prevent silent fails. 
+If the image cannot be found in the vault, the embed link will be kept as-as and a warning will be raised. This is to induce an error raising on Jekyll's side to prevent silent fails.
 
 > [!IMPORTANT]
 > Please avoid having multiple images with the exact same names inside the vault as the script scans the entire vault for images.
@@ -111,14 +112,13 @@ The tool looks for `[[another post|displayed text]]` or `[displayed text](anothe
 
 It works with links to other posts `[[another-post]]`, header links `[[#some-h2-title]]`, block/section links `[[#^link-to-block]]`, and headers and blocks from other posts `[[another-post#some-h3-title]]`.
 
-If the linked post does not exist (or is not published), the link will be transformed to plain text and a warning will be raised.
-
 > [!NOTE]
 > Section and block links are automatically prepended with a `secid` (e.g., `#^1e2t3` becomes `#secid1e2t3`) to ensure compatibility with HTML standards, which do not allow id's to start with a number. Don't worry if the id's don't look the same as in the original post.
 
+If the linked post does not exist (or is not published), the link will be transformed to plain text and a warning will be raised.
+
 > [!NOTE]
 > The tool transforms wikilinks into [Jekyll Liquids](https://jekyllrb.com/docs/liquid/) `[display text]({{ site.baseurl }}{% link path/to/post(or image) %})`. For Jekyll version 3.x the `{{ site.baseurl }}` is necessary if you use a baseurl. However, in Jekyll >= 4.0 the `{% link %}` Liquid adds base urls natively. Please set `PREVENT_DOUBLE_BASEURL` to `False` to prevent excessive addition of base urls.
-
 
 ### 5. Process Math
 
@@ -126,11 +126,11 @@ The tool will look for inline math `$...$` and swap it into `\(...\)` so that mo
 
 If the post contains math (be it inline math or math blocks), the tool will do one of the following things, depending on your configuration.
 
-- ##### If `MATH_RENDERING_MODE = "metadata"`
+- #### If `MATH_RENDERING_MODE = "metadata"`
 
 The tool will add `math: true` to the frontmatter. If the Jekyll theme you use supports math modes then the math will be rendered by whatever renderer the theme chooses.
 
-- ##### If `MATH_RENDERING_MODE = "inject_cdn"`
+- #### If `MATH_RENDERING_MODE = "inject_cdn"`
 
 The tool will automatically inject a [MathJax](https://www.mathjax.org/) script at the bottom of the post so that the browser will be able to render the math, even if your theme doesn't.
 
@@ -141,7 +141,6 @@ Generally, if your Jekyll theme supports math mode then `metadata` should be pre
 Obsidian callouts such as `> [!INFO]` or `> [!warning]` (case-insensitive) will be parsed and transformed into html elements. If callouts are used in a post, the tool will inject `{% include obsidian-callouts.html %}`, [Lucide's](https://lucide.dev/) CDN (Obsidian's original icon source), and a small icon-generating script `lucide.createIcons(...)` at the bottom of the post. The `obsidian-callouts.html` file will be saved to your root folder, inside the `_includes` folder, meeting Jekyll's requirement.
 
 It supports every callout type, including their alias, specified on the [Obsidian callout site](https://help.obsidian.md/callouts). If a callout type is not in the list, a grey-ish default callout block will be assigned.
-
 
 ## Workflow
 
