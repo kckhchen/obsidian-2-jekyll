@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/kckhchen/intaglio/compare/v1.1.0...v1.1.1) (2026-08-21)
+
+
+### Miscellaneous Chores
+
+* release v1.1.1 ([8b5cc49](https://github.com/kckhchen/intaglio/commit/8b5cc495455ade66247c0fc8d33015ebb8bec914))
+
 ## [1.1.0](https://github.com/kckhchen/intaglio/compare/v1.0.0...v1.1.0) (2026-08-21)
 
 
