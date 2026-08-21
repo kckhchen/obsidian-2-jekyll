@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/kckhchen/intaglio/compare/v1.0.0...v1.1.0) (2026-08-21)
+
+
+### Features
+
+* change tool name after rename to intaglio ([ccf844e](https://github.com/kckhchen/intaglio/commit/ccf844e99c78cdd64d641d8bde6e3701917ec747))
+
 ## [1.0.0](https://github.com/kckhchen/obsidian-2-jekyll/compare/v0.9.1...v1.0.0) (2026-08-21)
 
 
