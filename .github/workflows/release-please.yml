@@ -15,3 +15,21 @@ jobs:
     steps:
       - name: Run Release Please
         uses: googleapis/release-please-action@v4
+
+      - uses: actions/checkout@v4
+        if: ${{ steps.release.outputs.release_created }}
+        with: { fetch-depth: 0 }
+
+      - name: Move floating tags
+        if: ${{ steps.release.outputs.release_created }}
+        env:
+          TAG: ${{ steps.release.outputs.tag_name }}
+        run: |
+          [[ "$TAG" == *-* ]] && exit 0
+          MAJOR="${TAG%%.*}"; MINOR="${TAG%.*}"
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for t in "$MAJOR" "$MINOR"; do
+            git tag -f -a "$t" -m "Track latest $t release ($TAG)"
+            git push -f origin "$t"
+          done
