@@ -7,6 +7,7 @@ from src.utils import (
     _get_dest_fpath,
     get_valid_files,
     shield_content,
+    shield_liquid,
     slugify,
     unshield,
 )
@@ -87,6 +88,9 @@ class TestShielding:
         unshield(post, stash, convert_func=converter)
 
         assert post.content == "Code: MY_CODE"
+
+    def test_liquid_is_shield(self, postify):
+        assert shield_liquid("{{ hi }}") == "{% raw %}{{ hi }}{% endraw %}"
 
 
 class TestFileScanning:
