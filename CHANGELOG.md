@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/kckhchen/intaglio/compare/v1.2.2...v1.3.0) (2026-08-22)
+
+
+### Features
+
+* add liquid tag shielding ([e9e5098](https://github.com/kckhchen/intaglio/commit/e9e5098c342021db68fc92dd8a5307133d54c858))
+
 ## [1.2.2](https://github.com/kckhchen/intaglio/compare/v1.2.1...v1.2.2) (2026-08-22)
 
 
