@@ -19,6 +19,8 @@ The following are all the available configuration you can use with `with:` when 
 | `optimise-images` | Compress PNG/JPEG before commiting to save storage.                                           | `false`                          |
 | `python-version`  | Python version to run this job.                                                               | `3.13`                           |
 
+Aside from the options above, every environment variable has a counterpart in the `yml` file and can be changed via setting `yml` config.
+
 ## Outputs
 
 | Name               | Description                                |
