@@ -19,7 +19,7 @@ from src.process_images import process_embedded_images
 from src.process_links import process_wikilinks
 from src.process_math import process_math
 from src.text_cleanup import text_cleanup
-from src.utils import shield_content, unshield
+from src.utils import shield_content, shield_liquid, unshield
 
 
 def process_posts(files, dry, layout, force, only=None):
@@ -51,12 +51,14 @@ def process_posts(files, dry, layout, force, only=None):
                     post = process_callouts(post)
 
                     post = unshield(
-                        post, math_blocks, lambda x: re.sub(r"\|", r" \\vert ", x)
+                        post,
+                        math_blocks,
+                        lambda x: shield_liquid(re.sub(r"\|", r" \\vert ", x)),
                     )
                     post = process_math(post, MATH_RENDERING_MODE)
 
                     post = unshield(post, url_blocks)
-                    post = unshield(post, code_blocks)
+                    post = unshield(post, code_blocks, shield_liquid)
                     frontmatter.dump(post, dest)
             else:
                 skipped += 1

@@ -5,7 +5,13 @@ from pathlib import Path
 import frontmatter
 import yaml
 
-from .patterns import BLOCK_MATH_PATTERN, CODE_PATTERN, INLINE_MATH_PATTERN, URL_PATTERN
+from .patterns import (
+    BLOCK_MATH_PATTERN,
+    CODE_PATTERN,
+    INLINE_MATH_PATTERN,
+    LIQUID_PATTERN,
+    URL_PATTERN,
+)
 
 local_tz = datetime.now().astimezone().tzinfo
 
@@ -48,6 +54,15 @@ def unshield(post, stash, convert_func=None):
             original_text = convert_func(original_text)
         post.content = post.content.replace(key, original_text)
     return post
+
+
+def shield_liquid(text):
+    # wrap raw {{...}} into {% raw %} to prevent Jekyll conversion
+    if "{% raw %}" in text or "{% endraw %}" in text:
+        print("  |  Warning: block already contains raw tags; left as-is.")
+        return text
+    pattern = re.compile(LIQUID_PATTERN, re.DOTALL)
+    return pattern.sub(lambda m: "{% raw %}" + m.group(0) + "{% endraw %}", text)
 
 
 def get_valid_files(vault_dir, post_dir):
