@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/kckhchen/intaglio/compare/v1.2.1...v1.2.2) (2026-08-22)
+
+
+### Bug Fixes
+
+* add environment variable support for actions ([fefc1b5](https://github.com/kckhchen/intaglio/commit/fefc1b54e9b298657b077746e9546273f61f8d8b))
+
 ## [1.2.1](https://github.com/kckhchen/intaglio/compare/v1.2.0...v1.2.1) (2026-08-21)
 
 
