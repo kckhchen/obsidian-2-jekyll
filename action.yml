@@ -48,6 +48,31 @@ inputs:
     }
   optimise-images:
     { description: "Compress PNG/JPEG before committing.", default: "false" }
+  post-folder:
+    {
+      description: "Jekyll posts folder, relative to the site root.",
+      default: "_posts",
+    }
+  img-folder:
+    {
+      description: "Where images are copied, relative to the site root.",
+      default: "assets/images/obsidian",
+    }
+  includes-folder:
+    {
+      description: "Jekyll includes folder, relative to the site root.",
+      default: "_includes",
+    }
+  math-rendering-mode:
+    {
+      description: "'inject_cdn' adds MathJax to posts with math, 'metadata' only sets a frontmatter flag.",
+      default: "inject_cdn",
+    }
+  prevent-double-baseurl:
+    {
+      description: "Set to 'true' if your theme already prepends site.baseurl to links.",
+      default: "false",
+    }
   python-version: { default: "3.13" }
 
 outputs:
@@ -111,9 +136,14 @@ runs:
       env:
         VAULT_DIR: ${{ github.workspace }}/${{ inputs.vault-dir }}
         JEKYLL_DIR: ${{ github.workspace }}/${{ inputs.jekyll-dir }}
+        POST_FOLDER: ${{ inputs.post-folder }}
+        IMG_FOLDER: ${{ inputs.img-folder }}
+        INCLUDES_FOLDER: ${{ inputs.includes-folder }}
+        MATH_RENDERING_MODE: ${{ inputs.math-rendering-mode }}
+        PREVENT_DOUBLE_BASEURL: ${{ inputs.prevent-double-baseurl }}
       run: |
         python main.py ${{ inputs.args }}
-        echo "posts=$(find "$JEKYLL_DIR/_posts" -name '*.md' | wc -l)" >> "$GITHUB_OUTPUT"
+        echo "posts=$(find "$JEKYLL_DIR/$POST_FOLDER" -name '*.md' | wc -l)" >> "$GITHUB_OUTPUT"
 
     - name: Optimise images
       if: inputs.optimise-images == 'true'
@@ -121,8 +151,8 @@ runs:
       working-directory: ${{ github.workspace }}/${{ inputs.jekyll-dir }}
       run: |
         sudo apt-get install -y -qq optipng jpegoptim
-        find assets -name '*.png' -print0 | xargs -0 -r optipng -o2 -quiet
-        find assets \( -name '*.jpg' -o -name '*.jpeg' \) -print0 \
+        find "${{ inputs.img-folder }}" -name '*.png' -print0 | xargs -0 -r optipng -o2 -quiet
+        find "${{ inputs.img-folder }}" \( -name '*.jpg' -o -name '*.jpeg' \) -print0 \
           | xargs -0 -r jpegoptim --strip-all --max=85 --quiet
 
     - name: Inspect changes
